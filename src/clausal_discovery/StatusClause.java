@@ -67,7 +67,7 @@ public class StatusClause {
 	}
 
 	public boolean canProcess(Instance instance) {
-		if(!environment.isValidInstance(instance.getPredicate(), instance.getVariableIndices().getArray()))
+		if(!environment.isValidInstance(instance.getPredicate(), instance.getVariableIndices()))
 			return false;
 		Vector<Integer> indices = instance.getVariableIndices();//.sort(); // TODO review approach here
 		int max = getRank() - 1;

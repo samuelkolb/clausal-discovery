@@ -74,7 +74,7 @@ public class InstanceSetPrototype {
 		for(Predicate predicate : predicateSet) {
 			List<Numbers.Permutation> permutations = Numbers.take(rank, predicate.getArity());
 			for(Numbers.Permutation permutation : permutations)
-				if(new Environment().isValidInstance(predicate, permutation.getIntegerArray()))
+				if(new Environment().isValidInstance(predicate, new Vector<>(permutation.getIntegerArray())))
 					prototypes.add(new InstancePrototype(predicate, permutation));
 		}
 		return new InstanceSetPrototype(new Vector<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
@@ -83,7 +83,7 @@ public class InstanceSetPrototype {
 	public static void main(String[] args) {
 		Type type = new Type("H");
 		Predicate p = new Predicate("p", type, Type.UNDEFINED, new Type("T"), type);
-		System.out.println(new Environment().isValidInstance(p, new Integer[]{1, 1, 3, 2}));
+		System.out.println(new Environment().isValidInstance(p, new Vector<Integer>(1, 1, 3, 2)));
 	}
 	//endregion
 }

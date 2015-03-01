@@ -2,6 +2,8 @@ package logic.expression.formula;
 
 import logic.expression.visitor.ExpressionVisitor;
 
+import java.util.Collection;
+
 /**
  * Created by samuelkolb on 22/10/14.
  *
@@ -14,6 +16,10 @@ public class And extends CompositeFormula {
 	//endregion
 
 	//region Construction
+
+	public <T extends Formula> And(Collection<T> elements) {
+		this(elements.toArray(new Formula[elements.size()]));
+	}
 
 	public And(Formula... elements) {
 		super(elements);

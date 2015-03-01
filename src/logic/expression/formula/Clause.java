@@ -39,7 +39,7 @@ public class Clause extends Formula {
 
 	public Formula getBody() {
 		if(getBodyAtoms().length > 1)
-			return new And(getBodyAtoms().getArray());
+			return new And(getBodyAtoms());
 		if(getBodyAtoms().length == 1)
 			return getBodyAtoms().e(0);
 		return LogicalValue.TRUE;
@@ -116,15 +116,12 @@ public class Clause extends Formula {
 	 * @return	A new clause
 	 */
 	public Clause expandBody(Atom atom) {
-		Atom[] array = getBodyAtoms().getArray();
+		Atom[] array = getBodyAtoms().toArray(new Atom[getBodyAtoms().size()]);
 		Atom[] body = ArrayUtil.addElement(array, atom);
 		if(getHeadAtoms().size() > 0) {
 			Log.LOG.printLine("- Expression: " + ExpressionLogicPrinter.print(getHeadAtoms().get(0)));
 		}
-		Object[] headObjects = getHeadAtoms().getArray();
-		Atom[] head = new Atom[headObjects.length];
-		for(int i = 0; i < headObjects.length; i++)
-			head[i] = (Atom) headObjects[i];
+		Atom[] head = getHeadAtoms().toArray(new Atom[getHeadAtoms().size()]);
 		return new Clause(body, head);
 	}
 

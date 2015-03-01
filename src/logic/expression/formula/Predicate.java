@@ -94,7 +94,7 @@ public class Predicate {
 
 	@Override
 	public String toString() {
-		return getName() + "(" + StringUtil.join(", ", getTypes().getArray()) + ")";
+		return getName() + "(" + StringUtil.join(", ", getTypes()) + ")";
 	}
 
 	@Override
