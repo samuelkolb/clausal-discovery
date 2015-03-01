@@ -12,7 +12,7 @@ import logic.theory.Theory;
 public class EntailsProgram extends IdpProgram {
 
 	//region Variables
-	private static final Procedure ENTAIL_PROCEDURE = Procedures.ENTAILS.getProcedure("main");
+	private static final Procedure ENTAIL_PROCEDURE = Procedures.ENTAILS.getProcedure();
 
 	private final Theory theory;
 	//endregion

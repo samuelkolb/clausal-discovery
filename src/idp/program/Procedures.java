@@ -10,26 +10,26 @@ import vector.Vector;
  */
 public enum Procedures {
 
-	// 0: Theory, 1: Structure
-	VALID("valid.txt"),
-
 	// 0: Theory, 1: Theory that might be entailed
-	ENTAILS("entails.txt");
+	ENTAILS("entails.txt", new Vector<String>("Entailing theory", "Entailed theory"), new Vector<Function>());
 
-	private final String[] program;
+	private final String program;
 
-	Procedures(String filename) {
-		String content = FileUtil.readFile(FileUtil.getLocalFile(getClass().getResource("/idp_programs/" + filename)));
-		program = content.split("\n");
+	private final Vector<String> parameters;
+
+	private final Vector<Function> functions;
+
+	Procedures(String filename, Vector<String> parameters, Vector<Function> functions) {
+		this.parameters = parameters;
+		this.functions = functions;
+		program = FileUtil.readFile(FileUtil.getLocalFile(getClass().getResource("/idp_programs/" + filename)));
 	}
 
 	/**
 	 * Returns the procedure
-	 * @param name	The name the procedure should have
 	 * @return	A procedure containing the code to perform the operation
 	 */
-	public Procedure getProcedure(String name) {
-		Vector<String> result = new Vector<>(program);
-		return new LinesProcedure(name, result);
+	public Procedure getProcedure() {
+		return new Procedure(program, parameters, functions);
 	}
 }

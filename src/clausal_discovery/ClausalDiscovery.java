@@ -31,7 +31,7 @@ public class ClausalDiscovery {
 	 * @param args	Currently ignored
 	 */
 	public static void main(String[] args) {
-		// TODO Improve procedures
+		// TODO Parallel valid tests (per example)
 		// TODO Test not outsourcing "valid" test
 
 		LogicExecutor executor = IdpExecutor.get();
