@@ -1,8 +1,8 @@
 package logic.parse;
 
 import basic.FileUtil;
-import util.parse.BaseScopeParser;
-import util.parse.ParseCursor;
+import parse.BaseScopeParser;
+import parse.ParseCursor;
 import version3.example.clause_discovery.LogicBase;
 
 import java.io.File;

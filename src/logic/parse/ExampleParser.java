@@ -1,7 +1,7 @@
 package logic.parse;
 
-import util.parse.ParsingError;
-import util.parse.ScopeParser;
+import parse.ParsingError;
+import parse.ScopeParser;
 
 import java.util.Arrays;
 import java.util.List;
