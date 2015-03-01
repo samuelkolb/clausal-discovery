@@ -2,7 +2,7 @@ package logic.parse;
 
 import basic.StringUtil;
 import vector.Vector;
-import version3.example.clause_discovery.LogicBase;
+import clausal_discovery.LogicBase;
 import idp.IdpProgramPrinter;
 import logic.example.Example;
 import logic.theory.Vocabulary;

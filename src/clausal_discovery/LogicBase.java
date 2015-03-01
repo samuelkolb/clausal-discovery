@@ -1,4 +1,4 @@
-package version3.example.clause_discovery;
+package clausal_discovery;
 
 import vector.Vector;
 import logic.example.Example;

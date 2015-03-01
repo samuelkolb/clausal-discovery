@@ -3,7 +3,7 @@ package logic.parse;
 import basic.FileUtil;
 import parse.BaseScopeParser;
 import parse.ParseCursor;
-import version3.example.clause_discovery.LogicBase;
+import clausal_discovery.LogicBase;
 
 import java.io.File;
 import java.util.Arrays;

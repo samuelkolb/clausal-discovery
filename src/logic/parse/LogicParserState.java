@@ -2,7 +2,7 @@ package logic.parse;
 
 import util.Pair;
 import vector.Vector;
-import version3.example.clause_discovery.LogicBase;
+import clausal_discovery.LogicBase;
 import logic.bias.Type;
 import logic.example.Example;
 import logic.example.Setup;

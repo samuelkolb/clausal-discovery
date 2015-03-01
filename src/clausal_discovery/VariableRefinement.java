@@ -1,4 +1,4 @@
-package version3.example.clause_discovery;
+package clausal_discovery;
 
 import log.Log;
 import logic.expression.formula.*;
