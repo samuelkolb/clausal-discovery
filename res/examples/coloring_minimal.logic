@@ -1,0 +1,24 @@
+type Country
+type Color
+
+pred color(Country,Color)
+pred neighbor(Country,Country)
+
+const Country Belgium
+const Country Germany
+const Country Poland
+
+const Color Red
+const Color Green
+
+example 1 {
+	color(Belgium,Red)
+	color(Germany,Green)
+	color(Poland,Red)
+	neighbor(Belgium,Germany)
+	neighbor(Germany,Poland)
+	neighbor(Germany,Belgium)
+	neighbor(Poland,Germany)
+	different(Red,Green)
+	different(Green,Red)
+}
