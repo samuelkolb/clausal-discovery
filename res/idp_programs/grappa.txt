@@ -1,0 +1,93 @@
+vocabulary V {
+	type Node
+	type Label
+	type Rule
+
+	Edge(Node, Node, Label)
+	True(Node)
+	Influence(Node, Node, Label)
+	Type(Node, Rule) // Only when mixing different rules
+	AllRule(Node)
+	AnyRule(Node)
+	MorePlusRule(Node)
+
+	// Constants for Grappa
+	Minus:Label
+	Plus:Label
+	All:Rule
+	Any:Rule
+	MorePlus:Rule
+}
+
+theory Base : V {
+	Influence(n1, n2, l) <=> Edge(n1, n2, l) & True(n1).
+}
+
+theory DungTheory : V {
+	True(n) <=> #{p : Influence(p, n, Minus)} = 0.
+}
+
+theory GrappaBase : V {
+	AllRule(n) <=> #{p : Influence(p, n, Minus)} = 0 & #{p : Influence(p, n, Plus)} = #{p : Edge(p, n, Plus)}.
+	AnyRule(n) <=> #{p,l : Edge(p, n, l)} = 0 | (#{p : Influence(p, n, Minus)} = 0 & #{p : Influence(p, n, Plus)} > 0).
+	MorePlusRule(n) <=> ~(? p,l : Edge(p, n, l)) | (#{p : Influence(p, n, Plus)} > #{p : Influence(p, n, Minus)}).
+}
+
+theory GrappaAnyPositiveNoNegative : V {
+	True(n) <=> AnyRule(n).
+}
+
+theory GrappaAllPositiveNoNegative : V {
+	True(n) <=> AllRule(n).
+}
+
+theory GrappaMorePositive : V {
+	True(n) <=> MorePlusRule(n).
+}
+
+theory GrappaMix : V {
+	{
+		True(n) <-  Type(n, All) & AllRule(n).
+		True(n) <-  Type(n, Any) & AnyRule(n).
+	}
+}
+
+structure Dung : V {
+	Minus = Minus
+	Node = {A; B; C; D}
+	Edge = {(A,B,Minus); (B,C,Minus); (B,D,Minus); (C,D,Minus)}
+}
+
+structure Grappa : V {
+	Minus = Minus
+	Plus = Plus
+	All = All
+	Any = Any
+	MorePlus = MorePlus
+	Node = {A; B; C; D}
+	Edge = {(A,B,Plus); (A,C,Minus); (A,D,Plus); (B,D,Minus); (C,B,Plus)}
+	Type = {(A,All); (B,All); (C,All); (D,Any);}
+}
+
+procedure main() {
+	print("DUNG:")
+	show(modelexpand(merge(Base, DungTheory),Dung))
+
+	print("GRAPPA (No negative, any positive):")
+	show(modelexpand(merge(merge(Base, GrappaBase), GrappaAnyPositiveNoNegative),Grappa))
+
+	print("GRAPPA (No negative, all positive):")
+	show(modelexpand(merge(merge(Base, GrappaBase), GrappaAllPositiveNoNegative),Grappa))
+
+	print("GRAPPA (More positives than negatives):")
+	show(modelexpand(merge(merge(Base, GrappaBase), GrappaMorePositive),Grappa))
+
+	print("GRAPPA (Mixed):")
+	show(modelexpand(merge(merge(Base, GrappaBase), GrappaMix),Grappa))
+}
+
+procedure show(table) {
+	for i,sol in pairs(table) do
+	        print(sol)
+	end
+}

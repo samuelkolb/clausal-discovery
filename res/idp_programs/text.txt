@@ -1,0 +1,45 @@
+vocabulary V {
+	type Color
+	type Country
+	color(Country, Color)
+	different(Color, Color)
+	neighbor(Country, Country)
+}
+
+theory T:V {
+    (((color(V0, V1) & neighbor(V0, V2) & color(V2, V3) & V0 ~= V2 & V1 ~= V3) => different(V1, V3))).
+}
+
+structure S0:V {
+	Color = {Red; Green}
+	Country = {Germany; Poland; Belgium}
+	neighbor = {(Belgium, Germany); (Poland, Germany); (Germany, Poland); (Germany, Belgium)}
+	different = {(Green, Red); (Red, Green)}
+	color = {(Belgium, Red); (Germany, Green); (Poland, Red)}
+}
+
+procedure main() {
+	// Arguments
+	// 0: Theory
+	// 1: Structure
+
+	function isValid(t, s)
+	    stdoptions.nbmodels = 1 // Set to search for all models
+	    allsols = modelexpand(t, s) // Find all models
+
+	    local count = 0
+	    for _ in pairs(allsols) do count = count + 1 end
+
+	    if count ~= 1 then
+	    	return false
+	    else
+	    	// A model was found
+	    	return true
+	    end
+	end
+	if true and isValid(T, S0) then
+		print("YES")
+	else
+		print("NO")
+	end
+}

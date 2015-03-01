@@ -1,0 +1,371 @@
+// NOTE: the argument names are used literally in the help information, so they should be readable!
+
+namespace stdspace{
+
+/***********
+	Help
+***********/
+
+/**
+ * List the procedures in the given namespace  */
+procedure help(namespace ) {
+	namespace = namespace or idpglobal
+	if type(namespace) == "namespace" then
+		idpintern.help(namespace)
+	else
+		io.stderr:write("Error: namespace expected\n")
+	end
+}
+
+/**************************
+	Iterate over tables
+**************************/
+
+/**
+ * Returns a procedure, iterator, and a tuple such that
+ * for t in tuples(table) do ... end
+ * iterates over all tuples in the given predicate table.*/
+procedure tuples(table) {
+	if type(table) == "predicate_table" then
+		return idpintern.deref_and_increment, iterator(table), createdummytuple()
+	else
+		io.stderr:write("Error: predicate table expected\n")
+	end
+}
+
+/**
+ * Returns a procedure, iterator, and 0 such that
+ * for e in elements(d) do ... end
+ * iterates over all elements in the given domain d.*/
+procedure elements(d) {
+	if type(d) == "domain" then
+		return idpintern.deref_and_increment, iterator(d), 0
+	else 
+		io.stderr:write("Error: domain expected\n")
+	end
+}
+
+/**
+* Returns custom typeids for first-class idp citizens.*/
+procedure idptype(something){
+	return idpintern.idptype(something)
+}
+
+namespace inferences{
+
+/**
+ * Apply model expansion to theory T, structure S over the same vocabulary.
+ * The result is a table of two-valued structures and, if getoptions().trace == true, a trace of the solver */
+procedure modelexpand(theory, structure, vocabulary) {
+	local solutions
+	local trace
+	solutions, trace = modelexpandpartial(theory, structure, vocabulary)
+	if stdoptions.verbosity.grounding>0 then
+		io.stderr:write("Extending partial models to full models\n")
+	end
+	local solutions2 = nbModelsTwoValuedExtensions(solutions)
+	return solutions2, trace
+}
+
+/**
+ * Apply model expansion to theory T, structure S over the same vocabulary.
+ * The result is a table of (possibly three-valued) structures and, if getoptions().trace == true, a trace of the solver */
+procedure modelexpandpartial(theory, structure, vocabulary) {
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	if vocabulary ~= nil and type(vocabulary) ~= "vocabulary" then
+		io.stderr:write("Error: vocabulary expected\n")
+		return
+	end
+	
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	if(vocabulary~=nil) then
+		return idpintern.modelexpand(clonetheo,structure, vocabulary)
+	else
+		return idpintern.modelexpand(clonetheo,structure)
+	end	
+}
+
+/**
+ * Checks satisfiability of the given theory-structure combination over the same vocabulary. 
+ * Returns true if and only if there exists a model extending the structure satisfying the theory.
+ */
+procedure sat(theory, structure) {
+	Opts = getoptions()
+	local oldnbmodels = Opts.nbmodels
+	Opts.nbmodels = 1
+	local solutions = modelexpandpartial(theory,structure,newvocabulary("empty"))
+	Opts.nbmodels = oldnbmodels
+	return #solutions>0
+}
+
+/**
+ *  Return a vector of models of the given theory, more precise than the given structure. 
+ * The second return value is a boolean, representing whether or not the models are optimal with respect to the given term. 
+ * The third return argument is the value of the term in the optimal model.
+ * The (optional) fourth argument is a trace of the solver (depending on stdoptions.trace)*/
+procedure minimize(theory, structure, term){
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	if type(term) ~= "term" then
+		io.stderr:write("Error: term expected\n")
+		return
+	end
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	local solutions, optimal, value, trace = idpintern.minimize(clonetheo,structure,term)
+	local solutions2 = nbModelsTwoValuedExtensions(solutions)
+	return solutions2, optimal, value, trace
+}
+
+/**
+ * Create the reduced grounding of the given theory and structure and parameter on whether the grounding should preserve the number of models */
+procedure groundeq(theory, structure, modeleq) {	
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	return idpintern.ground(clonetheo,structure,modeleq)
+}
+
+/**
+ * Create the reduced grounding of the given theory and structure, preserving the number of models */
+procedure ground(theory, structure, modelequivalent) {
+	if(modelequivalent==nil) then modelequivalent = true end
+	return groundeq(theory,structure, modelequivalent) 
+}
+
+
+/**
+ * Print the reduced grounding of the given theory and structure
+ * MEMORY EFFICIENT: does not store the grounding internally */
+procedure printgrounding(theory, structure, modelequivalent) {
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	
+	if(modelequivalent==nil) then modelequivalent = true end
+	return idpintern.printgrounding(clonetheo,structure,modelequivalent)
+}
+
+/**
+* Return a structure, made more precise than the input by generating all models and checking which literals always have the same truth value.
+* This propagation is complete: everything that can be derived from the theory will be derived. 
+* Returns nil when propagation results in an inconsistent structure.*/ 
+procedure optimalpropagate(theory,structure){
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	return idpintern.optimalpropagate(clonetheo,structure) 
+}
+
+/**
+* Return a structure, made more precise than the input by grounding and unit propagation on the theory. 
+* Returns nil when propagation results in an inconsistent structure.*/
+procedure groundpropagate(theory,structure){
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	return idpintern.groundpropagate(clonetheo,structure)
+}
+
+/**
+* Return a structure, made more precise than the input by doing symbolic propagation on the theory. 
+* Returns nil when propagation results in an inconsistent structure.*/
+procedure propagate(theory,structure){
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	local clonetheo = clone(theory)
+	pushnegations(clonetheo)
+	flatten(clonetheo)
+	return idpintern.propagate(clonetheo,structure)
+}
+
+/**
+ * 	Initialise an LTC theory. 
+ * - Input: an LTC theory and (optionally the used Time type, Start and Next functions). 
+ * - Output: (depending on stdoptions.nbmodels) a number of models, and (arguments 2-5 respectively) the used bistate theory, initial theory, bistate vocabulary and initial vocabulary (for in case you want to modify the progression behaviour yourself) */
+procedure initialise(theory,structure,  timesym, startsym, nextsym) {
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	
+	local count = 0
+	if timesym ~= nil then 
+		count = count + 1
+	end
+	if startsym ~= nil then 
+		count = count + 1
+	end
+	if nextsym ~= nil then 
+		count = count + 1
+	end
+	local result
+	if(count == 0) then
+		result = idpintern.initialise(theory,structure)
+	elseif(count == 3) then
+		result = idpintern.initialise(theory,structure, timesym, startsym, nextsym)
+	else
+		print("Error: please either provide Time, Start and Next or provide none of them.")
+		return
+	end
+	
+	return result[1], result[2], result[3], result[4], result[5]
+}
+
+/**
+* Prints a subsetminimal subset of the given theory (a core) that is still unsatisfiable given a structure.*/
+procedure printcore(theory,structure){
+	if type(theory) ~= "theory" then
+		io.stderr:write("Error: theory expected\n")
+		return
+	end
+	if type(structure) ~= "structure" then
+		io.stderr:write("Error: structure expected\n")
+		return
+	end
+	idpintern.unsatcore(theory,structure)
+	return;
+}
+
+/*/**
+ * Check whether first theory entails the second */
+/*procedure entails(theory1, theory2) {
+	tmplang = stdoptions.language
+	stdoptions.language = "tptp"
+	fof_commands = {idp_intern.prover_fof_linux, idp_intern.prover_fof_win, idp_intern.prover_fof_osx}
+	tff_commands = {idp_intern.prover_tff_linux, idp_intern.prover_tff_win, idp_intern.prover_tff_osx}
+	result = idpintern.entails(
+		theory1,
+		theory2,
+		fof_commands,
+		tff_commands,
+		idpintern.prover_fof_truestrings,
+		idpintern.prover_fof_falsestrings,
+		idpintern.prover_tff_truestrings,
+		idpintern.prover_tff_falsestrings
+	)
+	stdoptions.language = tmplang
+	return result
+}*/
+
+
+
+/** Returns a structure that is a solution to the model expansion problem with input theory T and structure S */
+	procedure onemodel(T,S,V) {
+		Opts = getoptions()
+		local oldnbmodels = Opts.nbmodels
+		Opts.nbmodels = 1
+                local solutions, trace
+                if V then
+                    solutions, trace = modelexpand(T,S,V)
+                else 
+                    solutions, trace = modelexpand(T,S)
+                end
+		Opts.nbmodels = oldnbmodels
+		local solution = nil
+		if solutions then
+			solution = solutions[1]
+		end
+		if trace then
+			return solution, trace
+		else
+			return solution
+		end
+	}
+
+	/** Returns all solutions to the model expansion problem with input theory T and structure S */
+	procedure allmodels(T,S,V) {
+		Opts = getoptions()
+		local oldnbmodels = Opts.nbmodels
+		Opts.nbmodels = 0
+                local solutions, trace
+                if V then
+                    solutions, trace = modelexpand(T,S,V)
+                else 
+                    solutions, trace = modelexpand(T,S)
+                end
+		Opts.nbmodels = oldnbmodels
+		if trace then
+			return solutions, trace
+		else
+			return solutions
+		end
+	}
+	
+	/** Prints a given list of models or unsatisfiable if the list is empty */
+	procedure printmodels(sols) {
+		if #sols == 0 then
+			print("Unsatisfiable")
+		end
+
+		print("Number of models: "..#sols)
+		for k,v in ipairs(sols) do
+			print("Model "..k)
+			local kstr = tostring(k)
+			local str = "======"
+			for i=1,string.len(kstr) do str = str.."=" end
+			print(str)
+			print(v)
+		end
+	}
+
+}
+}

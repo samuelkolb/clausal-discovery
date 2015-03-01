@@ -1,0 +1,4 @@
+(false <- (female(V0) & male(V0)))
+(human(V0) <- female(V0))
+(human(V0) <- male(V0))
+((female(V0) | male(V0)) <- human(V0))

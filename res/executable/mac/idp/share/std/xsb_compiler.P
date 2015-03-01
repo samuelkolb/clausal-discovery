@@ -1,0 +1,199 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Note: When adding new predicates to this file as a result of them being
+%   'built-in' in IDP, make sure to also adapt the 
+%   XSBToIDPTranslator::isXSBCompilerSupported procedure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ixexponential(Solution,Base,Power)
+% Base case: right hand side is known
+ixexponential(Solution,Base,Power) :-
+	nonvar(Base),
+	nonvar(Power),
+	TMP is Base ** Power,
+	ixsame_number(TMP,Solution).
+	
+% Solution equals the base and is 1 -> power could be anything.
+ixexponential(1,1,Power) :-
+	ixint(Power).
+
+% Solution equals the base and is not 1 -> power has to be one.
+ixexponential(Base,Base,1) :-
+	nonvar(Base),
+	ixdifferent_number(Base,1). % Rule out double answer generation for previous case
+
+% ixdivision(Solution,Numerator,Denominator)
+% Represents the built-in "Solution is Numerator/Denominator"
+% Handle special cases of this expression first: X is Y/X, Y known
+ixdivision(Denominator,Numerator,Denominator) :-
+	nonvar(Numerator),
+	var(Denominator),
+	Denominator is sqrt(Numerator).
+ixdivision(Denominator,Numerator,Denominator) :-
+	var(Numerator),
+	nonvar(Denominator),
+	ixdifferent_number(Denominator,0),
+	Numerator is Denominator*Denominator.
+
+% Handle special cases of this expression first: X is X/Y, Y known 
+% -> infinite generator
+ixdivision(Numerator,Numerator,1) :-
+	var(Numerator),
+    throw_infinite_type_generation_error.
+
+% Handle special cases of this expression first: X is X/Y, Y known, with Y ~= 1 
+% -> this always fails
+ixdivision(Numerator,Numerator,Denominator) :-
+	nonvar(Denominator),
+	ixdifferent_number(Denominator,1),
+	fail.
+	
+% Handle special cases of this expression first: O is O/Y with Y known
+% -> succeeds 
+ixdivision(Numerator,Numerator,Denominator) :-
+	nonvar(Numerator),
+	ixsame_number(Numerator,0),
+	nonvar(Denominator),
+	ixdifferent_number(Denominator,0).
+
+% Only normal cases left: X is Y/Z with Y and Z variables
+ixdivision(Solution,Numerator,Denominator) :-
+	nonvar(Numerator),
+	nonvar(Denominator),
+	TMP is Numerator / Denominator,
+	ixsame_number(TMP,Solution).
+
+
+ixabs(X,Y) :- 
+	number(X),
+	Y is abs(X).
+
+ixabs(X,_) :-
+	var(X),
+    throw_infinite_type_generation_error.
+
+ixsum(List,Sum) :- ixsum(List,Sum,0).
+ixsum([],X,X).
+ixsum([H|T],Sum,Agg) :- Agg2 is Agg + H, ixsum(T,Sum,Agg2).
+
+ixprod(List,Prod) :- ixprod(List,Prod,1).
+ixprod([],X,X).
+ixprod([H|T],Prod,Agg) :- Agg2 is Agg * H, ixprod(T,Prod,Agg2).
+
+ixcard(List,Card) :- length(List,Card).
+
+ixmin([X|Rest],Min) :- ixmin(Rest,Min,X).
+
+ixmin([],Min,Min).
+ixmin([X|Rest],Min,TmpMin) :-
+	X < TmpMin,
+	ixmin(Rest,Min,X).
+ixmin([X|Rest],Min,TmpMin) :-
+	X >= TmpMin,
+	ixmin(Rest,Min,TmpMin).
+
+ixmax([X|Rest],Max) :- ixmax(Rest,Max,X).
+ixmax([],Max,Max).
+ixmax([X|Rest],Max,TmpMax) :-
+	X > TmpMax,
+	ixmax(Rest,Max,X).
+ixmax([X|Rest],Max,TmpMax) :-
+	X =< TmpMax,
+	ixmax(Rest,Max,TmpMax).
+
+ixforall(CallA, CallB) :-
+    tables:not_exists((call(CallA), tables:not_exists(CallB))).
+
+% ixthreeval_findall(Var,Query,Ret)
+%   1: Gather all "true" answers
+%   2: Gather all "undefined" answers of the Query
+%   3: Append each possible subset of "undefined" answers list to the "true" 
+%      answers list
+%   4: Introduce loop to make return tuple undefined if some "undefined" answers
+%      were added to the Ret list (generate_CT_or_U_answers/1 is used for this)
+ixthreeval_findall(Var,Query,Ret) :-
+  findall(Var,call_tv(Query,true),CTList),
+  findall(Var,call_tv(Query,undefined),Ulist),
+  ixsubset(Ulist,S),
+  append(S,CTList,Ret),
+  generate_CT_or_U_answer(S).
+
+generate_CT_or_U_answer([]).
+generate_CT_or_U_answer([_|_]) :- undef.
+
+:- table undef/0.
+undef :- tnot(undef).
+
+ixsubset([],[]).
+ixsubset([E|Tail],[E|NTail]) :-
+  ixsubset(Tail,NTail).
+ixsubset([_|Tail],NTail) :-
+  ixsubset(Tail,NTail).
+
+ixint(X) :- 
+    nonvar(X),
+    ROUNDEDNUMBER is round(X),
+    0 is ROUNDEDNUMBER - X.
+    
+ixint(X) :- 
+    var(X),
+    throw_infinite_type_generation_error.
+     
+ixfloat(X) :- 
+    nonvar(X),
+    number(X).
+    
+ixfloat(X) :- 
+    var(X),
+    throw_infinite_type_generation_error.
+
+ixnat(X) :- 
+    nonvar(X),
+    X >= 0,
+    ixint(X).
+
+ixnat(X) :- 
+    var(X),
+    throw_infinite_type_generation_error.
+
+% TODO: leaves through too much!
+ixchar(X) :- 
+    nonvar(X),
+    atomic(X). % Possible todo - maintain strings during translation and check for is_charlist(X,1) (of size 1) here
+    
+ixchar(X) :- 
+    var(X),
+    throw_infinite_type_generation_error.
+    
+ixstring(X) :- 
+    nonvar(X),
+    atomic(X). % Possible todo - maintain strings during translation and check for is_charlist/1 here
+
+ixstring(X) :-
+    var(X),
+    throw_infinite_type_generation_error.
+
+% First argument has to be instantiated
+% Second argument can be output variable or instantiated
+ixsame_number(X,Y) :-
+    ixconvert_to_int(X,X1),
+    X1 = Y.
+     
+% First argument has to be instantiated
+% Second argument has to be instantiated
+ixdifferent_number(X,Y) :-
+    ixconvert_to_int(X,X1),
+    ixconvert_to_int(Y,Y1),
+    X1 \== Y1.
+
+ixconvert_to_int(Num,Int) :-
+	nonvar(Num),
+    ixint(Num), 
+    Int is round(Num).
+
+ixconvert_to_int(Num,Int) :-
+	nonvar(Num),
+    ixfloat(Num), 
+    Int = Num.
+    
+throw_infinite_type_generation_error :-
+    error_handler:misc_error('Trying to generate an infinite type with XSB\ntry to rerun with stdoptions.xsb=false to see if that works.').

@@ -1,0 +1,10 @@
+// Arguments
+// 0: Theory
+// 1: Structure
+
+stdoptions.nbmodels=0 // Find all models
+solutions = modelexpand({0},{1})
+
+for i,sol in pairs(solutions) do
+        print(sol)
+end

@@ -1,0 +1,18 @@
+// Arguments
+// 0: Theory
+// 1: Structure
+
+function isValid(t, s)
+    stdoptions.nbmodels = 1 // Set to search for all models
+    allsols = modelexpand(t, s) // Find all models
+
+    local count = 0
+    for _ in pairs(allsols) do count = count + 1 end
+
+    if count ~= 1 then
+    	return false
+    else
+    	// A model was found
+    	return true
+    end
+end

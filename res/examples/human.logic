@@ -1,0 +1,21 @@
+type Human
+
+pred human(Human)
+pred male(Human)
+pred female(Human)
+
+const Human An
+const Human Sam
+
+example 1 {
+	human(An)
+	human(Sam)
+	male(Sam)
+	female(An)
+}
+
+example 2 {
+    male(An)
+    female(An)
+    human(An)
+}
