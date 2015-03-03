@@ -136,10 +136,14 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		for(int i = 0; i < instance.getVariableIndices().size(); i++) {
 			Integer integer = instance.getVariableIndices().get(i);
 			if(!variableMap.containsKey(integer))
-				variableMap.put(integer, new Variable("V" + integer));
+				variableMap.put(integer, getVariable(instance, i, integer));
 			terms[i] = variableMap.get(integer);
 		}
 		return instance.getPredicate().getInstance(terms);
+	}
+
+	private Variable getVariable(Instance instance, int i, Integer integer) {
+		return new Variable(instance.getPredicate().getTypes().get(i).getName() + (integer + 1));
 	}
 
 	private void applyOI(Collection<Variable> variables, List<Atom> bodyAtoms) {

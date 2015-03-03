@@ -12,6 +12,10 @@ import vector.*;
 import vector.Vector;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by samuelkolb on 02/03/15.
@@ -21,11 +25,31 @@ import java.util.*;
 public class ValidityCalculator {
 
 	//region Variables
+	private class CheckValidRunnable implements Runnable {
+
+		private final Formula formula;
+
+		private final Vector<Structure> structures;
+
+		private CheckValidRunnable(Formula formula, Vector<Structure> structures) {
+			this.formula = formula;
+			this.structures = structures;
+		}
+
+		@Override
+		public void run() {
+			Vector<Theory> theories = new Vector<Theory>(new Theory(formula));
+			LogicProgram program = new LogicProgram(base.getVocabulary(), theories, structures);
+			validityTable.put(formula, IdpExecutor.get().isValid(program));
+		}
+	}
+
 	private final LogicBase base;
 
 	private final List<Formula> formulas = new ArrayList<>();
 
-	private final Map<Formula, Boolean> validityTable = new HashMap<>();
+	private final Map<Formula, Boolean> validityTable = new ConcurrentHashMap<>();
+
 	//endregion
 
 	//region Construction
@@ -50,8 +74,11 @@ public class ValidityCalculator {
 		extendValidityTable();
 		return validityTable.get(formula);
 	}
-
 	private void extendValidityTable() {
+		extendValidityTableParallel();
+	}
+
+	private void extendValidityTableBatch() {
 		Log.LOG.printLine("Calculating...");
 		Vector<Structure> structures = new WriteOnceVector<>(new Structure[base.getExamples().size()]);
 		for(Example example : base.getExamples())
@@ -64,6 +91,25 @@ public class ValidityCalculator {
 		for(int i = 0; i < formulas.size(); i++)
 			validityTable.put(formulas.get(i), validity[i]);
 		formulas.clear();
+		Log.LOG.printLine("...Done");
+	}
+
+
+	private void extendValidityTableParallel() {
+		Log.LOG.printLine("Calculating...");
+		ExecutorService executorService = Executors.newFixedThreadPool(8);
+		Vector<Structure> structures = new WriteOnceVector<>(new Structure[base.getExamples().size()]);
+		for(Example example : base.getExamples())
+			structures.add(example.getStructure());
+		for(Formula formula : formulas)
+			executorService.execute(new CheckValidRunnable(formula, structures));
+		formulas.clear();
+		executorService.shutdown();
+		try {
+			executorService.awaitTermination(10, TimeUnit.DAYS);
+		} catch(InterruptedException e) {
+			throw new IllegalStateException(e);
+		}
 		Log.LOG.printLine("...Done");
 	}
 	//endregion
