@@ -20,7 +20,6 @@ public class LogicParser {
 		LogicParserState state = new BaseScopeParser<>(Arrays.asList(
 			new TypeDefParser(),
 			new PredicateDefParser(),
-			new ConstDefParser(),
 			new ExampleParser(),
 			new LineRemover()
 		)).parse(new ParseCursor(program), new LogicParserState());

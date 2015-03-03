@@ -22,18 +22,21 @@ public class ConstDefParser extends MatchParser<LogicParserState> {
 
 	@Override
 	public boolean matches(String string, LogicParserState parseState) throws ParsingError {
-		if(!string.matches("const.*\\n"))
+		if(!string.matches("\\s+const.*\\n"))
 			return false;
-		String[] parts = string.split("\\s+");
-		if(parts.length != 3)
-			throw new ParsingError("Expected 2 arguments for constant, got: " + parts.length);
+		String[] parts = string.trim().split("\\s+");
+		if(parts.length < 3)
+			throw new ParsingError("Expected at least 2 arguments for constant, got: " + parts.length);
 		String typeString = parts[1].trim();
-		String constName = parts[2].trim();
 		if (!parseState.containsType(typeString))
 			throw new ParsingError("Use of unknown type '" + typeString + "'");
-		if (parseState.containsConstant(constName))
-			throw new ParsingError("Constant '" + constName + "' already exists");
-		parseState.addConstant(constName, typeString);
+		for(int i = 2; i < parts.length; i++) {
+			String constName = parts[i].trim();
+			if (parseState.containsConstant(constName))
+				throw new ParsingError("Constant '" + constName + "' already exists");
+			parseState.addConstant(constName, typeString);
+
+		}
 		return true;
 	}
 

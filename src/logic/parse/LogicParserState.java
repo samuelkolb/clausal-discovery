@@ -1,5 +1,6 @@
 package logic.parse;
 
+import log.Log;
 import util.Pair;
 import vector.Vector;
 import clausal_discovery.LogicBase;
@@ -23,10 +24,10 @@ public class LogicParserState {
 	//region Variables
 	private Map<String, Type> types = new HashMap<>();
 	private Map<String, Predicate> predicates = new HashMap<>();
-	private Map<String, Constant> constants = new HashMap<>();
 	private Map<String, Example> examples = new HashMap<>();
 
 	private List<PredicateInstance> instances = new ArrayList<>();
+	private Map<String, Constant> constants = new HashMap<>();
 	//endregion
 
 	//region Construction
@@ -80,6 +81,7 @@ public class LogicParserState {
 		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
 		examples.put(exampleName, new Example(getSetup(), instances1));
 		instances.clear();
+		constants.clear();
 	}
 
 	public Setup getSetup() {

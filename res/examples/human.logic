@@ -4,10 +4,10 @@ pred human(Human)
 pred male(Human)
 pred female(Human)
 
-const Human An
-const Human Sam
-
 example 1 {
+	const Human An
+	const Human Sam
+
 	human(An)
 	human(Sam)
 	male(Sam)
@@ -15,7 +15,9 @@ example 1 {
 }
 
 example 2 {
-    male(An)
-    female(An)
-    human(An)
+	const Human Both
+
+    male(Both)
+    female(Both)
+    human(Both)
 }
