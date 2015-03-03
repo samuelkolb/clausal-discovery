@@ -4,8 +4,10 @@ import util.Pair;
 import vector.Vector;
 
 /**
- * Created by samuelkolb on 22/02/15.
+ * Represents a selection of indices that represent instances in the clauses body and head
+ * The status clause helps with the efficient traversal of the clausal space
  * // TODO Improvement by arranging instance sets in a graph to determine possible moves
+ * @author Samuel Kolb
  */
 public class StatusClause {
 
@@ -21,6 +23,10 @@ public class StatusClause {
 
 	private final boolean body;
 
+	/**
+	 * Returns whether this status clause is currently in the body
+	 * @return	True iff the status clause is currently in the body
+	 */
 	public boolean inBody() {
 		return body;
 	}
@@ -43,6 +49,9 @@ public class StatusClause {
 
 	private final Environment environment;
 
+	/**
+	 * Creates a new status clause
+	 */
 	public StatusClause() {
 		this.index = -1;
 		this.rank = 0;
@@ -60,16 +69,35 @@ public class StatusClause {
 		this.environment = environment;
 	}
 
+	/**
+	 * Returns whether this clause contains the given index-boolean pair
+	 * @param instance	The instance representation
+	 * @return	True iff this instance has been added to this status clause already
+	 */
+	public boolean contains(Pair<Integer, Boolean> instance) {
+		return getClauses().contains(instance);
+	}
+
+	/**
+	 * Returns a status clause where new instances will be added to the head of the clause
+	 * @return A new status clause
+	 */
 	public StatusClause enterHead() {
 		if(!inBody())
 			throw new IllegalStateException("Already in head");
 		return new StatusClause(getRank(), false, getIndex(), getClauses(), environment);
 	}
 
+	/**
+	 * Returns whether the given instance can be added
+	 * @param instance	A predicate instance
+	 * @return	True iff the given instance is 1) consistent with typing, 2) connected, and 3) introduces variables in
+	 * 			order and only it is in the body
+	 */
 	public boolean canProcess(Instance instance) {
 		if(!environment.isValidInstance(instance.getPredicate(), instance.getVariableIndices()))
 			return false;
-		Vector<Integer> indices = instance.getVariableIndices();//.sort(); // TODO review approach here
+		Vector<Integer> indices = instance.getVariableIndices();
 		int max = getRank() - 1;
 		boolean connected = false;
 		for(int i = 0; i < indices.size(); i++) {
@@ -83,6 +111,12 @@ public class StatusClause {
 		return connected || getRank() == 0;
 	}
 
+	/**
+	 * Returns a new status clause where the given instance has been added
+	 * @param index		The index of the instance to add
+	 * @param instance	The instance to add
+	 * @return	The new status clause
+	 */
 	public StatusClause process(int index, Instance instance) {
 		if(!canProcess(instance))
 			throw new IllegalArgumentException("Cannot process the given instance: " + instance);

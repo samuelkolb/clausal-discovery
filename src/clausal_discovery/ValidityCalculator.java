@@ -1,10 +1,10 @@
 package clausal_discovery;
 
-import idp.IdpExecutor;
 import idp.IdpExpressionPrinter;
 import log.Log;
 import logic.example.Example;
 import logic.expression.formula.Formula;
+import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Structure;
 import logic.theory.Theory;
@@ -22,95 +22,54 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Samuel Kolb
  */
-public class ValidityCalculator {
+public abstract class ValidityCalculator {
 
 	//region Variables
-	private class CheckValidRunnable implements Runnable {
-
-		private final Formula formula;
-
-		private final Vector<Structure> structures;
-
-		private CheckValidRunnable(Formula formula, Vector<Structure> structures) {
-			this.formula = formula;
-			this.structures = structures;
-		}
-
-		@Override
-		public void run() {
-			Vector<Theory> theories = new Vector<Theory>(new Theory(formula));
-			LogicProgram program = new LogicProgram(base.getVocabulary(), theories, structures);
-			validityTable.put(formula, IdpExecutor.get().isValid(program));
-		}
-	}
 
 	private final LogicBase base;
 
-	private final List<Formula> formulas = new ArrayList<>();
+	LogicBase getBase() {
+		return base;
+	}
 
-	private final Map<Formula, Boolean> validityTable = new ConcurrentHashMap<>();
+	private final LogicExecutor executor;
+
+	LogicExecutor getExecutor() {
+		return executor;
+	}
 
 	//endregion
 
 	//region Construction
 
-	public ValidityCalculator(LogicBase base) {
+	ValidityCalculator(LogicBase base, LogicExecutor executor) {
 		this.base = base;
+		this.executor = executor;
 	}
 
 	//endregion
 
 	//region Public methods
-	public void submitFormula(Formula formula) {
-		Log.LOG.printLine("INFO Submitted " + IdpExpressionPrinter.print(formula));
-		if(!validityTable.containsKey(formula))
-			formulas.add(formula);
-	}
 
-	public boolean isValid(Formula formula) {
-		Log.LOG.printLine("INFO Is valid? " + IdpExpressionPrinter.print(formula));
-		if(validityTable.containsKey(formula))
-			return validityTable.get(formula);
-		extendValidityTable();
-		return validityTable.get(formula);
-	}
-	private void extendValidityTable() {
-		extendValidityTableParallel();
-	}
+	/**
+	 * Submits the given formula, making it available to be queried later
+	 * @param formula	The formula for which the validity will be queried
+	 */
+	public abstract void submitFormula(Formula formula);
 
-	private void extendValidityTableBatch() {
-		Log.LOG.printLine("Calculating...");
-		Vector<Structure> structures = new WriteOnceVector<>(new Structure[base.getExamples().size()]);
-		for(Example example : base.getExamples())
+	/**
+	 * Returns whether the given formula is valid or not with respect to the given logic base
+	 * @param formula	The formula for which the validity is to be returned
+	 * @return	True iff the given formula is valid according to the provided logic executor
+	 */
+	public abstract boolean isValid(Formula formula);
+
+	Vector<Structure> getStructures() {
+		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getBase().getExamples().size()]);
+		for(Example example : getBase().getExamples())
 			structures.add(example.getStructure());
-		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
-		for(Formula formula : formulas)
-			theories.add(new Theory(formula));
-		LogicProgram program = new LogicProgram(base.getVocabulary(), theories, structures);
-		boolean[] validity = IdpExecutor.get().areValid(program);
-		for(int i = 0; i < formulas.size(); i++)
-			validityTable.put(formulas.get(i), validity[i]);
-		formulas.clear();
-		Log.LOG.printLine("...Done");
+		return structures;
 	}
 
-
-	private void extendValidityTableParallel() {
-		Log.LOG.printLine("Calculating...");
-		ExecutorService executorService = Executors.newFixedThreadPool(8);
-		Vector<Structure> structures = new WriteOnceVector<>(new Structure[base.getExamples().size()]);
-		for(Example example : base.getExamples())
-			structures.add(example.getStructure());
-		for(Formula formula : formulas)
-			executorService.execute(new CheckValidRunnable(formula, structures));
-		formulas.clear();
-		executorService.shutdown();
-		try {
-			executorService.awaitTermination(10, TimeUnit.DAYS);
-		} catch(InterruptedException e) {
-			throw new IllegalStateException(e);
-		}
-		Log.LOG.printLine("...Done");
-	}
 	//endregion
 }

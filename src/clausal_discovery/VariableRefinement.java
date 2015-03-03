@@ -1,26 +1,27 @@
 package clausal_discovery;
 
-import idp.IdpProgramPrinter;
 import log.Log;
-import logic.expression.formula.*;
-import logic.expression.visitor.ExpressionLogicPrinter;
-import util.Numbers;
-import util.Pair;
-import vector.Vector;
-import vector.WriteOnceVector;
-import version3.algorithm.*;
 import logic.example.Example;
+import logic.expression.formula.*;
 import logic.expression.term.Term;
 import logic.expression.term.Variable;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Structure;
 import logic.theory.Theory;
+import util.Numbers;
+import util.Pair;
+import vector.Vector;
+import vector.WriteOnceVector;
+import version3.algorithm.*;
 
 import java.util.*;
 
 /**
- * The variable refinement class implements the ExpansionOperator and ResultPolicy for clausal discovery
+ * The variable refinement class implements the ExpansionOperator and ResultPolicy for clausal discovery.
+ * It also represents a plugin that has to be added to the search algorithm for its correct working.
+ *
+ * @author Samuel Kolb
  */
 public class VariableRefinement implements ExpansionOperator<StatusClause>, ResultPolicy<StatusClause>,
 		Plugin<StatusClause> {
@@ -54,13 +55,19 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private final ValidityCalculator validityCalculator;
 
+	/**
+	 * Creates a new variable refinement operator
+	 * @param logicBase	The logic base holding the vocabulary and examples
+	 * @param variables	The number of variables that can be introduced
+	 * @param executor	The logic executor responsible for executing logical queries
+	 */
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
 		List<Instance> instanceList = getInstances(logicBase.getVocabulary().getPredicates(), variables);
 		this.instances = new Vector<>(instanceList.toArray(new Instance[instanceList.size()]));
 		Log.LOG.printLine(this.instances.size() + " instances");
 		this.logicBase = logicBase;
 		this.executor = executor;
-		this.validityCalculator = new ValidityCalculator(getLogicBase());
+		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
 	}
 
 	@Override
@@ -120,11 +127,16 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return validityCalculator.isValid(getClause(node.getValue()));
 	}
 
-	public Formula getClause(StatusClause value) {
+	/**
+	 * Returns the Formula represented by the given status clause
+	 * @param statusClause	The status clause
+	 * @return	A logical Formula
+	 */
+	public Formula getClause(StatusClause statusClause) {
 		List<Atom> bodyAtoms = new ArrayList<>();
 		List<Atom> headAtoms = new ArrayList<>();
 		Map<Integer, Variable> variableMap = new HashMap<>();
-		for(Pair<Integer, Boolean> pair : value.getClauses())
+		for(Pair<Integer, Boolean> pair : statusClause.getClauses())
 			(pair.getSecond() ? bodyAtoms : headAtoms).add(makeAtom(variableMap, pair.getFirst()));
 		applyOI(variableMap.values(), bodyAtoms);
 		return Clause.clause(bodyAtoms, headAtoms);
@@ -161,6 +173,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			formulas.add(getClause(statusClause));
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[1]);
 		theories.add(new Theory(formulas));
+		//Log.LOG.printLine("Does " + new IdpProgramPrinter().printTheory(new Theory(formulas), "T", "V") + " entail " + IdpExpressionPrinter.print(getClause(node.getValue())) + "?");
 		LogicProgram logicProgram = new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
 		return !executor.entails(logicProgram, new Theory(getClause(node.getValue())));
 	}
