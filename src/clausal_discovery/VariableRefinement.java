@@ -75,9 +75,11 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		List<StatusClause> children = new ArrayList<>();
 		StatusClause clause = node.getValue();
 
-		for(int i = clause.getIndex() + 1; i < instances.size(); i++)
-			if(clause.canProcess(instances.get(i)))
+		for(int i = clause.getIndex() + 1; i < instances.size(); i++) {
+			if((clause.inBody() || !clause.contains(new Pair.Implementation<>(i, true)))
+					&& clause.canProcess(instances.get(i)))
 				children.add(clause.process(i, instances.get(i)));
+		}
 
 		if(clause.inBody()) {
 			StatusClause headClause = clause.enterHead();
@@ -194,5 +196,12 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			choices.addAll(Numbers.getChoices(variables, i + 1));
 		choices.sort(new ClauseComparator());
 		return choices;
+	}
+
+	/**
+	 * Free any retained resources
+	 */
+	public void shutdown() {
+		validityCalculator.shutdown();
 	}
 }

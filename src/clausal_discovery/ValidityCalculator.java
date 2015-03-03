@@ -64,6 +64,13 @@ public abstract class ValidityCalculator {
 	 */
 	public abstract boolean isValid(Formula formula);
 
+	/**
+	 * Free any retained resources
+	 */
+	public void shutdown() {
+
+	}
+
 	Vector<Structure> getStructures() {
 		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getBase().getExamples().size()]);
 		for(Example example : getBase().getExamples())

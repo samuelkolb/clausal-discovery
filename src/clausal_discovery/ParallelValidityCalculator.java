@@ -73,5 +73,10 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		}
 	}
 
+	@Override
+	public void shutdown() {
+		executorService.shutdownNow();
+	}
+
 	//endregion
 }

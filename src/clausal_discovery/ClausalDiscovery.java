@@ -61,6 +61,7 @@ public class ClausalDiscovery {
 			e.printStackTrace(System.err);
 		} finally {
 			executor.shutdown();
+			refinement.shutdown();
 		}
 	}
 }
