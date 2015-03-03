@@ -1,15 +1,14 @@
 package clausal_discovery;
 
+import idp.IdpProgramPrinter;
 import log.Log;
 import logic.expression.formula.*;
+import logic.expression.visitor.ExpressionLogicPrinter;
 import util.Numbers;
 import util.Pair;
 import vector.Vector;
 import vector.WriteOnceVector;
-import version3.algorithm.ExpansionOperator;
-import version3.algorithm.Node;
-import version3.algorithm.Result;
-import version3.algorithm.ResultPolicy;
+import version3.algorithm.*;
 import logic.example.Example;
 import logic.expression.term.Term;
 import logic.expression.term.Variable;
@@ -23,7 +22,8 @@ import java.util.*;
 /**
  * The variable refinement class implements the ExpansionOperator and ResultPolicy for clausal discovery
  */
-public class VariableRefinement implements ExpansionOperator<StatusClause>, ResultPolicy<StatusClause> {
+public class VariableRefinement implements ExpansionOperator<StatusClause>, ResultPolicy<StatusClause>,
+		Plugin<StatusClause> {
 
 	private static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
 
@@ -52,12 +52,15 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private final LogicExecutor executor;
 
+	private final ValidityCalculator validityCalculator;
+
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
 		List<Instance> instanceList = getInstances(logicBase.getVocabulary().getPredicates(), variables);
 		this.instances = new Vector<>(instanceList.toArray(new Instance[instanceList.size()]));
 		Log.LOG.printLine(this.instances.size() + " instances");
 		this.logicBase = logicBase;
 		this.executor = executor;
+		this.validityCalculator = new ValidityCalculator(getLogicBase());
 	}
 
 	@Override
@@ -80,6 +83,28 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	}
 
 	@Override
+	public void initialise(List<Node<StatusClause>> initialNodes, Result<StatusClause> result) {
+		for(Node<StatusClause> node : initialNodes)
+			validityCalculator.submitFormula(getClause(node.getValue()));
+	}
+
+	@Override
+	public boolean nodeSelected(Node<StatusClause> node) {
+		return true;
+	}
+
+	@Override
+	public void nodeProcessed(Node<StatusClause> node, Result<StatusClause> result) {
+
+	}
+
+	@Override
+	public void nodeExpanded(Node<StatusClause> node, List<Node<StatusClause>> childNodes) {
+		for(Node<StatusClause> childNode : childNodes)
+			validityCalculator.submitFormula(getClause(childNode.getValue()));
+	}
+
+	@Override
 	public boolean processSolution(Result<StatusClause> result, Node<StatusClause> node) {
 		if(!isValid(node))
 			return true;
@@ -92,9 +117,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getLogicBase().getExamples().size()]);
 		for(Example example : getLogicBase().getExamples())
 			structures.add(example.getStructure());
-		Theory theory = new Theory(getClause(node.getValue()));
-		LogicProgram program = new LogicProgram(getLogicBase().getVocabulary(), theory, structures);
-		return executor.isValid(program);
+		return validityCalculator.isValid(getClause(node.getValue()));
 	}
 
 	public Formula getClause(StatusClause value) {
@@ -132,8 +155,9 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		List<Formula> formulas = new ArrayList<>();
 		for(StatusClause statusClause : result.getSolutions())
 			formulas.add(getClause(statusClause));
-		Theory theory = new Theory(formulas);
-		LogicProgram logicProgram = new LogicProgram(logicBase.getVocabulary(), theory, new Vector<>());
+		Vector<Theory> theories = new WriteOnceVector<>(new Theory[1]);
+		theories.add(new Theory(formulas));
+		LogicProgram logicProgram = new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
 		return !executor.entails(logicProgram, new Theory(getClause(node.getValue())));
 	}
 

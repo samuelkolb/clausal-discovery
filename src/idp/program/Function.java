@@ -12,6 +12,6 @@ public class Function {
 	}
 
 	public String print() {
-		return program;
+		return program + "\n";
 	}
 }

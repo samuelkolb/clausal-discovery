@@ -1,5 +1,6 @@
 package clausal_discovery;
 
+import log.LinkTransformer;
 import log.Log;
 import version3.algorithm.EmptyQueueStopCriterion;
 import version3.algorithm.Result;
@@ -35,21 +36,24 @@ public class ClausalDiscovery {
 		// TODO Parallel valid tests (per example)
 		// TODO Test not outsourcing "valid" test
 
+		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
+
 		LogicExecutor executor = IdpExecutor.get();
-		LogicBase base = new LogicParser().readLocalFile("human.logic");
+		LogicBase base = new LogicParser().readLocalFile("coloring.logic");
 
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
-		VariableRefinement expansion = new VariableRefinement(base, 4, executor);
+		VariableRefinement refinement = new VariableRefinement(base, 4, executor);
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
 
-		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(expansion, stopCriterion, expansion);
+		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
 		algorithm.addPlugin(new MaximalDepthPlugin<>(6));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
-		algorithm.addPlugin(new ClausePrintingPlugin(expansion));
+		//algorithm.addPlugin(new ClausePrintingPlugin(refinement));
+		algorithm.addPlugin(refinement);
 		try {
 			Result<StatusClause> result = Test.run(algorithm, initialNodes, 4);
 			for(StatusClause statusClause : result.getSolutions())
-				Log.LOG.printLine(ExpressionLogicPrinter.print(expansion.getClause(statusClause)));
+				Log.LOG.printLine(ExpressionLogicPrinter.print(refinement.getClause(statusClause)));
 		} catch(Exception e) {
 			Log.LOG.printTitle("Exception occurred");
 			System.out.flush();

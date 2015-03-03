@@ -4,6 +4,8 @@ import vector.Vector;
 
 /**
  * A generic logic program consists of a vocabulary, a theory and multiple structures
+ *
+ * @author Samuel Kolb
  */
 public class LogicProgram {
 
@@ -13,10 +15,15 @@ public class LogicProgram {
 		return vocabulary;
 	}
 
-	private final Theory theory;
+	private final Vector<Theory> theories;
 
+	@Deprecated
 	public Theory getTheory() {
-		return theory;
+		throw new UnsupportedOperationException();
+	}
+
+	public Vector<Theory> getTheories() {
+		return theories;
 	}
 
 	private final Vector<Structure> structures;
@@ -28,12 +35,12 @@ public class LogicProgram {
 	/**
 	 * Creates a new logic program
 	 * @param vocabulary	The type and predicate definitions
-	 * @param theory		The theory
+	 * @param theories		The theories
 	 * @param structures	The structures
 	 */
-	public LogicProgram(Vocabulary vocabulary, Theory theory, Vector<Structure> structures) {
+	public LogicProgram(Vocabulary vocabulary, Vector<Theory> theories, Vector<Structure> structures) {
 		this.vocabulary = vocabulary;
-		this.theory = theory;
+		this.theories = theories;
 		this.structures = structures;
 	}
 }

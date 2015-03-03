@@ -1,6 +1,7 @@
 package idp.program;
 
 import basic.FileUtil;
+import logic.theory.Theory;
 import vector.Vector;
 import logic.theory.LogicProgram;
 
@@ -25,13 +26,19 @@ public class ValidProgram extends IdpProgram {
 		printProgram(builder);
 
 		StringBuilder procedure = new StringBuilder();
-		procedure.append("\nif true");
-		for(int i = 0; i < getProgram().getStructures().size(); i++)
-			procedure.append(" and isValid(T, S").append(i).append(")");
-		procedure.append(" then\n\tprint(\"YES\")\nelse\n\tprint(\"NO\")\nend");
+		for(int i = 0; i < getProgram().getTheories().size(); i++)
+			queryTheory("T" + i, procedure);
+		procedure.append("print(\"\")\n");
 
 		Vector<Function> functions = new Vector<Function>(Functions.VALID.getFunction());
 		builder.append(new Procedure(procedure.toString(), new Vector<>(), functions).print());
 		return builder.toString();
+	}
+
+	private void queryTheory(String theoryName, StringBuilder procedure) {
+		procedure.append("if true");
+		for(int i = 0; i < getProgram().getStructures().size(); i++)
+			procedure.append(" and isValid(").append(theoryName).append(", S").append(i).append(")");
+		procedure.append(" then\n\tprint(\"YES\")\nelse\n\tprint(\"NO\")\nend\n");
 	}
 }

@@ -19,7 +19,7 @@ public class IdpProgramPrinter extends ProgramPrinter {
 		String theoryName = "T";
 		String structureName = "S";
 		return printVocabulary(program.getVocabulary(), vocabularyName)
-				+ printTheory(program.getTheory(), theoryName, vocabularyName)
+				+ printTheories(program, theoryName, vocabularyName)
 				+ printStructures(program, structureName, vocabularyName);
 	}
 

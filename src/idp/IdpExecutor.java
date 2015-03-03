@@ -61,12 +61,29 @@ public class IdpExecutor implements LogicExecutor {
 	}
 
 	@Override
+	public boolean[] areValid(LogicProgram program) {
+		return executeTests(new ValidProgram(program));
+	}
+
+	@Override
 	public boolean entails(LogicProgram program, Theory theory) {
 		return executeTest(new EntailsProgram(program, theory));
 	}
 
+	private boolean[] executeTests(IdpProgram idpProgram) throws IllegalStateException {
+		String[] lines = executeSafe(idpProgram).trim().split("\n");
+		boolean[] result = new boolean[lines.length];
+		for(int i = 0; i < result.length; i++)
+			result[i] = getBoolean(lines[i]);
+		return result;
+	}
+
 	private boolean executeTest(IdpProgram idpProgram) throws IllegalStateException {
-		String string = executeSafe(idpProgram);
+		String string = executeSafe(idpProgram).trim();
+		return getBoolean(string);
+	}
+
+	private boolean getBoolean(String string) {
 		if("YES".equals(string))
 			return true;
 		if("NO".equals(string))

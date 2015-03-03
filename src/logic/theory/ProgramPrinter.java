@@ -20,6 +20,15 @@ public abstract class ProgramPrinter {
 
 	public abstract String printStructure(Structure structure, String name, String vocabularyName);
 
+	public String printTheories(LogicProgram program, String prefix, String vocabularyName) {
+		if(program.getTheories().isEmpty())
+			return "";
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < program.getTheories().size(); i++)
+			builder.append(printTheory(program.getTheories().get(i), prefix + i, vocabularyName));
+		return builder.toString();
+	}
+
 	public String printStructures(LogicProgram program, String prefix, String vocabularyName) {
 		if(program.getStructures().isEmpty())
 			return "";

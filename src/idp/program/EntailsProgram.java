@@ -37,8 +37,8 @@ public class EntailsProgram extends IdpProgram {
 	public String print() {
 		StringBuilder builder = new StringBuilder();
 		printProgram(builder);
-		builder.append(new IdpProgramPrinter().printTheory(theory, "T2", "V"));
-		builder.append(ENTAIL_PROCEDURE.print("T", "T2"));
+		builder.append(new IdpProgramPrinter().printTheory(theory, "T1", "V"));
+		builder.append(ENTAIL_PROCEDURE.print("T0", "T1"));
 		return builder.toString();
 	}
 

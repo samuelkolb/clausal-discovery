@@ -19,6 +19,8 @@ public interface LogicExecutor {
 	 */
 	public boolean isValid(LogicProgram program);
 
+	boolean[] areValid(LogicProgram program);
+
 	/**
 	 * Returns whether the given program entails the given clause
 	 * @param program	The program containing the theory

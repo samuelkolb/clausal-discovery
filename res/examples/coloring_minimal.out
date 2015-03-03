@@ -1,25 +1,8 @@
-type Country
-type Color
-
-pred color(Country,Color)
-pred neighbor(Country,Country)
-pred different(Color,Color)
-
-const Country Belgium
-const Country Germany
-const Country Poland
-
-const Color Red
-const Color Green
-
-example 1 {
-	color(Belgium,Red)
-	color(Germany,Green)
-	color(Poland,Red)
-	neighbor(Belgium,Germany)
-	neighbor(Germany,Poland)
-	neighbor(Germany,Belgium)
-	neighbor(Poland,Germany)
-	different(Red,Green)
-	different(Green,Red)
-}
+(false <- neighbor(V0, V0))
+(false <- (color(V0, V1) & color(V0, V2) & (V1 ~= V2)))
+(neighbor(V1, V0) <- (neighbor(V0, V1) & (V0 ~= V1)))
+(false <- (color(V0, V1) & neighbor(V2, V0) & color(V2, V1) & (V0 ~= V2)))
+(false <- (color(V0, V1) & color(V2, V1) & color(V3, V1) & (V0 ~= V2) & (V0 ~= V3) & (V2 ~= V3)))
+(false <- (neighbor(V0, V1) & neighbor(V2, V0) & neighbor(V3, V0) & (V0 ~= V1) & (V0 ~= V2) & (V0 ~= V3) & (V1 ~= V2) & (V1 ~= V3) & (V2 ~= V3)))
+(false <- (neighbor(V0, V1) & neighbor(V2, V0) & neighbor(V3, V1) & (V0 ~= V1) & (V0 ~= V2) & (V0 ~= V3) & (V1 ~= V2) & (V1 ~= V3) & (V2 ~= V3)))
+(neighbor(V3, V2) <- (color(V0, V1) & neighbor(V2, V0) & color(V3, V1) & (V0 ~= V2) & (V0 ~= V3) & (V2 ~= V3)))
