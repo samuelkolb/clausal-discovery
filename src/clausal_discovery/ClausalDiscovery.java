@@ -1,6 +1,6 @@
 package clausal_discovery;
 
-import log.LinkTransformer;
+import basic.MathUtil;
 import log.Log;
 import version3.algorithm.EmptyQueueStopCriterion;
 import version3.algorithm.Result;
@@ -12,7 +12,6 @@ import version3.example.Test;
 import idp.IdpExecutor;
 import logic.expression.visitor.ExpressionLogicPrinter;
 import logic.parse.LogicParser;
-import logic.theory.LogicExecutor;
 
 import version3.plugin.DuplicateEliminationPlugin;
 import version3.plugin.MaximalDepthPlugin;
@@ -38,7 +37,7 @@ public class ClausalDiscovery {
 
 		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
 
-		LogicExecutor executor = IdpExecutor.get();
+		IdpExecutor executor = IdpExecutor.get();
 		LogicBase base = new LogicParser().readLocalFile("coloring_minimal.logic");
 
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
@@ -54,6 +53,7 @@ public class ClausalDiscovery {
 			Result<StatusClause> result = Test.run(algorithm, initialNodes, 4);
 			for(StatusClause statusClause : result.getSolutions())
 				Log.LOG.printLine(ExpressionLogicPrinter.print(refinement.getClause(statusClause)));
+			Log.LOG.newLine().printTitle(executor.entailmentCount + " entailment calculations took: " + MathUtil.round(executor.entailmentStopwatch.stop()/1000, 0) + ", " + executor.noEntailmentCount + " did not succeed.");
 		} catch(Exception e) {
 			Log.LOG.printTitle("Exception occurred");
 			System.out.flush();

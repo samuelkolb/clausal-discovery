@@ -29,7 +29,7 @@ public class ExpressionSkolemizer {
 	//region Public methods
 
 	public Formula skolemize(Formula formula) {
-		return skolemize(formula, new HashMap<Variable, Constant>());
+		return skolemize(formula, new HashMap<>());
 	}
 
 	private Formula skolemizePredicate(Map<Variable, Constant> substitutions, PredicateInstance instance) {
@@ -67,7 +67,7 @@ public class ExpressionSkolemizer {
 		return atom;
 	}
 
-	private Formula skolemize(Clause clause, Map<Variable, Constant> substitutions) {
+	public Clause skolemize(Clause clause, Map<Variable, Constant> substitutions) {
 		Atom[] head = skolemizeAtoms(clause.getHeadAtoms(), substitutions);
 		Atom[] body = skolemizeAtoms(clause.getBodyAtoms(), substitutions);
 		return Clause.clause(head, body);

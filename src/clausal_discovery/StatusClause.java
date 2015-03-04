@@ -2,6 +2,10 @@ package clausal_discovery;
 
 import util.Pair;
 import vector.Vector;
+import vector.WriteOnceVector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a selection of indices that represent instances in the clauses body and head
@@ -85,30 +89,45 @@ public class StatusClause {
 	public StatusClause enterHead() {
 		if(!inBody())
 			throw new IllegalStateException("Already in head");
-		return new StatusClause(getRank(), false, getIndex(), getClauses(), environment);
+		return new StatusClause(getRank(), false, -1, getClauses(), environment);
 	}
 
 	/**
 	 * Returns whether the given instance can be added
+	 * @param index		The index of the instance to add
 	 * @param instance	A predicate instance
-	 * @return	True iff the given instance is 1) consistent with typing, 2) connected, and 3) introduces variables in
-	 * 			order and only it is in the body
+	 * @return	True iff the given instance is 1) consistent with typing, 2) connected 3) introduces variables in
+	 * 			order and only it is in the body, and 4) an instance added to the head does not appear in the body
 	 */
-	public boolean canProcess(Instance instance) {
+	public boolean canProcess(int index, Instance instance) {
 		if(!environment.isValidInstance(instance.getPredicate(), instance.getVariableIndices()))
 			return false;
+		if(!inBody() && contains(new Pair.Implementation<>(index, true)))
+			return false;
 		Vector<Integer> indices = instance.getVariableIndices();
+		if(getRank() > 0 && !isConnected(indices))
+			return false;
+		if(!introducesVariablesInOrder(indices))
+			return false;
+		return true;
+	}
+
+	private boolean isConnected(Vector<Integer> indices) {
 		int max = getRank() - 1;
-		boolean connected = false;
-		for(int i = 0; i < indices.size(); i++) {
+		for(int i = 0; i < indices.size(); i++)
+			if(indices.get(i) <= max)
+				return true;
+		return false;
+	}
+
+	private boolean introducesVariablesInOrder(Vector<Integer> indices) {
+		int max = getRank() - 1;
+		for(int i = 0; i < indices.size(); i++)
 			if(inBody() && indices.get(i) == max + 1)
-				max += 1;
+				max = indices.get(i);
 			else if(indices.get(i) > max)
 				return false;
-			else
-				connected = true;
-		}
-		return connected || getRank() == 0;
+		return true;
 	}
 
 	/**
@@ -118,7 +137,7 @@ public class StatusClause {
 	 * @return	The new status clause
 	 */
 	public StatusClause process(int index, Instance instance) {
-		if(!canProcess(instance))
+		if(!canProcess(index, instance))
 			throw new IllegalArgumentException("Cannot process the given instance: " + instance);
 		Pair.Implementation<Integer, Boolean> element = new Pair.Implementation<>(index, inBody());
 		int newRank = Math.max(getRank(), instance.getMax() + 1);

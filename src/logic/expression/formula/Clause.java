@@ -159,6 +159,21 @@ public class Clause extends Formula {
 		expressionVisitor.visit(this);
 	}
 
+	/**
+	 * Returns whether this clause is a subset of a given clause
+	 * @param clause	The potential super set
+	 * @return	True iff this clause is a subset of the given clause
+	 */
+	public boolean isSubsetOf(Clause clause) {
+		for(Atom atom : getBodyAtoms())
+			if(!clause.getBodyAtoms().contains(atom))
+				return false;
+		for(Atom atom : getHeadAtoms())
+			if(!clause.getHeadAtoms().contains(atom))
+				return false;
+		return true;
+	}
+
 	public boolean contains(Atom atom) {
 		for(Atom bodyAtom : getBodyAtoms())
 			if(bodyAtom.equals(atom))

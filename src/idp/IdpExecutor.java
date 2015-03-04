@@ -10,6 +10,7 @@ import idp.program.ValidProgram;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Theory;
+import time.Stopwatch;
 
 import java.io.*;
 import java.util.concurrent.ExecutorService;
@@ -36,11 +37,16 @@ public class IdpExecutor implements LogicExecutor {
 	}
 
 	private Terminal terminal = new Terminal();
-	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	public Terminal getTerminal() {
 		return terminal;
 	}
+
+	public final Stopwatch entailmentStopwatch = new Stopwatch();
+
+	public int entailmentCount = 0;
+
+	public int noEntailmentCount = 0;
 
 	//endregion
 
@@ -52,7 +58,7 @@ public class IdpExecutor implements LogicExecutor {
 
 	@Override
 	public void shutdown() {
-		executorService.shutdown();
+
 	}
 
 	@Override
@@ -67,7 +73,21 @@ public class IdpExecutor implements LogicExecutor {
 
 	@Override
 	public boolean entails(LogicProgram program, Theory theory) {
-		return executeTest(new EntailsProgram(program, theory));
+		entailmentStopwatch.start();
+		boolean test = executeTest(new EntailsProgram(program, theory));
+		entailmentStopwatch.pause();
+		entailmentCount++;
+		if(!test)
+			noEntailmentCount++;
+		else {
+			Log.LOG.saveState();
+			Log.LOG.off();
+			Log.LOG.printTitle("Entailment:");
+			Log.LOG.printLine(new IdpProgramPrinter().print(program));
+			Log.LOG.printLine(new IdpProgramPrinter().printTheory(theory, "T", "V"));
+			Log.LOG.revert();
+		}
+		return test;
 	}
 
 	private boolean[] executeTests(IdpProgram idpProgram) throws IllegalStateException {
@@ -153,19 +173,15 @@ public class IdpExecutor implements LogicExecutor {
 	private File createFile(final String string) {
 		final File file = FileManager.instance.createTempFile("idp");
 		getTerminal().execute("mkfifo " + file.getAbsolutePath(), true);
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				try {
-					PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-					writer.write(string);
-					writer.close();
-				} catch(IOException e) {
-					throw new IllegalStateException("Unexpected error.", e);
-				}
+		new Thread(() -> {
+			try {
+				PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+				writer.write(string);
+				writer.close();
+			} catch(IOException e) {
+				throw new IllegalStateException("Unexpected error.", e);
 			}
-		};
-		executorService.submit(runnable);
+		}).start();
 		return file;
 	}
 	//endregion

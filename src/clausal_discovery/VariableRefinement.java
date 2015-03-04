@@ -1,5 +1,7 @@
 package clausal_discovery;
 
+import basic.ArrayUtil;
+import idp.IdpExpressionPrinter;
 import log.Log;
 import logic.example.Example;
 import logic.expression.formula.*;
@@ -55,6 +57,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private final ValidityCalculator validityCalculator;
 
+	private Set<StatusClause> resultSet = new HashSet<>();
+
 	/**
 	 * Creates a new variable refinement operator
 	 * @param logicBase	The logic base holding the vocabulary and examples
@@ -62,6 +66,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 * @param executor	The logic executor responsible for executing logical queries
 	 */
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
+		variables = getMaximalVariables(variables, logicBase.getVocabulary().getPredicates());
 		List<Instance> instanceList = getInstances(logicBase.getVocabulary().getPredicates(), variables);
 		this.instances = new Vector<>(instanceList.toArray(new Instance[instanceList.size()]));
 		Log.LOG.printLine(this.instances.size() + " instances");
@@ -70,36 +75,51 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
 	}
 
+	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
+		int max = 0;
+		for(Predicate predicate : predicates)
+			max = Math.max(max, predicate.getArity());
+		return  max > 1 ? variables : 1;
+	}
+
 	@Override
 	public List<StatusClause> expandNode(Node<StatusClause> node) {
 		List<StatusClause> children = new ArrayList<>();
 		StatusClause clause = node.getValue();
 
-		for(int i = clause.getIndex() + 1; i < instances.size(); i++) {
-			if((clause.inBody() || !clause.contains(new Pair.Implementation<>(i, true)))
-					&& clause.canProcess(instances.get(i)))
-				children.add(clause.process(i, instances.get(i)));
-		}
-
-		if(clause.inBody()) {
-			StatusClause headClause = clause.enterHead();
-			for(int i = 0; i < instances.size(); i++)
-				if(headClause.canProcess(instances.get(i)))
-					children.add(headClause.process(i, instances.get(i)));
-		}
+		addChildren(children, clause);
+		if(clause.inBody())
+			addChildren(children, clause.enterHead());
 
 		return children;
+	}
+
+	private void addChildren(List<StatusClause> children, StatusClause clause) {
+		for(int i = clause.getIndex() + 1; i < instances.size(); i++)
+			if(clause.canProcess(i, instances.get(i)))
+				children.add(clause.process(i, instances.get(i)));
 	}
 
 	@Override
 	public void initialise(List<Node<StatusClause>> initialNodes, Result<StatusClause> result) {
 		for(Node<StatusClause> node : initialNodes)
 			validityCalculator.submitFormula(getClause(node.getValue()));
+		result.addDelegate(new Result.Delegate<StatusClause>() {
+			@Override
+			public void processResultNodeAdded(Result<StatusClause> result, Node<StatusClause> node) {
+				resultSet.add(node.getValue());
+			}
+
+			@Override
+			public void processResultNodeRemoved(Result<StatusClause> result, Node<StatusClause> node) {
+
+			}
+		});
 	}
 
 	@Override
 	public boolean nodeSelected(Node<StatusClause> node) {
-		return true;
+		return !subsetOccurs(node.getValue());
 	}
 
 	@Override
@@ -134,11 +154,15 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 * @param statusClause	The status clause
 	 * @return	A logical Formula
 	 */
-	public Formula getClause(StatusClause statusClause) {
+	public Clause getClause(StatusClause statusClause) {
+		return getClause(statusClause.getClauses());
+	}
+
+	Clause getClause(Vector<Pair<Integer, Boolean>> instances) {
 		List<Atom> bodyAtoms = new ArrayList<>();
 		List<Atom> headAtoms = new ArrayList<>();
 		Map<Integer, Variable> variableMap = new HashMap<>();
-		for(Pair<Integer, Boolean> pair : statusClause.getClauses())
+		for(Pair<Integer, Boolean> pair : instances)
 			(pair.getSecond() ? bodyAtoms : headAtoms).add(makeAtom(variableMap, pair.getFirst()));
 		applyOI(variableMap.values(), bodyAtoms);
 		return Clause.clause(bodyAtoms, headAtoms);
@@ -167,6 +191,21 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 				if(array[i].getType().isSuperTypeOf(array[j].getType())
 						|| array[j].getType().isSuperTypeOf(array[i].getType()))
 					bodyAtoms.add(INEQUALITY.getInstance(array[i], array[j]));
+	}
+
+	private boolean subsetOccurs(StatusClause statusClause) {
+		for(StatusClause resultClause : resultSet)
+			for(Clause subset : getSubsets(statusClause))
+				if(getClause(resultClause).isSubsetOf(subset))
+					return true;
+		return false;
+	}
+
+	private List<Clause> getSubsets(StatusClause statusClause) {
+		List<Clause> subsets = new ArrayList<>();
+		for(int i = 0; i < statusClause.getClauses().size(); i++)
+			subsets.add(getClause(new Vector<>(ArrayUtil.removeElement(statusClause.getClauses().getArray(), i))));
+		return subsets;
 	}
 
 	private boolean shouldBeInserted(Result<StatusClause> result, Node<StatusClause> node) {
