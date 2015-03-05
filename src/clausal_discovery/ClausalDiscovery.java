@@ -34,7 +34,6 @@ public class ClausalDiscovery {
 		// TODO Test not outsourcing "valid" test
 
 		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
-		Log.LOG.error();
 
 		IdpExecutor executor = IdpExecutor.get();
 		LogicBase base = new LogicParser().readLocalFile("coloring_minimal.logic");
