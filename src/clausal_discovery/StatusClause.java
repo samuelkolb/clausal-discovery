@@ -1,11 +1,8 @@
 package clausal_discovery;
 
+import clausal_discovery.instance.Instance;
 import util.Pair;
 import vector.Vector;
-import vector.WriteOnceVector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents a selection of indices that represent instances in the clauses body and head
@@ -105,11 +102,7 @@ public class StatusClause {
 		if(!inBody() && contains(new Pair.Implementation<>(index, true)))
 			return false;
 		Vector<Integer> indices = instance.getVariableIndices();
-		if(getRank() > 0 && !isConnected(indices))
-			return false;
-		if(!introducesVariablesInOrder(indices))
-			return false;
-		return true;
+		return !(getRank() > 0 && !isConnected(indices)) && introducesVariablesInOrder(indices);
 	}
 
 	private boolean isConnected(Vector<Integer> indices) {

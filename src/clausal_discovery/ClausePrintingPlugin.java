@@ -48,6 +48,11 @@ public class ClausePrintingPlugin implements Plugin<StatusClause> {
 		Log.LOG.printObjects("\tYields: ", toString(childNodes));
 	}
 
+	@Override
+	public void searchComplete(Result<StatusClause> result) {
+
+	}
+
 	private String toString(List<Node<StatusClause>> nodes) {
 		if(nodes.isEmpty())
 			return "";

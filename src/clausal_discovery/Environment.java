@@ -1,5 +1,6 @@
 package clausal_discovery;
 
+import clausal_discovery.instance.Instance;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
 import vector.Vector;

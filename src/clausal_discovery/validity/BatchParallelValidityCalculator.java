@@ -1,14 +1,13 @@
-package clausal_discovery;
+package clausal_discovery.validity;
 
+import clausal_discovery.LogicBase;
 import log.Log;
-import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Structure;
 import logic.theory.Theory;
 import vector.Vector;
-import vector.WriteOnceVector;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

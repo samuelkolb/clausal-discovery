@@ -1,7 +1,10 @@
 package clausal_discovery;
 
 import basic.ArrayUtil;
-import idp.IdpExpressionPrinter;
+import clausal_discovery.instance.Instance;
+import clausal_discovery.instance.InstanceSetPrototype;
+import clausal_discovery.validity.ParallelValidityCalculator;
+import clausal_discovery.validity.ValidityCalculator;
 import log.Log;
 import logic.example.Example;
 import logic.expression.formula.*;
@@ -18,6 +21,9 @@ import vector.WriteOnceVector;
 import version3.algorithm.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The variable refinement class implements the ExpansionOperator and ResultPolicy for clausal discovery.
@@ -27,6 +33,34 @@ import java.util.*;
  */
 public class VariableRefinement implements ExpansionOperator<StatusClause>, ResultPolicy<StatusClause>,
 		Plugin<StatusClause> {
+
+	private class EntailmentTestRunnable implements Runnable {
+
+		private final Result<StatusClause> result;
+
+		private final Node<StatusClause> node;
+
+		private EntailmentTestRunnable(Result<StatusClause> result, Node<StatusClause> node) {
+			this.result = result;
+			this.node = node;
+		}
+
+		@Override
+		public void run() {
+			if(!executor.entails(getProgram(), new Theory(getClause(node.getValue()))))
+				result.addNode(node);
+		}
+
+		private LogicProgram getProgram() {
+			List<Formula> formulas = new ArrayList<>();
+			for(StatusClause statusClause : result.getSolutions())
+				formulas.add(getClause(statusClause));
+			Vector<Theory> theories = new WriteOnceVector<>(new Theory[1]);
+			theories.add(new Theory(formulas));
+			//Log.LOG.printLine("Does " + new IdpProgramPrinter().printTheory(new Theory(formulas), "T", "V") + " entail " + IdpExpressionPrinter.print(getClause(node.getValue())) + "?");
+			return new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
+		}
+	}
 
 	private static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
 
@@ -59,6 +93,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private Set<StatusClause> resultSet = new HashSet<>();
 
+	private final ExecutorService resultQueue;
+
 	/**
 	 * Creates a new variable refinement operator
 	 * @param logicBase	The logic base holding the vocabulary and examples
@@ -73,6 +109,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		this.logicBase = logicBase;
 		this.executor = executor;
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
+		this.resultQueue = Executors.newSingleThreadExecutor();
 	}
 
 	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
@@ -137,9 +174,19 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	public boolean processSolution(Result<StatusClause> result, Node<StatusClause> node) {
 		if(!isValid(node))
 			return true;
-		if(shouldBeInserted(result, node))
-			result.addNode(node);
+		resultQueue.execute(new EntailmentTestRunnable(result, node));
 		return false;
+	}
+
+	@Override
+	public void searchComplete(Result<StatusClause> result) {
+		validityCalculator.shutdown();
+		resultQueue.shutdown();
+		try {
+			resultQueue.awaitTermination(10, TimeUnit.DAYS);
+		} catch(InterruptedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	private boolean isValid(Node<StatusClause> node) {
@@ -208,17 +255,6 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return subsets;
 	}
 
-	private boolean shouldBeInserted(Result<StatusClause> result, Node<StatusClause> node) {
-		List<Formula> formulas = new ArrayList<>();
-		for(StatusClause statusClause : result.getSolutions())
-			formulas.add(getClause(statusClause));
-		Vector<Theory> theories = new WriteOnceVector<>(new Theory[1]);
-		theories.add(new Theory(formulas));
-		//Log.LOG.printLine("Does " + new IdpProgramPrinter().printTheory(new Theory(formulas), "T", "V") + " entail " + IdpExpressionPrinter.print(getClause(node.getValue())) + "?");
-		LogicProgram logicProgram = new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
-		return !executor.entails(logicProgram, new Theory(getClause(node.getValue())));
-	}
-
 	private List<Instance> getInstances(Vector<Predicate> predicates, int variables) {
 		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(predicates);
 		List<Instance> instanceList = new ArrayList<>();
@@ -235,12 +271,5 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			choices.addAll(Numbers.getChoices(variables, i + 1));
 		choices.sort(new ClauseComparator());
 		return choices;
-	}
-
-	/**
-	 * Free any retained resources
-	 */
-	public void shutdown() {
-		validityCalculator.shutdown();
 	}
 }

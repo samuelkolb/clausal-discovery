@@ -31,11 +31,10 @@ public class ClausalDiscovery {
 	 * @param args	Currently ignored
 	 */
 	public static void main(String[] args) {
-		// TODO Constants per example
-		// TODO Parallel valid tests (per example)
 		// TODO Test not outsourcing "valid" test
 
 		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
+		Log.LOG.error();
 
 		IdpExecutor executor = IdpExecutor.get();
 		LogicBase base = new LogicParser().readLocalFile("coloring_minimal.logic");
@@ -61,7 +60,6 @@ public class ClausalDiscovery {
 			e.printStackTrace(System.err);
 		} finally {
 			executor.shutdown();
-			refinement.shutdown();
 		}
 	}
 }

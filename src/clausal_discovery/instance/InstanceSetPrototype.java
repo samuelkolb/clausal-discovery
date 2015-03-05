@@ -1,5 +1,6 @@
-package clausal_discovery;
+package clausal_discovery.instance;
 
+import clausal_discovery.Environment;
 import util.Numbers;
 import vector.Vector;
 import vector.WriteOnceVector;

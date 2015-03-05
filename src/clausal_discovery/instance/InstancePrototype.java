@@ -1,4 +1,4 @@
-package clausal_discovery;
+package clausal_discovery.instance;
 
 import util.Numbers;
 import vector.Vector;

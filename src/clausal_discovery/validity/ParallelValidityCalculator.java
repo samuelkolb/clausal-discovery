@@ -1,5 +1,6 @@
-package clausal_discovery;
+package clausal_discovery.validity;
 
+import clausal_discovery.LogicBase;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
@@ -40,7 +41,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 	//region Variables
 	private final Map<Formula, Future<Boolean>> validityTable = new ConcurrentHashMap<>();
 
-	private final ExecutorService executorService = Executors.newFixedThreadPool(8);
+	private final ExecutorService executorService;
 	//endregion
 
 	//region Construction
@@ -52,6 +53,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 	 */
 	public ParallelValidityCalculator(LogicBase base, LogicExecutor executor) {
 		super(base, executor);
+		this.executorService = Executors.newFixedThreadPool(8);
 	}
 
 	//endregion

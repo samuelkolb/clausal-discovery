@@ -3,6 +3,7 @@ package idp;
 import basic.FileUtil;
 import basic.StringUtil;
 import log.Log;
+import logic.expression.term.Term;
 import runtime.Terminal;
 import idp.program.EntailsProgram;
 import idp.program.IdpProgram;
@@ -36,7 +37,7 @@ public class IdpExecutor implements LogicExecutor {
 		return executor;
 	}
 
-	private Terminal terminal = new Terminal();
+	private Terminal terminal = Terminal.get();
 
 	public Terminal getTerminal() {
 		return terminal;
@@ -100,7 +101,13 @@ public class IdpExecutor implements LogicExecutor {
 
 	private boolean executeTest(IdpProgram idpProgram) throws IllegalStateException {
 		String string = executeSafe(idpProgram).trim();
-		return getBoolean(string);
+		try {
+			return getBoolean(string);
+		} catch(Exception e) {
+			Log.LOG.printTitle("Error occurred:").printLine(e.getMessage()).newLine();
+			Log.LOG.printTitle("Program:").printLine(getDebugString(idpProgram));
+			throw e;
+		}
 	}
 
 	private boolean getBoolean(String string) {
@@ -114,10 +121,10 @@ public class IdpExecutor implements LogicExecutor {
 	private String executeSafe(IdpProgram idpProgram) throws IllegalStateException {
 		try {
 			return execute(idpProgram);
-		} catch(IllegalArgumentException e) {
+		} catch(Exception e) {
 			Log.LOG.printTitle("Error occurred:").printLine(e.getMessage()).newLine();
 			Log.LOG.printTitle("Program:").printLine(getDebugString(idpProgram));
-			throw new IllegalStateException(e);
+			throw new IllegalStateException(e); // TODO
 		}
 	}
 
@@ -174,12 +181,15 @@ public class IdpExecutor implements LogicExecutor {
 		final File file = FileManager.instance.createTempFile("idp");
 		getTerminal().execute("mkfifo " + file.getAbsolutePath(), true);
 		new Thread(() -> {
+			PrintWriter writer = null;
 			try {
-				PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+				writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 				writer.write(string);
-				writer.close();
 			} catch(IOException e) {
 				throw new IllegalStateException("Unexpected error.", e);
+			} finally {
+				if(writer != null)
+					writer.close();
 			}
 		}).start();
 		return file;
