@@ -31,10 +31,7 @@ public class ClausalDiscovery {
 	 * @param args	Currently ignored
 	 */
 	public static void main(String[] args) {
-		// TODO Test not outsourcing "valid" test
-
 		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
-
 		IdpExecutor executor = IdpExecutor.get();
 		LogicBase base = new LogicParser().readLocalFile("coloring_minimal.logic");
 

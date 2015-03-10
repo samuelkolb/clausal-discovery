@@ -36,12 +36,16 @@ public class ExampleParser extends ScopeParser<LogicParserState> {
 
 	@Override
 	public boolean activatesWith(String string, LogicParserState parseState) throws ParsingError {
-		if(!string.matches("example\\s+[A-Za-z0-9]+\\s+\\{\\s*\\n"))
+		if(!string.matches("example\\s+[A-Za-z0-9]+\\s+([+-]\\s+)?\\{\\s*\\n"))
 			return false;
-		String[] parts = string.split("\\s+", 3);
+		String[] parts = string.split("\\s+");
 		this.name = parts[1];
 		if(parseState.containsExample(name))
 			throw new ParsingError("Example '" + name + "' already exists");
+		if(parts[2].equals("+"))
+			parseState.setPositiveExample(true);
+		else if(parts[2].equals("-"))
+			parseState.setPositiveExample(false);
 		return true;
 	}
 

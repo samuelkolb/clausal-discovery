@@ -29,13 +29,29 @@ public class Example {
 	}
 
 	private final Vector<PredicateInstance> instances;
+
+	private final boolean isPositive;
+
+	public boolean isPositive() {
+		return isPositive;
+	}
+
 	//endregion
 
 	//region Construction
 
-	public Example(Setup setup, Vector<PredicateInstance> instances) {
+	/**
+	 * Creates a new example
+	 * @param setup			The example setup
+	 * @param instances		The instances present in the example
+	 * @param isPositive	Whether or not this is a positive or negative example
+	 */
+	public Example(Setup setup, Vector<PredicateInstance> instances, boolean isPositive) {
 		this.setup = setup;
 		this.instances = instances;
+		this.isPositive = isPositive;
+		if(!isPositive)
+			throw new UnsupportedOperationException("Only positive examples are currently supported");
 		Set<Predicate> predicates = setup.getPredicates();
 		for(PredicateInstance instance : instances)
 			if(!predicates.contains(instance.getPredicate()))
