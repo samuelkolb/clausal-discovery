@@ -9,10 +9,17 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- * Created by samuelkolb on 22/02/15.
+ * The logic parser parses logic files
+ *
+ * @author Samuel Kolb
  */
 public class LogicParser {
 
+	/**
+	 * Read and parse the local file with the given name. (Local files reside under res/examples/)
+	 * @param name	The name of the file (including the extension)
+	 * @return	The LogicBase parsed from the file
+	 */
 	public LogicBase readLocalFile(String name) {
 		File file = FileUtil.getLocalFile(getClass().getResource("/examples/" + name));
 		String program = FileUtil.readFile(file);
@@ -21,6 +28,7 @@ public class LogicParser {
 			new TypeDefParser(),
 			new PredicateDefParser(),
 			new ExampleParser(),
+			new SearchParser(),
 			new LineRemover()
 		)).parse(new ParseCursor(program), new LogicParserState());
 

@@ -32,6 +32,8 @@ public class LogicParserState {
 	private boolean positiveExample = true;
 
 	private Map<String, Constant> constants = new HashMap<>();
+
+	private List<Predicate> searchPredicates = new ArrayList<>();
 	//endregion
 
 	//region Construction
@@ -140,6 +142,14 @@ public class LogicParserState {
 		positiveExample = b;
 	}
 
+	/**
+	 * Adds the predicate with the given name to the list of search predicates
+	 * @param predicateName	The name of the predicate
+	 */
+	public void addSearchPredicate(String predicateName) {
+		searchPredicates.add(predicates.get(predicateName));
+	}
+
 	public Setup getSetup() {
 		Collection<Predicate> values = this.predicates.values();
 		Vector<Predicate> predicates = new Vector<>(values.toArray(new Predicate[values.size()]));
@@ -149,7 +159,13 @@ public class LogicParserState {
 	public LogicBase getLogicBase() {
 		Collection<Example> values = this.examples.values();
 		Vector<Example> examples = new Vector<>(values.toArray(new Example[values.size()]));
-		return new Knowledge(getSetup().getVocabulary(), examples);
+
+		Vector<Predicate> search;
+		if(searchPredicates.isEmpty())
+			search = new Vector<>(predicates.values().toArray(new Predicate[predicates.values().size()]));
+		else
+			search = new Vector<>(searchPredicates.toArray(new Predicate[searchPredicates.size()]));
+		return new Knowledge(getSetup().getVocabulary(), examples, search);
 	}
 
 	/**

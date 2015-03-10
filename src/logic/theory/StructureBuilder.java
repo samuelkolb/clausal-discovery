@@ -82,7 +82,7 @@ public class StructureBuilder extends Builder<Structure> {
 
 	@Override
 	public Structure sample() {
-		return new Structure(getTypeElementVector(), getPredicateElementVector());
+		return new Structure(getTypeElementVector(), getPredicateElementVector(), isPositive);
 	}
 
 	@Override

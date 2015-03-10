@@ -102,8 +102,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 * @param executor	The logic executor responsible for executing logical queries
 	 */
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
-		variables = getMaximalVariables(variables, logicBase.getVocabulary().getPredicates());
-		List<Instance> instanceList = getInstances(logicBase.getVocabulary().getPredicates(), variables);
+		variables = getMaximalVariables(variables, logicBase.getSearchPredicates());
+		List<Instance> instanceList = getInstances(logicBase.getSearchPredicates(), variables);
 		this.instances = new Vector<>(instanceList.toArray(new Instance[instanceList.size()]));
 		Log.LOG.printLine(this.instances.size() + " instances");
 		this.logicBase = logicBase;

@@ -5,14 +5,12 @@ pred color(Country,Color)
 pred neighbor(Country,Country)
 pred different(Color,Color)
 
-const Country Belgium
-const Country Germany
-const Country Poland
-
-const Color Red
-const Color Green
+search color neighbor
 
 example 1 {
+	const Country Belgium Germany Poland
+	const Color Red Green
+
 	color(Belgium,Red)
 	color(Germany,Green)
 	color(Poland,Red)

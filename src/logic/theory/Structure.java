@@ -56,13 +56,21 @@ public class Structure {
 		return predicateElements;
 	}
 
+	private final boolean isPositive;
+
+	public boolean isPositive() {
+		return isPositive;
+	}
+
 	/**
 	 * Creates a new structure using the given constants and predicates
-	 * @param typeElements		The given type structures
+	 * @param typeElements      The given type structures
 	 * @param predicateElements	The given predicate instances
+	 * @param isPositive		Whether this structure is a positive example or not
 	 */
-	public Structure(Vector<TypeElement> typeElements, Vector<PredicateElement> predicateElements) {
+	public Structure(Vector<TypeElement> typeElements, Vector<PredicateElement> predicateElements, boolean isPositive) {
 		this.typeElements = typeElements;
 		this.predicateElements = predicateElements;
+		this.isPositive = isPositive;
 	}
 }

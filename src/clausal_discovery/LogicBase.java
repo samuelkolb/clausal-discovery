@@ -1,5 +1,6 @@
 package clausal_discovery;
 
+import logic.expression.formula.Predicate;
 import vector.Vector;
 import logic.example.Example;
 import logic.theory.Vocabulary;
@@ -14,4 +15,6 @@ public interface LogicBase {
 	public Vocabulary getVocabulary();
 
 	public Vector<Example> getExamples();
+
+	public Vector<Predicate> getSearchPredicates();
 }

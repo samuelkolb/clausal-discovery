@@ -33,7 +33,7 @@ public class ClausalDiscovery {
 	public static void main(String[] args) {
 		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
 		IdpExecutor executor = IdpExecutor.get();
-		LogicBase base = new LogicParser().readLocalFile("coloring_minimal.logic");
+		LogicBase base = new LogicParser().readLocalFile("coloring.logic");
 
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
 		VariableRefinement refinement = new VariableRefinement(base, 4, executor);
