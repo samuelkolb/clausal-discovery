@@ -122,6 +122,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	@Override
 	public List<StatusClause> expandNode(Node<StatusClause> node) {
 		List<StatusClause> children = new ArrayList<>();
+		if(node.shouldPruneChildren())
+			return children;
 		StatusClause clause = node.getValue();
 
 		addChildren(children, clause);
@@ -268,7 +270,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	private List<Numbers.Permutation> getChoices(int variables, int maxArity) {
 		List<Numbers.Permutation> choices = new ArrayList<>();
 		for(int i = 0; i < maxArity; i++)
-			choices.addAll(Numbers.getChoices(variables, i + 1));
+			if(i + 1 <= variables)
+				choices.addAll(Numbers.getChoices(variables, i + 1));
 		choices.sort(new ClauseComparator());
 		return choices;
 	}

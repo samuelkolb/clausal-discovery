@@ -25,6 +25,7 @@ public class LogicParser {
 		String program = FileUtil.readFile(file);
 
 		LogicParserState state = new BaseScopeParser<>(Arrays.asList(
+			new CommentParser(),
 			new TypeDefParser(),
 			new PredicateDefParser(),
 			new ExampleParser(),

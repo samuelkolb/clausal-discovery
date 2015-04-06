@@ -5,12 +5,8 @@ pred color(Country,Color)
 pred neighbor(Country,Country)
 
 example 1 {
-	const Country Belgium
-	const Country Germany
-	const Country Poland
-
-	const Color Red
-	const Color Green
+	const Country Belgium Germany Poland
+	const Color Red Green
 
 	color(Belgium,Red)
 	color(Germany,Green)
@@ -22,13 +18,8 @@ example 1 {
 }
 
 example 2 {
-	const Country Belgium
-	const Country Germany
-	const Country Lux
-
-	const Color Red
-	const Color Green
-	const Color Blue
+	const Country Belgium Germany Lux
+	const Color Red Green Blue
 
 	color(Belgium,Red)
 	color(Lux,Green)

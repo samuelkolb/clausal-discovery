@@ -1,0 +1,24 @@
+type index > int
+
+// position(queen, row)
+pred position(index, index)
+
+// gap(index1, index2, distance)
+pred gap(index, index, index)
+
+search position
+
+example 1 {
+	const index 1 2 3 4
+
+	position(1, 2)
+	position(2, 4)
+	position(3, 1)
+	position(4, 3)
+}
+
+example 2 {
+	const index 1
+
+	position(1, 1)
+}

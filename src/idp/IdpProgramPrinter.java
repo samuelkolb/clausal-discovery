@@ -41,8 +41,12 @@ public class IdpProgramPrinter extends ProgramPrinter {
 	public String printVocabulary(Vocabulary vocabulary, String name) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("vocabulary ").append(name).append(" {\n");
-		for(Type type : vocabulary.getTypes())
-			builder.append("\ttype ").append(type.getName()).append('\n');
+		for(Type type : vocabulary.getTypes()) {
+			builder.append("\ttype ").append(type.getName());
+			if(type.hasParent() && !type.getParent().equals(Type.UNDEFINED))
+				builder.append(" isa ").append(type.getParent().getName());
+			builder.append('\n');
+		}
 		for(Predicate predicate : vocabulary.getPredicates())
 			builder.append("\t").append(predicate).append("\n");
 		builder.append("}\n\n");

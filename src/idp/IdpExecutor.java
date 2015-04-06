@@ -14,6 +14,7 @@ import logic.theory.Theory;
 import time.Stopwatch;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,6 +50,16 @@ public class IdpExecutor implements LogicExecutor {
 
 	public int noEntailmentCount = 0;
 
+	private Optional<String> backgroundFile = Optional.empty();
+
+	public void setBackgroundFile(String backgroundFile) {
+		this.backgroundFile = Optional.of(backgroundFile);
+	}
+
+	private Optional<String> getBackgroundFile() {
+		return backgroundFile;
+	}
+
 	//endregion
 
 	//region Construction
@@ -64,18 +75,18 @@ public class IdpExecutor implements LogicExecutor {
 
 	@Override
 	public boolean isValid(LogicProgram program) {
-		return executeTest(new ValidProgram(program));
+		return executeTest(new ValidProgram(program, getBackgroundFile()));
 	}
 
 	@Override
 	public boolean[] areValid(LogicProgram program) {
-		return executeTests(new ValidProgram(program));
+		return executeTests(new ValidProgram(program, getBackgroundFile()));
 	}
 
 	@Override
 	public boolean entails(LogicProgram program, Theory theory) {
 		entailmentStopwatch.start();
-		boolean test = executeTest(new EntailsProgram(program, theory));
+		boolean test = executeTest(new EntailsProgram(program, theory, getBackgroundFile()));
 		entailmentStopwatch.pause();
 		entailmentCount++;
 		if(!test)

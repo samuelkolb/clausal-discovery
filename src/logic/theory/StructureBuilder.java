@@ -22,6 +22,8 @@ public class StructureBuilder extends Builder<Structure> {
 	private final List<Structure.TypeElement> typeElements = new ArrayList<>();
 
 	private final List<Structure.PredicateElement> predicateElements = new ArrayList<>();
+
+	private boolean isPositive = true;
 	//endregion
 
 	//region Construction
@@ -66,6 +68,10 @@ public class StructureBuilder extends Builder<Structure> {
 		addPredicateInstances(predicate, instances.toArray(new PredicateInstance[instances.size()]));
 	}
 
+	public void setPositive(boolean isPositive) {
+		this.isPositive = isPositive;
+	}
+
 	/*
 	 * Extracts all constants in the given predicate instances
 	 * @param predicates	The given predicate instances
@@ -82,7 +88,7 @@ public class StructureBuilder extends Builder<Structure> {
 
 	@Override
 	public Structure sample() {
-		return new Structure(getTypeElementVector(), getPredicateElementVector(), isPositive);
+		return new Structure(getTypeElementVector(), getPredicateElementVector(), true);
 	}
 
 	@Override

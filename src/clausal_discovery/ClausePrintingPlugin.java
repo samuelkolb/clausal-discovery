@@ -16,12 +16,19 @@ public class ClausePrintingPlugin implements Plugin<StatusClause> {
 
 	//region Variables
 	private final VariableRefinement refinement;
+
+	private final boolean printYield;
 	//endregion
 
 	//region Construction
 
 	public ClausePrintingPlugin(VariableRefinement refinement) {
+		this(refinement, true);
+	}
+
+	public ClausePrintingPlugin(VariableRefinement refinement, boolean printYield) {
 		this.refinement = refinement;
+		this.printYield = printYield;
 	}
 
 	//endregion
@@ -45,7 +52,8 @@ public class ClausePrintingPlugin implements Plugin<StatusClause> {
 
 	@Override
 	public void nodeExpanded(Node<StatusClause> node, List<Node<StatusClause>> childNodes) {
-		Log.LOG.printObjects("\tYields: ", toString(childNodes));
+		if(this.printYield)
+			Log.LOG.printObjects("\tYields: ", toString(childNodes));
 	}
 
 	@Override

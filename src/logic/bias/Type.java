@@ -20,11 +20,15 @@ public class Type {
 
 	private final Optional<Type> parent;
 
-	private boolean hasParent() {
+	/**
+	 * Returns whether this type has a parent type
+	 * @return	True iff this type has a parent type
+	 */
+	public boolean hasParent() {
 		return parent.isPresent();
 	}
 
-	private Type getParent() {
+	public Type getParent() {
 		if(!hasParent())
 			throw new IllegalStateException();
 		return parent.get();

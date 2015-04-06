@@ -4,6 +4,8 @@ pred human(Human)
 pred male(Human)
 pred female(Human)
 
+search human male female
+
 example 1 {
 	const Human An
 	const Human Sam

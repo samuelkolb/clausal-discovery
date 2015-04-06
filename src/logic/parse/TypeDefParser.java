@@ -15,12 +15,21 @@ public class TypeDefParser extends MatchParser<LogicParserState> {
 		if(!string.matches("type.*\\n"))
 			return false;
 		String[] parts = string.split("\\s+");
-		if(parts.length != 2)
-			throw new ParsingError("Type declaration expects one argument");
+		if(parts.length < 2)
+			throw new ParsingError("Type declaration expects at least one argument");
 		String typeName = parts[1];
 		if(parseState.containsType(typeName))
 			throw new ParsingError("Type '" + typeName + "' already exists");
-		parseState.addType(typeName);
+		if(parts.length > 2) {
+			if(!parts[2].equals(">"))
+				throw new ParsingError("Expected inheritance symbol '>'");
+			else if(parts.length != 4)
+				throw new ParsingError("Expected super type");
+			else if(!parseState.containsType(parts[3]))
+				throw new ParsingError("Use of unknown type '" + parts[3] + "'");
+			parseState.addSubType(parts[3], typeName);
+		} else
+			parseState.addType(typeName);
 		return true;
 	}
 }

@@ -66,6 +66,7 @@ public class Example {
 
 	public Structure getStructure() {
 		StructureBuilder builder = new StructureBuilder();
+		builder.setPositive(isPositive());
 		buildTypes(builder);
 		buildPredicates(builder);
 		return builder.create();

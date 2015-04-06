@@ -3,6 +3,9 @@ package idp.program;
 import idp.IdpProgramPrinter;
 import logic.theory.LogicProgram;
 import logic.theory.Theory;
+import vector.Vector;
+
+import java.util.Optional;
 
 /**
  * Represents a program that checks whether a theory entails a given clause
@@ -23,9 +26,10 @@ public class EntailsProgram extends IdpProgram {
 	 * Constructs a new entails program
 	 * @param program	The logic program containing vocabulary and theory
 	 * @param theory	The theory that has to be checked
+	 * @param backgroundFile	The optional name of the file containing background knowledge
 	 */
-	public EntailsProgram(LogicProgram program, Theory theory) {
-		super(program);
+	public EntailsProgram(LogicProgram program, Theory theory, Optional<String> backgroundFile) {
+		super(program, backgroundFile);
 		this.theory = theory;
 	}
 
@@ -38,7 +42,13 @@ public class EntailsProgram extends IdpProgram {
 		StringBuilder builder = new StringBuilder();
 		printProgram(builder);
 		builder.append(new IdpProgramPrinter().printTheory(theory, "T1", "V"));
-		builder.append(ENTAIL_PROCEDURE.print("T0", "T1"));
+		StringBuilder procedure = new StringBuilder();
+		if(getBackgroundFile().isPresent())
+			procedure.append("t0 = merge(T0, B)\nt1 = merge(T1, B)\n");
+		else
+			procedure.append("t0 = T0\nt1 = T1\n");
+		procedure.append(ENTAIL_PROCEDURE.printProgram("t0", "t1"));
+		builder.append(new Procedure(procedure.toString(), new Vector<>(), new Vector<>()).print());
 		return builder.toString();
 	}
 

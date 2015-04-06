@@ -5,7 +5,9 @@ import logic.bias.Type;
 import logic.expression.formula.Predicate;
 
 /**
- * Created by samuelkolb on 09/11/14.
+ * A structure behaves similar as an example but contains elements that relate more closely to IDP structures
+ *
+ * @author Samuel Kolb
  */
 public class Structure {
 

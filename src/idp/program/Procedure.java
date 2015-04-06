@@ -47,16 +47,18 @@ public class Procedure {
 	//region Public methods
 
 	public String print(String... args) {
+		return "procedure main() {\n" + printProgram(args) + "}\n";
+	}
+
+	public String printProgram(String... args) {
 		if(args.length < parameters.length) {
 			String[] missing = Arrays.copyOfRange(parameters.getArray(), args.length, parameters.length);
 			throw new MissingParametersException(missing);
 		}
 		StringBuilder builder = new StringBuilder();
-		builder.append("procedure main() {\n");
 		for(Function function : functions)
 			builder.append(function.print());
 		builder.append(MessageFormat.format(program, args));
-		builder.append("}\n");
 		return builder.toString();
 	}
 

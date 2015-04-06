@@ -1,5 +1,6 @@
 package logic.parse;
 
+import log.Log;
 import util.Pair;
 import vector.Vector;
 import clausal_discovery.LogicBase;
@@ -39,10 +40,11 @@ public class LogicParserState {
 	//region Construction
 
 	/**
-	 * Creates a new logic parser state containing only the unknown type
+	 * Creates a new logic parser state containing only the unknown type and the integer type
 	 */
 	public LogicParserState() {
 		types.put("?", Type.UNDEFINED);
+		types.put("int", new Type("int"));
 	}
 
 	//endregion
@@ -63,7 +65,18 @@ public class LogicParserState {
 	 * @param typeName	The name of the type
 	 */
 	public void addType(String typeName) {
+		Log.LOG.printLine("INFO added type " + typeName);
 		types.put(typeName, new Type(typeName));
+	}
+
+	/**
+	 * Adds a subtype with the given name
+	 * @param superTypeName	The name of the super type
+	 * @param subTypeName 	The name of the sub type
+	 */
+	public void addSubType(String superTypeName, String subTypeName) {
+		Log.LOG.printLine("INFO added type " + subTypeName + " > " + superTypeName);
+		types.put(subTypeName, types.get(superTypeName).getSubtype(subTypeName));
 	}
 
 	/**
@@ -81,6 +94,7 @@ public class LogicParserState {
 	 * @param typeNames		The names of the predicate arguments types
 	 */
 	public void addPredicate(String predicateName, String[] typeNames) {
+		Log.LOG.printLine("INFO added predicate " + predicateName + Arrays.toString(typeNames));
 		Type[] types = new Type[typeNames.length];
 		for(int i = 0; i < typeNames.length; i++)
 			types[i] = this.types.get(typeNames[i]);
@@ -102,6 +116,7 @@ public class LogicParserState {
 	 * @param typeName		The name of the constants type
 	 */
 	public void addConstant(String constantName, String typeName) {
+		Log.LOG.printLine("INFO added constant " + typeName + " " + constantName);
 		constants.put(constantName, new Constant(constantName, types.get(typeName)));
 	}
 
@@ -120,6 +135,7 @@ public class LogicParserState {
 	 * @param constantNames	The names of the constant arguments of the predicate
 	 */
 	public void addInstance(String predicateName, String[] constantNames) {
+		Log.LOG.printLine("INFO added instance " + predicateName + Arrays.toString(constantNames));
 		Term[] terms = new Term[constantNames.length];
 		for(int i = 0; i < constantNames.length; i++)
 			terms[i] = constants.get(constantNames[i]);
@@ -131,6 +147,7 @@ public class LogicParserState {
 	 * @param exampleName	The name of the example
 	 */
 	public void addExample(String exampleName) {
+		Log.LOG.printLine("INFO added example " + exampleName);
 		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
 		examples.put(exampleName, new Example(getSetup(), instances1, positiveExample));
 		instances.clear();
@@ -139,6 +156,7 @@ public class LogicParserState {
 	}
 
 	public void setPositiveExample(boolean b) {
+		Log.LOG.printLine("INFO set " + (b ? "positive" : "negative") + " example");
 		positiveExample = b;
 	}
 
@@ -147,6 +165,7 @@ public class LogicParserState {
 	 * @param predicateName	The name of the predicate
 	 */
 	public void addSearchPredicate(String predicateName) {
+		Log.LOG.printLine("INFO added search predicate " + predicateName);
 		searchPredicates.add(predicates.get(predicateName));
 	}
 
