@@ -1,7 +1,5 @@
 package clausal_discovery.instance;
 
-import vector.Vector;
-
 /**
  * Created by samuelkolb on 12/04/15.
  *
@@ -11,10 +9,10 @@ public class PositionedInstance {
 
 	// IVAR instance - The instance list used for clause ordering
 
-	private final Vector<Instance> instances;
+	private final InstanceList instanceList;
 
-	public Vector<Instance> getInstances() {
-		return instances;
+	public InstanceList getInstanceList() {
+		return instanceList;
 	}
 
 	// IVAR inBody - Whether this instance is in the body of a clause
@@ -34,11 +32,17 @@ public class PositionedInstance {
 	}
 
 	public Instance getInstance() {
-		return getInstances().get(getIndex());
+		return getInstanceList().get(getIndex());
 	}
 
-	public PositionedInstance(Vector<Instance> instances, boolean inBody, int index) {
-		this.instances = instances;
+	/**
+	 * Creates a new positioned instance
+	 * @param instanceList	The instance list
+	 * @param inBody		Whether this instance is a body or a head instance
+	 * @param index			The index of the instance within the instance list
+	 */
+	PositionedInstance(InstanceList instanceList, boolean inBody, int index) {
+		this.instanceList = instanceList;
 		this.inBody = inBody;
 		this.index = index;
 	}
@@ -50,7 +54,7 @@ public class PositionedInstance {
 	 * 			| && return.isInBody() == inBody
 	 */
 	public PositionedInstance clone(boolean inBody) {
-		return new PositionedInstance(getInstances(), inBody, getIndex());
+		return new PositionedInstance(getInstanceList(), inBody, getIndex());
 	}
 
 	@Override

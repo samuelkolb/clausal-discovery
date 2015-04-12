@@ -56,5 +56,22 @@ public class Instance {
 		return predicate.getName() + variableIndices.toString();
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(o == null || getClass() != o.getClass()) return false;
+
+		Instance instance = (Instance) o;
+		return predicate.equals(instance.predicate) && variableIndices.equals(instance.variableIndices);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = predicate.hashCode();
+		result = 31 * result + variableIndices.hashCode();
+		return result;
+	}
+
 	//endregion
 }

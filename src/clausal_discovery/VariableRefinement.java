@@ -2,7 +2,7 @@ package clausal_discovery;
 
 import basic.ArrayUtil;
 import clausal_discovery.instance.Instance;
-import clausal_discovery.instance.InstanceSetPrototype;
+import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import clausal_discovery.validity.ParallelValidityCalculator;
 import clausal_discovery.validity.ValidityCalculator;
@@ -15,7 +15,6 @@ import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Structure;
 import logic.theory.Theory;
-import util.Numbers;
 import vector.Vector;
 import vector.WriteOnceVector;
 import version3.algorithm.*;
@@ -64,22 +63,15 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
 
-	private static class ClauseComparator implements Comparator<Numbers.Permutation> {
-		@Override
-		public int compare(Numbers.Permutation o1, Numbers.Permutation o2) {
-			int index = 0;
-			while(o1.getArray().length > index && o2.getArray().length > index) {
-				if(o1.getArray()[index] > o2.getArray()[index])
-					return 1;
-				else if(o1.getArray()[index] < o2.getArray()[index])
-					return -1;
-				index++;
-			}
-			return Integer.compare(o1.getArray().length, o2.getArray().length);
-		}
+	// IVAR instanceList - The instance list used for clause generation
+
+	private final InstanceList instanceList;
+
+	public InstanceList getInstanceList() {
+		return instanceList;
 	}
 
-	private final Vector<Instance> instances;
+	// IVAR logicBase - The logic base containing the search parameters
 
 	private final LogicBase logicBase;
 
@@ -87,11 +79,19 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return logicBase;
 	}
 
+	// IVAR executor - The logic executor used validity and entailment tests
+
 	private final LogicExecutor executor;
+
+	// IVAR validityCalculator - The validity calculator used for validity tests
 
 	private final ValidityCalculator validityCalculator;
 
+	// IVAR resultSet - The result set used for efficient subset tests
+
 	private final Set<StatusClause> resultSet = new HashSet<>();
+
+	// IVAR resultQueue - The result queue queues entailment calculations
 
 	private final ExecutorService resultQueue;
 
@@ -102,18 +102,13 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 * @param executor	The logic executor responsible for executing logical queries
 	 */
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
-		this.instances = createInstances(logicBase, variables);
-		Log.LOG.printLine(this.instances.size() + " instances");
+		Vector<Predicate> predicates = logicBase.getSearchPredicates();
+		this.instanceList = new InstanceList(predicates, getMaximalVariables(variables, predicates));
+		Log.LOG.printLine(getInstanceList().size() + " instances");
 		this.logicBase = logicBase;
 		this.executor = executor;
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
 		this.resultQueue = Executors.newSingleThreadExecutor();
-	}
-
-	private Vector<Instance> createInstances(LogicBase logicBase, int variables) {
-		variables = getMaximalVariables(variables, logicBase.getSearchPredicates());
-		List<Instance> instanceList = getInstances(logicBase.getSearchPredicates(), variables);
-		return new Vector<>(instanceList.toArray(new Instance[instanceList.size()]));
 	}
 
 	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
@@ -125,21 +120,19 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	@Override
 	public List<StatusClause> expandNode(Node<StatusClause> node) {
-		List<StatusClause> children = new ArrayList<>();
 		if(node.shouldPruneChildren())
-			return children;
-		StatusClause clause = node.getValue();
-
-		addChildren(children, clause);
-		return children;
+			return new ArrayList<>();
+		return getChildren(node.getValue());
 	}
 
-	private void addChildren(List<StatusClause> children, StatusClause clause) {
-		for(int i = clause.getIndex() + 1; i < instances.size(); i++)
-			clause.process(new PositionedInstance(instances, clause.inBody(), i)).ifPresent(children::add);
+	private List<StatusClause> getChildren(StatusClause clause) {
+		List<StatusClause> children = new ArrayList<>();
+		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
+			clause.process(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
 		if(clause.inBody())
-			for(int i = 0; i < instances.size(); i++)
-				clause.process(new PositionedInstance(instances, false, i)).ifPresent(children::add);
+			for(int i = 0; i < getInstanceList().size(); i++)
+				clause.process(getInstanceList().getInstance(i, false)).ifPresent(children::add);
+		return children;
 	}
 
 	@Override
@@ -257,24 +250,5 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		for(int i = 0; i < statusClause.getInstances().size(); i++)
 			subsets.add(getClause(new Vector<>(ArrayUtil.removeElement(statusClause.getInstances().getArray(), i))));
 		return subsets;
-	}
-
-	private List<Instance> getInstances(Vector<Predicate> predicates, int variables) {
-		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(predicates);
-		List<Instance> instanceList = new ArrayList<>();
-		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.length)) {
-			InstanceSetPrototype instanceSetPrototype = instanceSetPrototypes.get(choice.getDistinctCount() - 1);
-			instanceList.addAll(instanceSetPrototype.getInstances(choice.getArray()));
-		}
-		return instanceList;
-	}
-
-	private List<Numbers.Permutation> getChoices(int variables, int maxArity) {
-		List<Numbers.Permutation> choices = new ArrayList<>();
-		for(int i = 0; i < maxArity; i++)
-			if(i + 1 <= variables)
-				choices.addAll(Numbers.getChoices(variables, i + 1));
-		choices.sort(new ClauseComparator());
-		return choices;
 	}
 }

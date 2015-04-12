@@ -65,6 +65,10 @@ public class StatusClause {
 		return getInstances().isEmpty() || getInstances().getLast().isInBody();
 	}
 
+	/**
+	 * Returns the index of the last instance
+	 * @return The index of the last instance or -1 if none such instance exists
+	 */
 	public int getIndex() {
 		return getInstances().isEmpty() ? -1 : getInstances().getLast().getIndex();
 	}
@@ -95,7 +99,9 @@ public class StatusClause {
 		if(!inBody() && contains(instance.clone(false)))
 			return false;
 		Vector<Integer> indices = instance.getInstance().getVariableIndices();
-		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(instance);
+		if (!((getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(instance)))
+			return false;
+		return true;
 	}
 
 	private boolean isConnected(Vector<Integer> indices) {

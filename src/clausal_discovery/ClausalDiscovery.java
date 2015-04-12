@@ -60,7 +60,7 @@ public class ClausalDiscovery {
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
 		//algorithm.addPlugin(new MaximalDepthPlugin<>(3));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
-		algorithm.addPlugin(new ClausePrintingPlugin(refinement, false));
+		//algorithm.addPlugin(new ClausePrintingPlugin(refinement, false));
 		algorithm.addPlugin(refinement);
 		try {
 			//OutputContainer container = Log.LOG.buffer();
