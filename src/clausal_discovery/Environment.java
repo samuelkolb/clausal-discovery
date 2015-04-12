@@ -9,12 +9,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by samuelkolb on 26/02/15.
+ * The environment class contains variable indices and their types. It can be used to determine the validity of
+ * instances and keep track of typing information.
+ *
+ * @author Samuel Kolb
  */
 public class Environment {
 
+	// IVAR variableTypes - Maps integers to types
+
 	private final Map<Integer, Type> variableTypes;
 
+	/**
+	 * Creates a new environment with an empty variable-type map
+	 */
 	public Environment() {
 		this.variableTypes = new HashMap<>();
 	}
@@ -23,7 +31,16 @@ public class Environment {
 		this.variableTypes = variableTypes;
 	}
 
-	public boolean isValidInstance(Predicate predicate, Vector<Integer> indices) {
+	/**
+	 * Determines whether an instance is consistent with the typing information stored in this environment
+	 * @param instance	The instance to check
+	 * @return	True iff the given instance is consistent
+	 */
+	public boolean isValidInstance(Instance instance) {
+		return isValidInstance(instance.getPredicate(), instance.getVariableIndices());
+	}
+
+	protected boolean isValidInstance(Predicate predicate, Vector<Integer> indices) {
 		Map<Integer, Type> variables = new HashMap<>(variableTypes);
 		for(int i = 0; i < predicate.getArity(); i++) {
 			Integer integer = indices.get(i);
@@ -36,11 +53,16 @@ public class Environment {
 		return true;
 	}
 
+	/**
+	 * Adds the given instance by processing its typing information
+	 * @param instance	The instance to add
+	 * @return	A new environment that contains additional typing information contained in the given instance
+	 */
 	public Environment addInstance(Instance instance) {
 		return addInstance(instance.getPredicate(), instance.getVariableIndices());
 	}
 
-	public Environment addInstance(Predicate predicate, Vector<Integer> indices) {
+	protected Environment addInstance(Predicate predicate, Vector<Integer> indices) {
 		Map<Integer, Type> variables = new HashMap<>(variableTypes);
 		for(int i = 0; i < predicate.getArity(); i++) {
 			Integer integer = indices.get(i);
@@ -51,9 +73,5 @@ public class Environment {
 				throw new IllegalStateException();
 		}
 		return new Environment(variables);
-	}
-
-	public Environment copy() {
-		return new Environment(new HashMap<>(variableTypes));
 	}
 }
