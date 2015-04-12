@@ -33,7 +33,13 @@ public class StatusClause {
 		return getInstances().size();
 	}
 
+	// IVAR environment - The typing environment
+
 	private final Environment environment;
+
+	public Environment getEnvironment() {
+		return environment;
+	}
 
 	/**
 	 * Creates a new status clause
@@ -77,18 +83,19 @@ public class StatusClause {
 	 * @param instance	A positioned instance
 	 * @return	True iff the given instance is 1) consistent with typing, 2) connected 3) introduces variables in
 	 * 			order and only it is in the body, and 4) an instance added to the head does not appear in the body
+	 * 		TODO correct documentation
 	 */
 	public boolean canProcess(PositionedInstance instance) {
 		if(inBody() == instance.isInBody() && instance.getIndex() <= getIndex())
 			return false;
 		if(!inBody() && instance.isInBody())
 			return false;
-		if(!environment.isValidInstance(instance.getInstance()))
+		if(!getEnvironment().isValidInstance(instance.getInstance()))
 			return false;
 		if(!inBody() && contains(instance.clone(false)))
 			return false;
 		Vector<Integer> indices = instance.getInstance().getVariableIndices();
-		return !(getRank() > 0 && !isConnected(indices)) && introducesVariablesInOrder(indices);
+		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(instance);
 	}
 
 	private boolean isConnected(Vector<Integer> indices) {
@@ -99,10 +106,11 @@ public class StatusClause {
 		return false;
 	}
 
-	private boolean introducesVariablesInOrder(Vector<Integer> indices) {
+	private boolean introducesVariablesInOrder(PositionedInstance instance) {
 		int max = getRank() - 1;
+		Vector<Integer> indices = instance.getInstance().getVariableIndices();
 		for(int i = 0; i < indices.size(); i++)
-			if(inBody() && indices.get(i) == max + 1)
+			if(instance.isInBody() && indices.get(i) == max + 1)
 				max = indices.get(i);
 			else if(indices.get(i) > max)
 				return false;
@@ -118,12 +126,12 @@ public class StatusClause {
 		if(!canProcess(instance))
 			return Optional.empty();
 		int newRank = Math.max(getRank(), instance.getInstance().getMax() + 1);
-		Environment newEnvironment = environment.addInstance(instance.getInstance());
-		return Optional.of(new StatusClause(newRank, instances.grow(instance), newEnvironment));
+		Environment newEnvironment = getEnvironment().addInstance(instance.getInstance());
+		return Optional.of(new StatusClause(newRank, getInstances().grow(instance), newEnvironment));
 	}
 
 	@Override
 	public String toString() {
-		return "StatusClause[" + instances + "]";
+		return "StatusClause[" + getInstances() + "]";
 	}
 }

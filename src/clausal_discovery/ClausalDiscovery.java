@@ -60,7 +60,7 @@ public class ClausalDiscovery {
 			executor.setBackgroundFile(FileUtil.getLocalFile(url).getAbsolutePath());
 
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
-		VariableRefinement refinement = new VariableRefinement(base, 3, executor);
+		VariableRefinement refinement = new VariableRefinement(base, 4, executor);
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
 
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
@@ -70,7 +70,7 @@ public class ClausalDiscovery {
 		algorithm.addPlugin(refinement);
 		try {
 			//OutputContainer container = Log.LOG.buffer();
-			Result<StatusClause> result = Test.run(algorithm, initialNodes, 3);
+			Result<StatusClause> result = Test.run(algorithm, initialNodes, 4);
 			for(StatusClause statusClause : result.getSolutions())
 				Log.LOG.printLine(ExpressionLogicPrinter.print(refinement.getClause(statusClause)));
 			Log.LOG.newLine().printTitle(executor.entailmentCount + " entailment calculations took: " + MathUtil.round(executor.entailmentStopwatch.stop()/1000, 0) + ", " + executor.noEntailmentCount + " did not succeed.");
