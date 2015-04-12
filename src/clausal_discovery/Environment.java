@@ -40,7 +40,7 @@ public class Environment {
 		return isValidInstance(instance.getPredicate(), instance.getVariableIndices());
 	}
 
-	protected boolean isValidInstance(Predicate predicate, Vector<Integer> indices) {
+	public boolean isValidInstance(Predicate predicate, Vector<Integer> indices) {
 		Map<Integer, Type> variables = new HashMap<>(variableTypes);
 		for(int i = 0; i < predicate.getArity(); i++) {
 			Integer integer = indices.get(i);
