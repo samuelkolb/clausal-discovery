@@ -9,7 +9,7 @@ public class Numbers {
 
 	public static class Permutation {
 
-		private int[] array;
+		private final int[] array;
 
 		public int[] getArray() {
 			return array;
@@ -168,8 +168,10 @@ public class Numbers {
 
 	private static int[] leaveOut(int[] elements, int index) {
 		int[] newElements = new int[elements.length - 1];
+		//noinspection ManualArrayCopy
 		for(int i = 0; i < index; i++)
 			newElements[i] = elements[i];
+		//noinspection ManualArrayCopy
 		for(int i = index; i < newElements.length; i++)
 			newElements[i] = elements[i + 1];
 		return newElements;

@@ -1,6 +1,5 @@
 package logic.parse;
 
-import log.Log;
 import parse.MatchParser;
 import parse.ParsingError;
 import parse.ScopeParser;

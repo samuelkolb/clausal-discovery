@@ -14,7 +14,7 @@ import java.util.List;
 public class ExampleParser extends ScopeParser<LogicParserState> {
 
 	//region Variables
-	private List<ScopeParser<LogicParserState>> parser = Arrays.asList(
+	private final List<ScopeParser<LogicParserState>> parser = Arrays.asList(
 			new PredicateParser(),
 			new ConstDefParser(),
 			new LineRemover()

@@ -23,6 +23,7 @@ public class StructureBuilder extends Builder<Structure> {
 
 	private final List<Structure.PredicateElement> predicateElements = new ArrayList<>();
 
+	@SuppressWarnings("FieldCanBeLocal")
 	private boolean isPositive = true;
 	//endregion
 

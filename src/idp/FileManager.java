@@ -17,19 +17,28 @@ public class FileManager {
 	//region Variables
 	public static final FileManager instance = new FileManager();
 
+	private static final char[] CHARACTERS = new char[]{'0','1','2','3','4','5','6','7','8','9',
+			'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+
+	private static final Random random = new Random(System.currentTimeMillis());
+
+	private static final int FILENAME_LENGTH = 48;
+
+	// IVAR tempDir - Directory to store temporary files
+
 	private final File tempDir;
 
 	public File getTempDir() {
 		return tempDir;
 	}
 
+	// IVAR properties - Properties file
+
 	private final Properties properties;
 
-	private static final char[] CHARACTERS = new char[]{'0','1','2','3','4','5','6','7','8','9',
-			'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-	private static Random random = new Random(System.currentTimeMillis());
-
-	private static final int FILENAME_LENGTH = 48;
+	protected Properties getProperties() {
+		return properties;
+	}
 
 	//endregion
 
@@ -53,7 +62,7 @@ public class FileManager {
 		cleanTempDir();
 		try {
 			File propertiesFile = new File(getTempDir(), fileName);
-			properties.load(new FileInputStream(propertiesFile));
+			getProperties().load(new FileInputStream(propertiesFile));
 		} catch(IllegalArgumentException e) {
 			throw new IllegalStateException("Missing file: /temp/" + fileName, e);
 		} catch(Exception e) {
@@ -65,6 +74,11 @@ public class FileManager {
 
 	//region Public methods
 
+	/**
+	 * Creates a temporary file with the given extension
+	 * @param extension	The extension of the temporary file to be created (e.g. txt)
+	 * @return	A file object (that has not yet been created)
+	 */
 	public File createTempFile(String extension) {
 		File file;
 		do {

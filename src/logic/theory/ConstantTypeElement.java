@@ -15,7 +15,7 @@ class ConstantTypeElement extends Structure.TypeElement {
 	private final Vector<Constant> constants;
 
 	public ConstantTypeElement(Type type) {
-		this(type, new Vector<Constant>());
+		this(type, new Vector<>());
 	}
 
 	public ConstantTypeElement(Type type, Vector<Constant> constants) {

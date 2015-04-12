@@ -1,22 +1,12 @@
 package clausal_discovery.validity;
 
 import clausal_discovery.LogicBase;
-import idp.IdpExpressionPrinter;
-import log.Log;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
-import logic.theory.LogicProgram;
 import logic.theory.Structure;
-import logic.theory.Theory;
-import vector.*;
 import vector.Vector;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import vector.WriteOnceVector;
 
 /**
  * Created by samuelkolb on 02/03/15.

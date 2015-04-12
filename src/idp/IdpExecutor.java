@@ -2,21 +2,18 @@ package idp;
 
 import basic.FileUtil;
 import basic.StringUtil;
-import log.Log;
-import logic.expression.term.Term;
-import runtime.Terminal;
 import idp.program.EntailsProgram;
 import idp.program.IdpProgram;
 import idp.program.ValidProgram;
+import log.Log;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Theory;
+import runtime.Terminal;
 import time.Stopwatch;
 
 import java.io.*;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by samuelkolb on 11/11/14.
@@ -38,7 +35,7 @@ public class IdpExecutor implements LogicExecutor {
 		return executor;
 	}
 
-	private Terminal terminal = Terminal.get();
+	private final Terminal terminal = Terminal.get();
 
 	public Terminal getTerminal() {
 		return terminal;

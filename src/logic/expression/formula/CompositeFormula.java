@@ -60,7 +60,7 @@ public abstract class CompositeFormula extends Formula {
 
 		CompositeFormula that = (CompositeFormula) o;
 
-		return new HashSet<>(elements).equals(new HashSet<Formula>(that.elements));
+		return new HashSet<>(elements).equals(new HashSet<>(that.elements));
 
 	}
 

@@ -91,7 +91,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private final ValidityCalculator validityCalculator;
 
-	private Set<StatusClause> resultSet = new HashSet<>();
+	private final Set<StatusClause> resultSet = new HashSet<>();
 
 	private final ExecutorService resultQueue;
 

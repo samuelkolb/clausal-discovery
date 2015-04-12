@@ -22,19 +22,19 @@ import java.util.*;
 public class LogicParserState {
 
 	//region Variables
-	private Map<String, Type> types = new HashMap<>();
+	private final Map<String, Type> types = new HashMap<>();
 
-	private Map<String, Predicate> predicates = new HashMap<>();
+	private final Map<String, Predicate> predicates = new HashMap<>();
 
-	private Map<String, Example> examples = new HashMap<>();
+	private final Map<String, Example> examples = new HashMap<>();
 
-	private List<PredicateInstance> instances = new ArrayList<>();
+	private final List<PredicateInstance> instances = new ArrayList<>();
 
 	private boolean positiveExample = true;
 
-	private Map<String, Constant> constants = new HashMap<>();
+	private final Map<String, Constant> constants = new HashMap<>();
 
-	private List<Predicate> searchPredicates = new ArrayList<>();
+	private final List<Predicate> searchPredicates = new ArrayList<>();
 	//endregion
 
 	//region Construction

@@ -2,10 +2,7 @@ package clausal_discovery;
 
 import basic.FileUtil;
 import basic.MathUtil;
-import idp.FileManager;
 import log.Log;
-import log.OutputContainer;
-import logic.expression.formula.Clause;
 import version3.algorithm.EmptyQueueStopCriterion;
 import version3.algorithm.Result;
 import version3.algorithm.SearchAlgorithm;
@@ -18,11 +15,8 @@ import logic.expression.visitor.ExpressionLogicPrinter;
 import logic.parse.LogicParser;
 
 import version3.plugin.DuplicateEliminationPlugin;
-import version3.plugin.MaximalDepthPlugin;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;

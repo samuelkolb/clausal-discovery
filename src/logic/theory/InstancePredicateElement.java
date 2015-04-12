@@ -18,7 +18,7 @@ public class InstancePredicateElement extends Structure.PredicateElement {
 
 	//region Construction
 	public InstancePredicateElement(Predicate predicate) {
-		this(predicate, new Vector<PredicateInstance>());
+		this(predicate, new Vector<>());
 	}
 
 	public InstancePredicateElement(Predicate predicate, Vector<PredicateInstance> instances) {

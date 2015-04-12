@@ -10,6 +10,7 @@ public interface LogicExecutor {
 	/**
 	 * Shuts down the executor, allowing it to wrap up all execution services
 	 */
+	@SuppressWarnings("EmptyMethod")
 	public void shutdown();
 
 	/**

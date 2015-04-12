@@ -19,7 +19,7 @@ public class Vocabulary {
 	}
 
 	public Vocabulary(Predicate... predicates) {
-		this(new Vector<Predicate>(predicates));
+		this(new Vector<>(predicates));
 	}
 
 	public Vocabulary(Vector<Predicate> predicates) {

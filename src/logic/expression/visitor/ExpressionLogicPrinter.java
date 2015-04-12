@@ -13,7 +13,7 @@ import logic.expression.term.Variable;
 public class ExpressionLogicPrinter extends ExpressionVisitor {
 
 	//region Variables
-	private StringBuilder builder = new StringBuilder();
+	private final StringBuilder builder = new StringBuilder();
 
 	protected String getString() {
 		return builder.toString();
@@ -35,6 +35,11 @@ public class ExpressionLogicPrinter extends ExpressionVisitor {
 
 	//region Public methods
 
+	/**
+	 * Prints a given expression using an expression logic printer
+	 * @param expression	The expression to print
+	 * @return	A textual representation of the given expression
+	 */
 	public static String print(Expression expression) {
 		ExpressionLogicPrinter visitor = new ExpressionLogicPrinter();
 		expression.accept(visitor);

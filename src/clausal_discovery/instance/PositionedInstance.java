@@ -11,7 +11,7 @@ public class PositionedInstance {
 
 	// IVAR instance - The instance list used for clause ordering
 
-	private Vector<Instance> instances;
+	private final Vector<Instance> instances;
 
 	public Vector<Instance> getInstances() {
 		return instances;
@@ -19,7 +19,7 @@ public class PositionedInstance {
 
 	// IVAR inBody - Whether this instance is in the body of a clause
 
-	private boolean inBody;
+	private final boolean inBody;
 
 	public boolean isInBody() {
 		return inBody;
@@ -27,7 +27,7 @@ public class PositionedInstance {
 
 	// IVAR index - The index of this instance
 
-	private int index;
+	private final int index;
 
 	public int getIndex() {
 		return index;
