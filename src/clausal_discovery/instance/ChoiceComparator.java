@@ -9,7 +9,7 @@ import java.util.Comparator;
 *
 * @author Samuel Kolb
 */
-class ClauseComparator implements Comparator<Numbers.Permutation> {
+class ChoiceComparator implements Comparator<Numbers.Permutation> {
 
 	@Override
 	public int compare(Numbers.Permutation o1, Numbers.Permutation o2) {

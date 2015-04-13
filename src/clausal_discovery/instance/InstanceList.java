@@ -1,5 +1,8 @@
 package clausal_discovery.instance;
 
+import association.HashPairing;
+import association.Pairing;
+import basic.StringUtil;
 import logic.expression.formula.Predicate;
 import util.Numbers;
 import vector.Vector;
@@ -14,9 +17,9 @@ import java.util.List;
  */
 public class InstanceList {
 
-	// IVAR instances - The instances
+	// IVAR pairing - The mapping between indices and instances
 
-	private Vector<Instance> instances;
+	private Pairing<Integer, Instance> pairing;
 
 	/**
 	 * Creates a new instance list
@@ -24,7 +27,7 @@ public class InstanceList {
 	 * @param variables		The number of variables to be used
 	 */
 	public InstanceList(Vector<Predicate> predicates, int variables) {
-		this.instances = getInstances(predicates, variables);
+		this.pairing = getInstances(predicates, variables);
 	}
 
 	/**
@@ -33,7 +36,7 @@ public class InstanceList {
 	 * @return	An instance
 	 */
 	public Instance get(int index) {
-		return this.instances.get(index);
+		return this.pairing.getValue(index);
 	}
 
 	/**
@@ -41,7 +44,7 @@ public class InstanceList {
 	 * @return	The size of this instance list
 	 */
 	public int size() {
-		return this.instances.size();
+		return this.pairing.size();
 	}
 
 	/**
@@ -54,14 +57,26 @@ public class InstanceList {
 		return new PositionedInstance(this, inBody, index);
 	}
 
-	private Vector<Instance> getInstances(Vector<Predicate> predicates, int variables) {
+	/**
+	 * Finds the index of the given instance within this list
+	 * @param instance	The instance to search
+	 * @return	The index of the instance
+	 */
+	public int getIndex(Instance instance) {
+		return this.pairing.getKey(instance);
+	}
+
+	private Pairing<Integer, Instance> getInstances(Vector<Predicate> predicates, int variables) {
 		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(predicates);
 		List<Instance> instanceList = new ArrayList<>();
 		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.length)) {
 			InstanceSetPrototype instanceSetPrototype = instanceSetPrototypes.get(choice.getDistinctCount() - 1);
 			instanceList.addAll(instanceSetPrototype.getInstances(choice.getArray()));
 		}
-		return new Vector<>(instanceList.toArray(new Instance[instanceList.size()]));
+		Pairing<Integer, Instance> pairing = new HashPairing<>(false, false);
+		for(int i = 0; i < instanceList.size(); i++)
+			pairing.put(i, instanceList.get(i));
+		return pairing;
 	}
 
 	private List<Numbers.Permutation> getChoices(int variables, int maxArity) {
@@ -69,7 +84,15 @@ public class InstanceList {
 		for(int i = 0; i < maxArity; i++)
 			if(i + 1 <= variables)
 				choices.addAll(Numbers.getChoices(variables, i + 1));
-		choices.sort(new ClauseComparator());
+		choices.sort(new ChoiceComparator());
 		return choices;
+	}
+
+	@Override
+	public String toString() {
+		List<String> strings = new ArrayList<>();
+		for(Integer key : this.pairing.keySet())
+			strings.add(key + " => " + get(key));
+		return StringUtil.join(", ", strings.toArray());
 	}
 }

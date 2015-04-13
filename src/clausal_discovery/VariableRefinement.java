@@ -128,10 +128,10 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	private List<StatusClause> getChildren(StatusClause clause) {
 		List<StatusClause> children = new ArrayList<>();
 		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
-			clause.process(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
+			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
 		if(clause.inBody())
 			for(int i = 0; i < getInstanceList().size(); i++)
-				clause.process(getInstanceList().getInstance(i, false)).ifPresent(children::add);
+				clause.processIfRepresentative(getInstanceList().getInstance(i, false)).ifPresent(children::add);
 		return children;
 	}
 

@@ -74,4 +74,9 @@ public class PositionedInstance {
 		result = 31 * result + index;
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return (isInBody() ? "~" : "") + getInstance();
+	}
 }
