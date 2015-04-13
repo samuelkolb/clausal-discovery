@@ -123,6 +123,23 @@ public class StatusClause {
 		return Optional.of(new StatusClause(newRank, getInstances().grow(instance), newEnvironment));
 	}
 
+	/**
+	 * Determines whether this status clause is a subset of the given status clause
+	 * @param statusClause	The clause to check
+	 * @return	True iff this clause equals a subset of the given status clause of the same length as this clause
+	 */
+	public boolean isSubsetOf(StatusClause statusClause) {
+		for(int i = 0; i <= statusClause.getLength() - getLength(); i++) {
+			Optional<StatusClause> optionalClause = statusClause.getSubsetClause(i, getLength());
+			if(optionalClause.isPresent() && equals(optionalClause.get())) {
+				Log.LOG.printLine(this + " equals" + optionalClause.get());
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;
@@ -216,13 +233,26 @@ public class StatusClause {
 				instances.add(instance);
 			else
 				instances.add(getInstances().get(i - 1));
+
+		Optional<StatusClause> builtClause = getClause(instances);
+		boolean representative = !builtClause.isPresent() || isRepresentative(clause, builtClause.get());
+		Log.LOG.printLine("INFO " + (representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
+		// TODO
+		return representative;
+	}
+
+	private Optional<StatusClause> getSubsetClause(int start, int length) {
+		List<PositionedInstance> instances = new ArrayList<>(length);
+		for(int i = start; i < start + length; i++)
+			instances.add(getInstances().get(i));
+		return getClause(instances);
+	}
+
+	private Optional<StatusClause> getClause(List<PositionedInstance> instances) {
 		Map<Integer, Integer> mapping = createMapping(instances);
 		updateInstances(mapping, instances);
 		instances.sort(new InstanceComparator());
-		Optional<StatusClause> builtClause = buildClause(instances);
-		boolean representative = !builtClause.isPresent() || isRepresentative(clause, builtClause.get());
-		Log.LOG.printLine("INFO " + (representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
-		return representative;
+		return buildClause(instances);
 	}
 
 	private boolean isRepresentative(StatusClause clause, StatusClause newClause) {

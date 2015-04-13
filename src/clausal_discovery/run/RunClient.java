@@ -4,6 +4,7 @@ import basic.MathUtil;
 import clausal_discovery.core.ClausalDiscovery;
 import clausal_discovery.core.StatusClause;
 import idp.IdpExecutor;
+import log.LinkTransformer;
 import log.Log;
 import time.Stopwatch;
 
@@ -18,6 +19,7 @@ public class RunClient {
 
 	static {
 		Log.LOG.addMessageFilter(message -> !message.MESSAGE.startsWith("INFO"));
+		Log.LOG.addTransformer(new LinkTransformer());
 	}
 
 	//region Variables

@@ -6,7 +6,6 @@ import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import clausal_discovery.validity.ParallelValidityCalculator;
 import clausal_discovery.validity.ValidityCalculator;
-import idp.IdpProgramPrinter;
 import log.Log;
 import logic.example.Example;
 import logic.expression.formula.*;
@@ -52,9 +51,9 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			Log.LOG.saveState()/*.off()/**/;
 			if(!executor.entails(getProgram(), new Theory(getClause(node.getValue())))) {
 				result.addNode(node);
-				Log.LOG.print("NEW    ");
+				Log.LOG.printLine("NEW    ");
 			} else {
-				Log.LOG.print("DENIED ");
+				Log.LOG.printLine("DENIED ");
 			}
 			Log.LOG.printLine(node.getValue()).revert();
 		}
@@ -182,7 +181,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	public boolean processSolution(Result<StatusClause> result, Node<StatusClause> node) {
 		if(!isValid(node))
 			return true;
-		resultQueue.execute(new EntailmentTestRunnable(result, node));
+		new EntailmentTestRunnable(result, node).run();
+		//resultQueue.execute(new EntailmentTestRunnable(result, node));
 		return false;
 	}
 
@@ -273,9 +273,14 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private boolean subsetOccurs(StatusClause statusClause) {
 		for(StatusClause resultClause : resultSet)
-			for(Clause subset : getSubsets(statusClause))
-				if(getClause(resultClause).isSubsetOf(subset))
-					return true;
+			if(resultClause.isSubsetOf(statusClause)) {
+				Log.LOG.printTitle("(" + resultClause + ") subset of (" + statusClause + ")");
+				return true;
+			} else {
+				Log.LOG.printTitle("(" + resultClause + ") not a subset of (" + statusClause + ")");
+			}
+		if(!resultSet.isEmpty())
+			Log.LOG.newLine();
 		return false;
 	}
 
