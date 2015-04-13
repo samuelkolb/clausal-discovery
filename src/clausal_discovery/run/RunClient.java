@@ -48,7 +48,7 @@ public class RunClient {
 		try {
 			Stopwatch stopwatch = new Stopwatch(true);
 			List<StatusClause> clauses = getClausalDiscovery().findConstraints(configuration);
-			Log.LOG.printLine("Search finished in " + round(stopwatch.stop()) + "s:");
+			Log.LOG.printLine("\nSearch finished in " + round(stopwatch.stop()) + "s:");
 			for(int i = 0; i < clauses.size(); i++)
 				Log.LOG.printLine("\t" + (i + 1) + ": " + clauses.get(i));
 		} catch(Exception e) {

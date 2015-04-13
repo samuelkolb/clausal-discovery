@@ -51,9 +51,9 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			Log.LOG.saveState()/*.off()/**/;
 			if(!executor.entails(getProgram(), new Theory(getClause(node.getValue())))) {
 				result.addNode(node);
-				Log.LOG.printLine("NEW    ");
+				Log.LOG.print("NEW      ");
 			} else {
-				Log.LOG.printLine("DENIED ");
+				Log.LOG.print("DENIED   ");
 			}
 			Log.LOG.printLine(node.getValue()).revert();
 		}
@@ -274,13 +274,13 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	private boolean subsetOccurs(StatusClause statusClause) {
 		for(StatusClause resultClause : resultSet)
 			if(resultClause.isSubsetOf(statusClause)) {
-				Log.LOG.printTitle("(" + resultClause + ") subset of (" + statusClause + ")");
+				Log.LOG.printLine("INFO (" + resultClause + ") subset of (" + statusClause + ")");
 				return true;
 			} else {
-				Log.LOG.printTitle("(" + resultClause + ") not a subset of (" + statusClause + ")");
+				Log.LOG.printLine("INFO (" + resultClause + ") not a subset of (" + statusClause + ")");
 			}
 		if(!resultSet.isEmpty())
-			Log.LOG.newLine();
+			Log.LOG.printLine("INFO ");
 		return false;
 	}
 

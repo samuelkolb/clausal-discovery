@@ -131,10 +131,8 @@ public class StatusClause {
 	public boolean isSubsetOf(StatusClause statusClause) {
 		for(int i = 0; i <= statusClause.getLength() - getLength(); i++) {
 			Optional<StatusClause> optionalClause = statusClause.getSubsetClause(i, getLength());
-			if(optionalClause.isPresent() && equals(optionalClause.get())) {
-				Log.LOG.printLine(this + " equals" + optionalClause.get());
+			if(optionalClause.isPresent() && equals(optionalClause.get()))
 				return true;
-			}
 		}
 		return false;
 	}
