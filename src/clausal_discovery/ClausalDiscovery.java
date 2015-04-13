@@ -15,6 +15,7 @@ import logic.expression.visitor.ExpressionLogicPrinter;
 import logic.parse.LogicParser;
 
 import version3.plugin.DuplicateEliminationPlugin;
+import version3.plugin.PrintingPlugin;
 
 import java.io.File;
 import java.net.URL;
@@ -60,13 +61,11 @@ public class ClausalDiscovery {
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
 		//algorithm.addPlugin(new MaximalDepthPlugin<>(3));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
-		algorithm.addPlugin(new ClausePrintingPlugin(refinement, false));
+		//algorithm.addPlugin(new ClausePrintingPlugin(refinement, false));
 		algorithm.addPlugin(refinement);
 		try {
 			//OutputContainer container = Log.LOG.buffer();
 			Result<StatusClause> result = Test.run(algorithm, initialNodes, 4);
-			for(StatusClause statusClause : result.getSolutions())
-				Log.LOG.printLine(ExpressionLogicPrinter.print(refinement.getClause(statusClause)));
 			Log.LOG.newLine().printTitle(executor.entailmentCount + " entailment calculations took: " + MathUtil.round(executor.entailmentStopwatch.stop()/1000, 0) + ", " + executor.noEntailmentCount + " did not succeed.");
 			//container.printToFile(FileManager.instance.createTempFile("txt"));
 		} catch(Exception e) {

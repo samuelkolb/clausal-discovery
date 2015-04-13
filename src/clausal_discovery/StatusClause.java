@@ -1,5 +1,6 @@
 package clausal_discovery;
 
+import basic.StringUtil;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
@@ -147,7 +148,8 @@ public class StatusClause {
 				.filter(PositionedInstance::isInBody)
 				.map(PositionedInstance::getInstance)
 				.collect(Collectors.toList());
-		return  body + " => " + head;
+		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
+				+ (head.isEmpty() ? "false" : StringUtil.join(" & ", head));
 	}
 
 	// endregion
