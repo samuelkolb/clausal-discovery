@@ -2,20 +2,18 @@ package clausal_discovery;
 
 import basic.FileUtil;
 import basic.MathUtil;
+import idp.FileManager;
+import idp.IdpExecutor;
 import log.Log;
+import logic.parse.LogicParser;
 import version3.algorithm.EmptyQueueStopCriterion;
 import version3.algorithm.Result;
 import version3.algorithm.SearchAlgorithm;
 import version3.algorithm.StopCriterion;
 import version3.algorithm.implementation.BreadthFirstSearch;
 import version3.example.Test;
-
-import idp.IdpExecutor;
-import logic.expression.visitor.ExpressionLogicPrinter;
-import logic.parse.LogicParser;
-
 import version3.plugin.DuplicateEliminationPlugin;
-import version3.plugin.PrintingPlugin;
+import version3.plugin.FileLoggingPlugin;
 
 import java.io.File;
 import java.net.URL;
@@ -29,6 +27,8 @@ import java.util.Scanner;
  * @author Samuel Kolb
  */
 public class ClausalDiscovery {
+
+	private static final FileManager FILE_MANAGER = new FileManager("log");
 
 	/**
 	 * Entry point for the given example
@@ -60,14 +60,15 @@ public class ClausalDiscovery {
 
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
 		//algorithm.addPlugin(new MaximalDepthPlugin<>(3));
+		algorithm.addPlugin(new FileLoggingPlugin<>(FILE_MANAGER.createRandomFile("txt")));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		//algorithm.addPlugin(new ClausePrintingPlugin(refinement, false));
 		algorithm.addPlugin(refinement);
 		try {
 			//OutputContainer container = Log.LOG.buffer();
-			Result<StatusClause> result = Test.run(algorithm, initialNodes, 4);
-			Log.LOG.newLine().printTitle(executor.entailmentCount + " entailment calculations took: " + MathUtil.round(executor.entailmentStopwatch.stop()/1000, 0) + ", " + executor.noEntailmentCount + " did not succeed.");
-			//container.printToFile(FileManager.instance.createTempFile("txt"));
+			Test.run(algorithm, initialNodes, 4);
+			Log.LOG.newLine().printLine(executor.entailmentCount + " entailment calculations took: " + MathUtil.round(executor.entailmentStopwatch.stop() / 1000, 0) + ", " + executor.noEntailmentCount + " did not succeed.");
+			//container.printToFile(FileManager.instance.createRandomFile("txt"));
 		} catch(Exception e) {
 			Log.LOG.printTitle("Exception occurred");
 			System.out.flush();

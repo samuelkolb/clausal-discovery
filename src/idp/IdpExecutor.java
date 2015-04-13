@@ -57,10 +57,21 @@ public class IdpExecutor implements LogicExecutor {
 		return backgroundFile;
 	}
 
+	// IVAR fileManager - The file manager used for temporary files
+
+	private final FileManager fileManager;
+
+	protected FileManager getFileManager() {
+		return fileManager;
+	}
+
 	//endregion
 
 	//region Construction
-	private IdpExecutor() {}
+	private IdpExecutor() {
+		this.fileManager = new FileManager("temp");
+		getFileManager().cleanTempDir("idp");
+	}
 	//endregion
 
 	//region Public methods
@@ -186,7 +197,7 @@ public class IdpExecutor implements LogicExecutor {
 	}
 
 	private File createFile(final String string) {
-		final File file = FileManager.instance.createTempFile("idp");
+		final File file = getFileManager().createRandomFile("idp");
 		getTerminal().execute("mkfifo " + file.getAbsolutePath(), true);
 		new Thread(() -> {
 			PrintWriter writer = null;
