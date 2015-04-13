@@ -3,7 +3,7 @@ package logic.parse;
 import log.Log;
 import util.Pair;
 import vector.Vector;
-import clausal_discovery.LogicBase;
+import clausal_discovery.core.LogicBase;
 import logic.bias.Type;
 import logic.example.Example;
 import logic.example.Setup;

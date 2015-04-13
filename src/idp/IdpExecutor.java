@@ -77,11 +77,6 @@ public class IdpExecutor implements LogicExecutor {
 	//region Public methods
 
 	@Override
-	public void shutdown() {
-
-	}
-
-	@Override
 	public boolean isValid(LogicProgram program) {
 		return executeTest(new ValidProgram(program, getBackgroundFile()));
 	}
@@ -99,14 +94,6 @@ public class IdpExecutor implements LogicExecutor {
 		entailmentCount++;
 		if(!test)
 			noEntailmentCount++;
-		else {
-			Log.LOG.saveState();
-			Log.LOG.off();
-			Log.LOG.printTitle("Entailment:");
-			Log.LOG.printLine(new IdpProgramPrinter().print(program));
-			Log.LOG.printLine(new IdpProgramPrinter().printTheory(theory, "T", "V"));
-			Log.LOG.revert();
-		}
 		return test;
 	}
 
@@ -143,7 +130,7 @@ public class IdpExecutor implements LogicExecutor {
 		} catch(Exception e) {
 			Log.LOG.printTitle("Error occurred:").printLine(e.getMessage()).newLine();
 			Log.LOG.printTitle("Program:").printLine(getDebugString(idpProgram));
-			throw new IllegalStateException(e); // TODO
+			throw new IllegalStateException(e);
 		}
 	}
 

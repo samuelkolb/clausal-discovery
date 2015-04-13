@@ -1,4 +1,4 @@
-package clausal_discovery;
+package clausal_discovery.core;
 
 import basic.StringUtil;
 import clausal_discovery.instance.Instance;
@@ -90,8 +90,8 @@ public class StatusClause {
 	}
 
 	/**
-	 * Returns whether this clause contains the given index-boolean pair
-	 * @param instance	The instance representation
+	 * Returns whether this clause contains the given instance
+	 * @param instance	The instance
 	 * @return	True iff this instance has been added to this status clause already
 	 */
 	public boolean contains(PositionedInstance instance) {
@@ -140,16 +140,16 @@ public class StatusClause {
 
 	@Override
 	public String toString() {
-		List<Instance> head = getInstances().stream()
+		List<String> head = getInstances().stream()
 				.filter(i -> !i.isInBody())
-				.map(PositionedInstance::getInstance)
+				.map(pi -> pi.getIndex() + ":" + pi.getInstance())
 				.collect(Collectors.toList());
-		List<Instance> body = getInstances().stream()
+		List<String> body = getInstances().stream()
 				.filter(PositionedInstance::isInBody)
-				.map(PositionedInstance::getInstance)
+				.map(pi -> pi.getIndex() + ":" + pi.getInstance())
 				.collect(Collectors.toList());
 		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
-				+ (head.isEmpty() ? "false" : StringUtil.join(" & ", head));
+				+ (head.isEmpty() ? "false" : StringUtil.join(" | ", head));
 	}
 
 	// endregion
@@ -174,7 +174,7 @@ public class StatusClause {
 			return false;
 		if(!getEnvironment().isValidInstance(instance.getInstance()))
 			return false;
-		if(!inBody() && contains(instance.clone(false)))
+		if(!instance.isInBody() && contains(instance.clone(true)))
 			return false;
 		Vector<Integer> indices = instance.getInstance().getVariableIndices();
 		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(instance);
@@ -267,6 +267,5 @@ public class StatusClause {
 		variableList.addAll(instance.getVariableIndices().stream().map(mapping::get).collect(Collectors.toList()));
 		return variableList;
 	}
-
 	// endregion
 }

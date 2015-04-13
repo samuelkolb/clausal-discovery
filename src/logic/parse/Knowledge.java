@@ -3,7 +3,7 @@ package logic.parse;
 import basic.StringUtil;
 import logic.expression.formula.Predicate;
 import vector.Vector;
-import clausal_discovery.LogicBase;
+import clausal_discovery.core.LogicBase;
 import idp.IdpProgramPrinter;
 import logic.example.Example;
 import logic.theory.Vocabulary;

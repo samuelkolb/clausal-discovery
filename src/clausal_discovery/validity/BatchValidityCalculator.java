@@ -1,6 +1,6 @@
 package clausal_discovery.validity;
 
-import clausal_discovery.LogicBase;
+import clausal_discovery.core.LogicBase;
 import idp.IdpExpressionPrinter;
 import log.Log;
 import logic.expression.formula.Formula;

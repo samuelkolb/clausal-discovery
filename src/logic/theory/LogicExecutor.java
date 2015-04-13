@@ -8,12 +8,6 @@ package logic.theory;
 public interface LogicExecutor {
 
 	/**
-	 * Shuts down the executor, allowing it to wrap up all execution services
-	 */
-	@SuppressWarnings("EmptyMethod")
-	public void shutdown();
-
-	/**
 	 * Returns whether the given program is valid, a.k.a. has a model
 	 * @param program	The program to execute
 	 * @return	True iff the given program is valid

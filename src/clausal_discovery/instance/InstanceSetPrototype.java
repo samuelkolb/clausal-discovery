@@ -1,6 +1,6 @@
 package clausal_discovery.instance;
 
-import clausal_discovery.Environment;
+import clausal_discovery.core.Environment;
 import util.Numbers;
 import vector.Vector;
 import vector.WriteOnceVector;

@@ -1,4 +1,4 @@
-package clausal_discovery;
+package clausal_discovery.core;
 
 import basic.ArrayUtil;
 import clausal_discovery.instance.Instance;
@@ -6,6 +6,7 @@ import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import clausal_discovery.validity.ParallelValidityCalculator;
 import clausal_discovery.validity.ValidityCalculator;
+import idp.IdpProgramPrinter;
 import log.Log;
 import logic.example.Example;
 import logic.expression.formula.*;
@@ -15,6 +16,7 @@ import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Structure;
 import logic.theory.Theory;
+import time.Stopwatch;
 import vector.Vector;
 import vector.WriteOnceVector;
 import version3.algorithm.*;
@@ -47,8 +49,14 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 		@Override
 		public void run() {
-			if(!executor.entails(getProgram(), new Theory(getClause(node.getValue()))))
+			Log.LOG.saveState()/*.off()/**/;
+			if(!executor.entails(getProgram(), new Theory(getClause(node.getValue())))) {
 				result.addNode(node);
+				Log.LOG.print("NEW    ");
+			} else {
+				Log.LOG.print("DENIED ");
+			}
+			Log.LOG.printLine(node.getValue()).revert();
 		}
 
 		private LogicProgram getProgram() {
@@ -63,6 +71,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	}
 
 	private static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
+
+	// region Variables
 
 	// IVAR instanceList - The instance list used for clause generation
 
@@ -96,6 +106,18 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private final ExecutorService resultQueue;
 
+	// IVAR excessTimer - A stopwatch that measures the excess time to finish entailment checks
+
+	private final Stopwatch excessTimer = new Stopwatch();
+
+	public Stopwatch getExcessTimer() {
+		return excessTimer;
+	}
+
+	// endregion
+
+	// region Construction
+
 	/**
 	 * Creates a new variable refinement operator
 	 * @param logicBase	The logic base holding the vocabulary and examples
@@ -105,35 +127,22 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
 		Vector<Predicate> predicates = logicBase.getSearchPredicates();
 		this.instanceList = new InstanceList(predicates, getMaximalVariables(variables, predicates));
-		Log.LOG.printLine(getInstanceList().size() + " instances");
+		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
 		this.executor = executor;
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
 		this.resultQueue = Executors.newSingleThreadExecutor();
 	}
 
-	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
-		int max = 0;
-		for(Predicate predicate : predicates)
-			max = Math.max(max, predicate.getArity());
-		return  max > 1 ? variables : 1;
-	}
+	// endregion
+
+	// region Public methods
 
 	@Override
 	public List<StatusClause> expandNode(Node<StatusClause> node) {
 		if(node.shouldPruneChildren())
 			return new ArrayList<>();
 		return getChildren(node.getValue());
-	}
-
-	private List<StatusClause> getChildren(StatusClause clause) {
-		List<StatusClause> children = new ArrayList<>();
-		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
-			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
-		if(clause.inBody())
-			for(int i = 0; i < getInstanceList().size(); i++)
-				clause.processIfRepresentative(getInstanceList().getInstance(i, false)).ifPresent(children::add);
-		return children;
 	}
 
 	@Override
@@ -181,18 +190,14 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	public void searchComplete(Result<StatusClause> result) {
 		validityCalculator.shutdown();
 		resultQueue.shutdown();
+		getExcessTimer().start();
 		try {
 			resultQueue.awaitTermination(10, TimeUnit.DAYS);
 		} catch(InterruptedException e) {
 			throw new IllegalStateException(e);
+		} finally {
+			getExcessTimer().pause();
 		}
-	}
-
-	private boolean isValid(Node<StatusClause> node) {
-		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getLogicBase().getExamples().size()]);
-		for(Example example : getLogicBase().getExamples())
-			structures.add(example.getStructure());
-		return validityCalculator.isValid(getClause(node.getValue()));
 	}
 
 	/**
@@ -204,7 +209,35 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return getClause(statusClause.getInstances());
 	}
 
-	Clause getClause(Vector<PositionedInstance> instances) {
+	// endregion
+
+	// region Private methods
+
+	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
+		int max = 0;
+		for(Predicate predicate : predicates)
+			max = Math.max(max, predicate.getArity());
+		return  max > 1 ? variables : 1;
+	}
+
+	private List<StatusClause> getChildren(StatusClause clause) {
+		List<StatusClause> children = new ArrayList<>();
+		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
+			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
+		if(clause.inBody())
+			for(int i = 0; i < getInstanceList().size(); i++)
+				clause.processIfRepresentative(getInstanceList().getInstance(i, false)).ifPresent(children::add);
+		return children;
+	}
+
+	private boolean isValid(Node<StatusClause> node) {
+		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getLogicBase().getExamples().size()]);
+		for(Example example : getLogicBase().getExamples())
+			structures.add(example.getStructure());
+		return validityCalculator.isValid(getClause(node.getValue()));
+	}
+
+	protected Clause getClause(Vector<PositionedInstance> instances) {
 		List<Atom> bodyAtoms = new ArrayList<>();
 		List<Atom> headAtoms = new ArrayList<>();
 		Map<Integer, Variable> variableMap = new HashMap<>();
@@ -252,4 +285,6 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			subsets.add(getClause(new Vector<>(ArrayUtil.removeElement(statusClause.getInstances().getArray(), i))));
 		return subsets;
 	}
+
+	// endregion
 }

@@ -1,4 +1,4 @@
-package clausal_discovery;
+package clausal_discovery.core;
 
 import clausal_discovery.instance.Instance;
 import logic.bias.Type;

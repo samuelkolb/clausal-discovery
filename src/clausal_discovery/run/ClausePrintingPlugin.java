@@ -1,5 +1,7 @@
-package clausal_discovery;
+package clausal_discovery.run;
 
+import clausal_discovery.core.StatusClause;
+import clausal_discovery.core.VariableRefinement;
 import log.Log;
 import version3.algorithm.Node;
 import version3.algorithm.Plugin;
