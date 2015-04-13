@@ -20,6 +20,7 @@ import vector.WriteOnceVector;
 import version3.algorithm.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -89,7 +90,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	// IVAR resultSet - The result set used for efficient subset tests
 
-	private final Set<StatusClause> resultSet = new HashSet<>();
+	private final Set<StatusClause> resultSet = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	// IVAR resultQueue - The result queue queues entailment calculations
 

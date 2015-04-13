@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
  */
 public class StatusClause {
 
+	// region Variables
+
 	// IVAR rank - The rank is the amount of variables already introduced
 
 	private final int rank;
@@ -47,6 +49,10 @@ public class StatusClause {
 		return environment;
 	}
 
+	// endregion
+
+	// region Construction
+
 	/**
 	 * Creates a new status clause
 	 */
@@ -62,6 +68,9 @@ public class StatusClause {
 		this.environment = environment;
 	}
 
+	// endregion
+
+	// region Public methods
 
 	/**
 	 * Returns whether this status clause is currently in the body
@@ -89,13 +98,74 @@ public class StatusClause {
 	}
 
 	/**
-	 * Returns whether the given instance can be added
-	 * @param instance	A positioned instance
-	 * @return	True iff the given instance is 1) consistent with typing, 2) connected 3) introduces variables in
-	 * 			order and only it is in the body, and 4) an instance added to the head does not appear in the body
-	 * 		TODO correct documentation
+	 * Creates a new clause by adding the given instance
+	 * @param instance	The instance to add
+	 * @return	An optional containing either the valid representative clause or an empty optional
 	 */
-	public boolean canProcess(PositionedInstance instance) {
+	public Optional<StatusClause> processIfRepresentative(PositionedInstance instance) {
+		Optional<StatusClause> clause = addIfValid(instance);
+		if(clause.isPresent() && isRepresentativeWith(clause.get(), instance))
+			return clause;
+		return Optional.empty();
+	}
+
+	/**
+	 * Creates a new clause by adding the given instance
+	 * @param instance	The instance to add
+	 * @return	An optional containing either the valid clause or an empty optional
+	 */
+	public Optional<StatusClause> addIfValid(PositionedInstance instance) {
+		if(!canAdd(instance))
+			return Optional.empty();
+		int newRank = Math.max(getRank(), instance.getInstance().getMax() + 1);
+		Environment newEnvironment = getEnvironment().addInstance(instance.getInstance());
+		return Optional.of(new StatusClause(newRank, getInstances().grow(instance), newEnvironment));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(o == null || getClass() != o.getClass()) return false;
+
+		StatusClause clause = (StatusClause) o;
+		return instances.equals(clause.instances);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return instances.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		List<Instance> head = getInstances().stream()
+				.filter(i -> !i.isInBody())
+				.map(PositionedInstance::getInstance)
+				.collect(Collectors.toList());
+		List<Instance> body = getInstances().stream()
+				.filter(PositionedInstance::isInBody)
+				.map(PositionedInstance::getInstance)
+				.collect(Collectors.toList());
+		return  body + " => " + head;
+	}
+
+	// endregion
+
+	// region Private methods
+
+	/**
+	 * Returns whether adding the given instance will produce a valid clause
+	 * @param instance	The instance to add
+	 * @return True iff the given instance:
+	 * 		1) does not occur in the instance list before the last instance of this clause
+	 * 		2) is a body instance while this clause already contains a head instance
+	 * 		3) is consistent with the typing of this clause
+	 * 		4) is not a head instance that has already been added as a body instance
+	 * 		5) is connected
+	 * 		6) introduces variables in order
+	 */
+	protected boolean canAdd(PositionedInstance instance) {
 		if(inBody() == instance.isInBody() && instance.getIndex() <= getIndex())
 			return false;
 		if(!inBody() && instance.isInBody())
@@ -163,7 +233,7 @@ public class StatusClause {
 	private Optional<StatusClause> buildClause(List<PositionedInstance> instances) {
 		Optional<StatusClause> clause = Optional.of(new StatusClause());
 		for(PositionedInstance instance : instances) {
-			clause = clause.get().processIfValid(instance);
+			clause = clause.get().addIfValid(instance);
 			if(!clause.isPresent())
 				return clause;
 		}
@@ -196,51 +266,5 @@ public class StatusClause {
 		return variableList;
 	}
 
-	public Optional<StatusClause> processIfRepresentative(PositionedInstance instance) {
-		Optional<StatusClause> clause = processIfValid(instance);
-		if(clause.isPresent() && isRepresentativeWith(clause.get(), instance))
-			return clause;
-		return Optional.empty();
-	}
-
-	/**
-	 * Returns a new status clause where the given instance has been added
-	 * @param instance	The instance to add
-	 * @return	The new status clause // TODO documentation
-	 */
-	public Optional<StatusClause> processIfValid(PositionedInstance instance) {
-		if(!canProcess(instance))
-			return Optional.empty();
-		int newRank = Math.max(getRank(), instance.getInstance().getMax() + 1);
-		Environment newEnvironment = getEnvironment().addInstance(instance.getInstance());
-		return Optional.of(new StatusClause(newRank, getInstances().grow(instance), newEnvironment));
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if(this == o) return true;
-		if(o == null || getClass() != o.getClass()) return false;
-
-		StatusClause clause = (StatusClause) o;
-		return instances.equals(clause.instances);
-
-	}
-
-	@Override
-	public int hashCode() {
-		return instances.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		List<Instance> head = getInstances().stream()
-				.filter(i -> !i.isInBody())
-				.map(PositionedInstance::getInstance)
-				.collect(Collectors.toList());
-		List<Instance> body = getInstances().stream()
-				.filter(PositionedInstance::isInBody)
-				.map(PositionedInstance::getInstance)
-				.collect(Collectors.toList());
-		return  body + " => " + head;
-	}
+	// endregion
 }
