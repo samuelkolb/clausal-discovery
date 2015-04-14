@@ -24,14 +24,6 @@ public class RunClient {
 
 	//region Variables
 
-	// IVAR clausalDiscovery - The clausal discovery algorithm object
-
-	private ClausalDiscovery clausalDiscovery = new ClausalDiscovery();
-
-	public ClausalDiscovery getClausalDiscovery() {
-		return clausalDiscovery;
-	}
-
 	//endregion
 
 	//region Construction
@@ -45,9 +37,10 @@ public class RunClient {
 	 * @param configuration	The run configuration
 	 */
 	public void run(Configuration configuration) {
+		ClausalDiscovery clausalDiscovery = new ClausalDiscovery(configuration);
+		Stopwatch stopwatch = new Stopwatch(true);
 		try {
-			Stopwatch stopwatch = new Stopwatch(true);
-			List<StatusClause> clauses = getClausalDiscovery().findConstraints(configuration);
+			List<StatusClause> clauses = clausalDiscovery.findConstraints();
 			Log.LOG.printLine("\nSearch finished in " + round(stopwatch.stop()) + "s:");
 			for(int i = 0; i < clauses.size(); i++)
 				Log.LOG.printLine("\t" + (i + 1) + ": " + clauses.get(i));
@@ -58,14 +51,19 @@ public class RunClient {
 			e.printStackTrace(System.err);
 		}
 
-		IdpExecutor executor = getClausalDiscovery().getExecutor();
+		IdpExecutor executor = clausalDiscovery.getExecutor();
 		double time = round(executor.entailmentStopwatch.stop());
 		Log.LOG.newLine().printLine(executor.entailmentCount + " entailment checks took " + time + "s.");
-		Log.LOG.printLine("Entailment checks excess time " + round(getClausalDiscovery().getExcessTime()) + "s.");
+		Log.LOG.printLine("Entailment checks excess time " + round(clausalDiscovery.getExcessTime()) + "s.");
 	}
+
+	//endregion
+
+	// region Private methods
 
 	private double round(double time) {
 		return MathUtil.round(time / 1000, 3);
 	}
-	//endregion
+
+	// endregion
 }

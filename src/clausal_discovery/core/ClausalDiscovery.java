@@ -18,12 +18,8 @@ import java.util.List;
  */
 public class ClausalDiscovery {
 
-	// IVAR executor - The executor used to delegate tasks to IDP
-
-	private IdpExecutor executor = IdpExecutor.get();
-
 	public IdpExecutor getExecutor() {
-		return executor;
+		return IdpExecutor.get();
 	}
 
 	// IVAR excessTime - The time taken that entailment checks in the last run needed to round off the search
@@ -34,21 +30,38 @@ public class ClausalDiscovery {
 		return excessTime;
 	}
 
+	// IVAR configuration - The search configuration
+
+	private final Configuration configuration;
+
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+
+	/**
+	 * Creates a new clausal discovery algorithm object
+	 * @param configuration	The configuration to guide the search
+	 */
+	public ClausalDiscovery(Configuration configuration) {
+		this.configuration = configuration;
+	}
+
 	/**
 	 * Use the given configuration to find hard constraints in the data
-	 * @param config	The configuration containing search instructions
 	 * @return	A list of status clauses that represent hard constraints
 	 */
-	public List<StatusClause> findConstraints(Configuration config) {
-		if(config.getBackgroundFile().isPresent())
-			getExecutor().setBackgroundFile(config.getBackgroundFile().get());
+	public List<StatusClause> findConstraints() {
+		if(getConfiguration().getBackgroundFile().isPresent())
+			getExecutor().setBackgroundFile(getConfiguration().getBackgroundFile().get());
 
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
-		VariableRefinement refinement = new VariableRefinement(config.getLogicBase(), config.getVariableCount(), getExecutor());
+		int variableCount = getConfiguration().getVariableCount();
+		LogicBase logicBase = getConfiguration().getLogicBase();
+		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor());
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
 
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
-		algorithm.addPlugin(new MaximalDepthPlugin<>(config.getClauseLength()));
+		algorithm.addPlugin(new MaximalDepthPlugin<>(getConfiguration().getClauseLength()));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		algorithm.addPlugin(refinement);
 
