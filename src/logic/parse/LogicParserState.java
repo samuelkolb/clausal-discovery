@@ -52,7 +52,7 @@ public class LogicParserState {
 	//region Public methods
 
 	/**
-	 * Checks whether this state contains a type with the given name
+	 * Checks whether this state containsInstance a type with the given name
 	 * @param typeName	The name of the type to check for
 	 * @return	True iff a type with the given name has already been added to this state
 	 */
@@ -80,7 +80,7 @@ public class LogicParserState {
 	}
 
 	/**
-	 * Checks whether this state contains a predicate definition with the given name
+	 * Checks whether this state containsInstance a predicate definition with the given name
 	 * @param predicateName	The name of the predicate to check for
 	 * @return	True iff a predicate definition with the given name has already been added to this state
 	 */
@@ -91,18 +91,20 @@ public class LogicParserState {
 	/**
 	 * Adds a predicate definition with the given name and type names
 	 * @param predicateName	The name of the predicate
+	 * @param symmetric		Whether or not this is a symmetric predicate
 	 * @param typeNames		The names of the predicate arguments types
 	 */
-	public void addPredicate(String predicateName, String[] typeNames) {
+	public void addPredicate(String predicateName, boolean symmetric, String[] typeNames) {
 		Log.LOG.printLine("INFO added predicate " + predicateName + Arrays.toString(typeNames));
 		Type[] types = new Type[typeNames.length];
 		for(int i = 0; i < typeNames.length; i++)
 			types[i] = this.types.get(typeNames[i]);
-		predicates.put(predicateName, new Predicate(predicateName, types));
+		Predicate predicate = new Predicate(predicateName, symmetric, types);
+		predicates.put(predicateName, predicate);
 	}
 
 	/**
-	 * Checks whether this state contains a constant with the given name
+	 * Checks whether this state containsInstance a constant with the given name
 	 * @param constantName	The name of the constant to check for
 	 * @return	True iff a constant with the given name has already been added to this state
 	 */
@@ -121,7 +123,7 @@ public class LogicParserState {
 	}
 
 	/**
-	 * Checks whether this state contains an example with the given name
+	 * Checks whether this state containsInstance an example with the given name
 	 * @param exampleName	The name of the example to check for
 	 * @return	True iff an example with the given name has already been added to this state
 	 */

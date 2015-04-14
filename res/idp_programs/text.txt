@@ -3,25 +3,31 @@ vocabulary V {
 	type Country
 	color(Country, Color)
 	neighbor(Country, Country)
+	n(Country, Country)
 }
 
 theory T0:V {
-	!Country2[Country] Color3[Color] Country4[Country] Country1[Country]: ((neighbor(Country1, Country2) & color(Country1, Color3) & neighbor(Country4, Country2) & (Country1 ~= Country2) & (Country1 ~= Country4) & (Country2 ~= Country4)) => false).
+	/*{
+		n(x, y) <- neighbor(x, y) & x ~= y.
+		n(y, x) <- neighbor(x, y) & x ~= y.
+	}*/
+	!x y: x ~= y & neighbor(x, y) => n(x, y).
+	!x y: x ~= y & neighbor(x, y) => n(y, x).
 }
 
 structure S0:V {
 	Color = {Green; Red}
 	Country = {Germany; Poland; Belgium}
-	neighbor = {(Germany, Poland); (Belgium, Germany); (Germany, Belgium); (Poland, Germany)}
+	neighbor = {(Germany, Poland); (Belgium, Germany)}
 	color = {(Germany, Green); (Belgium, Red); (Poland, Red)}
 }
 
-structure S1:V {
+/*structure S1:V {
 	Color = {Red; Blue; Green}
 	Country = {Germany; Lux; Belgium}
 	neighbor = {(Lux, Germany); (Belgium, Lux); (Germany, Lux); (Lux, Belgium); (Germany, Belgium); (Belgium, Germany)}
 	color = {(Lux, Green); (Belgium, Red); (Germany, Blue)}
-}
+}*/
 
 procedure main() {
 // Arguments
@@ -31,6 +37,8 @@ procedure main() {
 function isValid(t, s)
     stdoptions.nbmodels = 1 // Set to search for all models
     allsols = modelexpand(t, s) // Find all models
+
+    printmodels(allsols)
 
     local count = 0
     for _ in pairs(allsols) do count = count + 1 end
@@ -42,7 +50,7 @@ function isValid(t, s)
     	return true
     end
 end
-if true and isValid(T0, S0) and isValid(T0, S1) then
+if true and isValid(T0, S0) /*and isValid(T0, S1)*/ then
 	print("YES")
 else
 	print("NO")

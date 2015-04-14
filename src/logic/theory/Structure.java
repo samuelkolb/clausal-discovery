@@ -5,7 +5,7 @@ import logic.bias.Type;
 import logic.expression.formula.Predicate;
 
 /**
- * A structure behaves similar as an example but contains elements that relate more closely to IDP structures
+ * A structure behaves similar as an example but containsInstance elements that relate more closely to IDP structures
  *
  * @author Samuel Kolb
  */

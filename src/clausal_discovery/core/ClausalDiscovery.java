@@ -64,6 +64,7 @@ public class ClausalDiscovery {
 		algorithm.addPlugin(new MaximalDepthPlugin<>(getConfiguration().getClauseLength()));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		algorithm.addPlugin(refinement);
+		getConfiguration().addPlugins(algorithm);
 
 		List<StatusClause> statusClauses = makeList(algorithm.search(initialNodes));
 		this.excessTime = refinement.getExcessTimer().stop();

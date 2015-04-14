@@ -6,9 +6,12 @@ import clausal_discovery.core.StatusClause;
 import idp.FileManager;
 import logic.parse.LogicParser;
 import version3.algorithm.SearchAlgorithm;
+import version3.plugin.CountingPlugin;
 import version3.plugin.FileLoggingPlugin;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,9 +19,9 @@ import java.util.Optional;
  *
  * @author Samuel Kolb
  */
-public interface Configuration {
+public abstract class Configuration {
 
-	public static abstract class FileConfiguration implements Configuration {
+	public static abstract class FileConfiguration extends Configuration {
 
 		private final LogicBase logicBase;
 
@@ -74,19 +77,29 @@ public interface Configuration {
 
 	static final FileManager FILE_MANAGER = new FileManager("log");
 
-	public LogicBase getLogicBase();
+	// IVAR countingPlugin - The last used counting plugin
 
-	public Optional<String> getBackgroundFile();
+	private CountingPlugin<StatusClause> countingPlugin;
 
-	public int getVariableCount();
-
-	public int getClauseLength();
+	public CountingPlugin<StatusClause> getCountingPlugin() {
+		return countingPlugin;
+	}
 
 	/**
 	 * Add plugins to monitor the algorithms execution
 	 * @param algorithm	The search algorithm
 	 */
-	public default void addPlugins(SearchAlgorithm<StatusClause> algorithm) {
+	public void addPlugins(SearchAlgorithm<StatusClause> algorithm) {
+		this.countingPlugin = new CountingPlugin<>();
+		algorithm.addPlugin(getCountingPlugin());
 		algorithm.addPlugin(new FileLoggingPlugin<>(FILE_MANAGER.createRandomFile("txt")));
 	}
+
+	public abstract LogicBase getLogicBase();
+
+	public abstract Optional<String> getBackgroundFile();
+
+	public abstract int getVariableCount();
+
+	public abstract int getClauseLength();
 }

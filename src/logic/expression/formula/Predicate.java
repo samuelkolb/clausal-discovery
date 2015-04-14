@@ -2,10 +2,9 @@ package logic.expression.formula;
 
 import basic.ArrayUtil;
 import basic.StringUtil;
-import vector.Vector;
-import logic.bias.Mode;
 import logic.bias.Type;
 import logic.expression.term.Term;
+import vector.Vector;
 
 /**
  * Created by samuelkolb on 22/10/14.
@@ -15,11 +14,16 @@ import logic.expression.term.Term;
 public class Predicate {
 
 	//region Variables
+
+	// IVAR name - The predicate name
+
 	private final String name;
 
 	public String getName() {
 		return name;
 	}
+
+	// IVAR types - The argument types
 
 	private final Vector<Type> types;
 
@@ -27,50 +31,56 @@ public class Predicate {
 		return types;
 	}
 
+	// IVAR symmetric - Whether this predicate is symmetric
+
+	private final boolean symmetric;
+
+	public boolean isSymmetric() {
+		return symmetric;
+	}
+
 	//endregion
 
 	//region Construction
 
 	/**
-	 * Creates a new predicate with the given name and arity
+	 * Creates a new non-symmetric predicate with the given name and arity
 	 * The modes and types of the parameters will be undefined
 	 * @param name	The predicate name
 	 * @param arity	The arity (number of parameters) of the predicate
 	 */
 	public Predicate(String name, int arity) {
-		this(name, ArrayUtil.fill(new Mode[arity], Mode.UNDEFINED));
+		this(name, false, arity);
 	}
 
 	/**
-	 * Creates a new predicate with the given name and mode declaration
-	 * The types of the parameters will be undefined
-	 * @param name	The predicate name
-	 * @param modes	The modes of the parameters
+	 * Creates a new predicate
+	 * @param name		The predicate name
+	 * @param symmetric	Whether this predicate is symmetric or not
+	 * @param arity		The arity (number of parameters) of the predicate
 	 */
-	public Predicate(String name, Mode... modes) {
-		this(name, modes, ArrayUtil.fill(new Type[modes.length], Type.UNDEFINED));
+	public Predicate(String name, boolean symmetric, int arity) {
+		this(name, symmetric, ArrayUtil.fill(new Type[arity], Type.UNDEFINED));
 	}
 
 	/**
-	 * Creates a new predicate with the given name and type declaration
-	 * The modes of the parameters will be undefined
+	 * Creates a new non-symmetric predicate with the given name, mode- and type declaration
 	 * @param name	The predicate name
 	 * @param types	The types of the parameters
 	 */
 	public Predicate(String name, Type... types) {
-		this(name, ArrayUtil.fill(new Mode[types.length], Mode.UNDEFINED), types);
+		this(name, false, types);
 	}
 
 	/**
-	 * Creates a new predicate with the given name, mode- and type declaration
-	 * @param name	The predicate name
-	 * @param modes	The modes of the parameters
-	 * @param types	The types of the parameters
+	 * Creates a new predicate
+	 * @param name		The predicate name
+	 * @param symmetric	Whether this predicate is symmetric or not
+	 * @param types		The types of the parameters
 	 */
-	public Predicate(String name, Mode[] modes, Type[] types) {
-		if(modes.length != types.length)
-			throw new IllegalArgumentException("The number of modes differed from the numbers of types.");
+	public Predicate(String name, boolean symmetric, Type... types) {
 		this.name = name;
+		this.symmetric = symmetric;
 		this.types = ArrayUtil.wrap(types);
 	}
 

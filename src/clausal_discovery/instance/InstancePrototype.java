@@ -7,6 +7,8 @@ import logic.expression.formula.Predicate;
 /**
  * The instance prototype describes a predicate and an ordering of its variables
  * e.g. p(0, 1, 2, 2)
+ *
+ * @author Samuel Kolb
  */
 public class InstancePrototype {
 

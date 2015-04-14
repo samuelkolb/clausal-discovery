@@ -1,7 +1,5 @@
 package clausal_discovery.core;
 
-import basic.ArrayUtil;
-import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import clausal_discovery.validity.ParallelValidityCalculator;
@@ -9,7 +7,6 @@ import clausal_discovery.validity.ValidityCalculator;
 import log.Log;
 import logic.example.Example;
 import logic.expression.formula.*;
-import logic.expression.term.Term;
 import logic.expression.term.Variable;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
@@ -61,12 +58,15 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		private LogicProgram getProgram() {
 			List<Formula> formulas = new ArrayList<>();
 			for(StatusClause statusClause : result.getSolutions())
-				formulas.add(getClause(statusClause));
+				formulas.add(VariableRefinement.this.getClause(statusClause));
+
+			formulas.addAll(getLogicBase().getSymmetryFormulas());
 			Vector<Theory> theories = new WriteOnceVector<>(new Theory[1]);
 			theories.add(new Theory(formulas));
 			//Log.LOG.printLine("Does " + new IdpProgramPrinter().printTheory(new Theory(formulas), "T", "V") + " entail " + IdpExpressionPrinter.print(getClause(node.getValue())) + "?");
 			return new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
 		}
+
 	}
 
 	private static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
@@ -124,8 +124,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 * @param executor	The logic executor responsible for executing logical queries
 	 */
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
-		Vector<Predicate> predicates = logicBase.getSearchPredicates();
-		this.instanceList = new InstanceList(predicates, getMaximalVariables(variables, predicates));
+		this.instanceList = new InstanceList(logicBase.getSearchPredicates(), variables);
 		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
 		this.executor = executor;
@@ -213,13 +212,6 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	// region Private methods
 
-	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
-		int max = 0;
-		for(Predicate predicate : predicates)
-			max = Math.max(max, predicate.getArity());
-		return  max > 1 ? variables : 1;
-	}
-
 	private List<StatusClause> getChildren(StatusClause clause) {
 		List<StatusClause> children = new ArrayList<>();
 		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
@@ -242,24 +234,9 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		List<Atom> headAtoms = new ArrayList<>();
 		Map<Integer, Variable> variableMap = new HashMap<>();
 		for(PositionedInstance instance : instances)
-			(instance.isInBody() ? bodyAtoms : headAtoms).add(makeAtom(variableMap, instance.getInstance()));
+			(instance.isInBody() ? bodyAtoms : headAtoms).add(instance.getInstance().makeAtom(variableMap));
 		applyOI(variableMap.values(), bodyAtoms);
 		return Clause.clause(bodyAtoms, headAtoms);
-	}
-
-	private Atom makeAtom(Map<Integer, Variable> variableMap, Instance instance) {
-		Term[] terms = new Term[instance.getVariableIndices().size()];
-		for(int i = 0; i < instance.getVariableIndices().size(); i++) {
-			Integer integer = instance.getVariableIndices().get(i);
-			if(!variableMap.containsKey(integer))
-				variableMap.put(integer, getVariable(instance, i, integer));
-			terms[i] = variableMap.get(integer);
-		}
-		return instance.getPredicate().getInstance(terms);
-	}
-
-	private Variable getVariable(Instance instance, int i, Integer integer) {
-		return new Variable(instance.getPredicate().getTypes().get(i).getName() + (integer + 1));
 	}
 
 	private void applyOI(Collection<Variable> variables, List<Atom> bodyAtoms) {
@@ -283,13 +260,5 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			Log.LOG.printLine("INFO ");
 		return false;
 	}
-
-	private List<Clause> getSubsets(StatusClause statusClause) {
-		List<Clause> subsets = new ArrayList<>();
-		for(int i = 0; i < statusClause.getInstances().size(); i++)
-			subsets.add(getClause(new Vector<>(ArrayUtil.removeElement(statusClause.getInstances().getArray(), i))));
-		return subsets;
-	}
-
 	// endregion
 }

@@ -5,8 +5,12 @@ import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.Structure;
+import logic.theory.Theory;
 import vector.Vector;
 import vector.WriteOnceVector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by samuelkolb on 02/03/15.
@@ -67,6 +71,13 @@ public abstract class ValidityCalculator {
 		for(Example example : getBase().getExamples())
 			structures.add(example.getStructure());
 		return structures;
+	}
+
+	protected Theory getTheory(Formula formula) {
+		List<Formula> formulas = new ArrayList<>();
+		formulas.add(formula);
+		//formulas.addAll(getBase().getSymmetryFormulas());
+		return new Theory(formulas);
 	}
 
 	//endregion

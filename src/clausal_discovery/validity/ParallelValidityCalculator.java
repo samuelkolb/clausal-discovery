@@ -8,6 +8,8 @@ import logic.theory.Structure;
 import logic.theory.Theory;
 import vector.Vector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -32,7 +34,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 
 		@Override
 		public Boolean call() throws Exception {
-			Vector<Theory> theories = new Vector<Theory>(new Theory(formula));
+			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
 			LogicProgram program = new LogicProgram(getBase().getVocabulary(), theories, structures);
 			return getExecutor().isValid(program);
 		}

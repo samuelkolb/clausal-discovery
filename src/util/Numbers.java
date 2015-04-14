@@ -59,6 +59,20 @@ public class Numbers {
 		public String toString() {
 			return Arrays.toString(array);
 		}
+
+		/**
+		 * Determines whether this permutation is sorted
+		 * @return	True iff this permutation containsInstance a non-decreasing sequence of numbers
+		 */
+		public boolean isSorted() {
+			int current = getArray()[0];
+			for(int i = 1; i < getArray().length; i++)
+				if(getArray()[i] < current)
+					return false;
+				else
+					current = Math.max(current, getArray()[i]);
+			return true;
+		}
 	}
 
 	public static List<Permutation> take(int pool, int length) {

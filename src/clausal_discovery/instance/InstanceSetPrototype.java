@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by samuelkolb on 18/02/15.
+ * An instance set prototype contains prototypes of the same rank
  *
  * @author Samuel Kolb
  */

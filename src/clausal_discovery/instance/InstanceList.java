@@ -27,7 +27,7 @@ public class InstanceList {
 	 * @param variables		The number of variables to be used
 	 */
 	public InstanceList(Vector<Predicate> predicates, int variables) {
-		this.pairing = getInstances(predicates, variables);
+		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
 	}
 
 	/**
@@ -63,6 +63,8 @@ public class InstanceList {
 	 * @return	The index of the instance
 	 */
 	public int getIndex(Instance instance) {
+		if(!this.pairing.containsValue(instance))
+			throw new IllegalArgumentException("Instance list does not contain " + instance);
 		return this.pairing.getKey(instance);
 	}
 
@@ -86,6 +88,13 @@ public class InstanceList {
 				choices.addAll(Numbers.getChoices(variables, i + 1));
 		choices.sort(new ChoiceComparator());
 		return choices;
+	}
+
+	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
+		int max = 0;
+		for(Predicate predicate : predicates)
+			max = Math.max(max, predicate.getArity());
+		return  max > 1 ? variables : 1;
 	}
 
 	@Override

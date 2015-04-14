@@ -54,6 +54,13 @@ public class StatusClause {
 
 	// region Construction
 
+	public static StatusClause buildClauseFromList(List<PositionedInstance> instances) {
+		StatusClause clause = new StatusClause();
+		for(PositionedInstance instance : instances)
+			clause = clause.addIfValid(instance).get();
+		return clause;
+	}
+
 	/**
 	 * Creates a new status clause
 	 */
@@ -90,15 +97,6 @@ public class StatusClause {
 	}
 
 	/**
-	 * Returns whether this clause contains the given instance
-	 * @param instance	The instance
-	 * @return	True iff this instance has been added to this status clause already
-	 */
-	public boolean contains(PositionedInstance instance) {
-		return getInstances().contains(instance);
-	}
-
-	/**
 	 * Creates a new clause by adding the given instance
 	 * @param instance	The instance to add
 	 * @return	An optional containing either the valid representative clause or an empty optional
@@ -131,12 +129,11 @@ public class StatusClause {
 	public boolean isSubsetOf(StatusClause statusClause) {
 		for(int i = 0; i <= statusClause.getLength() - getLength(); i++) {
 			Optional<StatusClause> optionalClause = statusClause.getSubsetClause(i, getLength());
-			if(optionalClause.isPresent() && equals(optionalClause.get()))
+			if(optionalClause.isPresent() && equalsSymmetric(optionalClause.get()))
 				return true;
 		}
 		return false;
 	}
-
 
 	@Override
 	public boolean equals(Object o) {
@@ -157,11 +154,11 @@ public class StatusClause {
 	public String toString() {
 		List<String> head = getInstances().stream()
 				.filter(i -> !i.isInBody())
-				.map(pi -> pi.getIndex() + ":" + pi.getInstance())
+				.map(pi -> "" + pi.getInstance())
 				.collect(Collectors.toList());
 		List<String> body = getInstances().stream()
 				.filter(PositionedInstance::isInBody)
-				.map(pi -> pi.getIndex() + ":" + pi.getInstance())
+				.map(pi -> "" + pi.getInstance())
 				.collect(Collectors.toList());
 		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
 				+ (head.isEmpty() ? "false" : StringUtil.join(" | ", head));
@@ -173,26 +170,69 @@ public class StatusClause {
 
 	/**
 	 * Returns whether adding the given instance will produce a valid clause
-	 * @param instance	The instance to add
+	 * @param positionedInstance	The instance to add
 	 * @return True iff the given instance:
 	 * 		1) does not occur in the instance list before the last instance of this clause
-	 * 		2) is a body instance while this clause already contains a head instance
+	 * 		2) is a body instance while this clause already containsInstance a head instance
 	 * 		3) is consistent with the typing of this clause
 	 * 		4) is not a head instance that has already been added as a body instance
 	 * 		5) is connected
 	 * 		6) introduces variables in order
 	 */
-	protected boolean canAdd(PositionedInstance instance) {
-		if(inBody() == instance.isInBody() && instance.getIndex() <= getIndex())
+	protected boolean canAdd(PositionedInstance positionedInstance) {
+		Instance instance = positionedInstance.getInstance();
+		// TODO containsInstance instance => sort variables to compare
+		if(inBody() == positionedInstance.isInBody() && positionedInstance.getIndex() <= getIndex())
 			return false;
-		if(!inBody() && instance.isInBody())
+		if(!inBody() && positionedInstance.isInBody())
 			return false;
-		if(!getEnvironment().isValidInstance(instance.getInstance()))
+		if(!getEnvironment().isValidInstance(instance))
 			return false;
-		if(!instance.isInBody() && contains(instance.clone(true)))
+		/*if(!positionedInstance.isInBody() && getInstances().contains(positionedInstance.clone(true)))
+			return false;/*/
+		if(containsInstance(positionedInstance.getInstance()))
+			return false;/**/
+		Vector<Integer> indices = instance.getVariableIndices();
+		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(positionedInstance);
+	}
+
+	protected boolean equalsSymmetric(StatusClause clause) {
+		for(PositionedInstance instance : clause.getInstances())
+			if(!containsElementSymmetric(instance))
+				return false;
+		return true;
+	}
+
+	protected boolean containsElementSymmetric(PositionedInstance containedInstance) {
+		for(PositionedInstance instance : getInstances())
+			if(equalsSymmetric(instance, containedInstance))
+				return true;
+		return false;
+	}
+
+	protected boolean equalsSymmetric(PositionedInstance instance1, PositionedInstance instance2) {
+		return containsInstance(instance1, instance2.getInstance()) && instance1.isInBody() == instance2.isInBody();
+	}
+
+	/**
+	 * Returns whether this clause containsInstance the given instance
+	 * @param instance	The instance
+	 * @return	True iff this instance has been added to this status clause already
+	 */
+	protected boolean containsInstance(Instance instance) {
+		for(PositionedInstance positionedInstance : getInstances())
+			if(containsInstance(positionedInstance, instance))
+				return true;
+		return false;
+	}
+
+	private boolean containsInstance(PositionedInstance positionedInstance, Instance instance) {
+		Instance containedInstance = positionedInstance.getInstance();
+		if(!containedInstance.getPredicate().equals(instance.getPredicate()))
 			return false;
-		Vector<Integer> indices = instance.getInstance().getVariableIndices();
-		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(instance);
+		if(!instance.getPredicate().isSymmetric())
+			return containedInstance.getVariableIndices().equals(instance.getVariableIndices());
+		return containedInstance.getVariableIndices().sort().equals(instance.getVariableIndices().sort());
 	}
 
 	private boolean isConnected(Vector<Integer> indices) {

@@ -53,6 +53,11 @@ public class RunClient {
 
 		IdpExecutor executor = clausalDiscovery.getExecutor();
 		double time = round(executor.entailmentStopwatch.stop());
+
+		Log.LOG.newLine().printLine("Selected " + configuration.getCountingPlugin().getSelectedCount() + " nodes");
+		Log.LOG.printLine("Processed " + configuration.getCountingPlugin().getProcessedCount() + " nodes");
+		Log.LOG.printLine("Expanded " + configuration.getCountingPlugin().getExpandedCount() + " nodes");
+
 		Log.LOG.newLine().printLine(executor.entailmentCount + " entailment checks took " + time + "s.");
 		Log.LOG.printLine("Entailment checks excess time " + round(clausalDiscovery.getExcessTime()) + "s.");
 	}

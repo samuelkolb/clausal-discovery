@@ -30,7 +30,7 @@ public abstract class IdpProgram {
 	//region Construction
 
 	/**
-	 * Creates an IDP program which contains a LogicProgram
+	 * Creates an IDP program which containsInstance a LogicProgram
 	 * @param program       	The LogicProgram
 	 * @param backgroundFile	The optional name of the file containing background knowledge
 	 */

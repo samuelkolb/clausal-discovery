@@ -18,10 +18,6 @@ public class Vocabulary {
 		return predicates;
 	}
 
-	public Vocabulary(Predicate... predicates) {
-		this(new Vector<>(predicates));
-	}
-
 	public Vocabulary(Vector<Predicate> predicates) {
 		this.predicates = predicates;
 	}

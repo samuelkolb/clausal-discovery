@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The environment class contains variable indices and their types. It can be used to determine the validity of
+ * The environment class containsInstance variable indices and their types. It can be used to determine the validity of
  * instances and keep track of typing information.
  *
  * @author Samuel Kolb
@@ -56,7 +56,7 @@ public class Environment {
 	/**
 	 * Adds the given instance by processing its typing information
 	 * @param instance	The instance to add
-	 * @return	A new environment that contains additional typing information contained in the given instance
+	 * @return	A new environment that containsInstance additional typing information contained in the given instance
 	 */
 	public Environment addInstance(Instance instance) {
 		return addInstance(instance.getPredicate(), instance.getVariableIndices());

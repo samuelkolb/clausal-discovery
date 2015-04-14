@@ -1,7 +1,12 @@
 package clausal_discovery.instance;
 
+import logic.expression.formula.Atom;
 import logic.expression.formula.Predicate;
+import logic.expression.term.Term;
+import logic.expression.term.Variable;
 import vector.Vector;
+
+import java.util.Map;
 
 /**
  * An instance holds a predicate and variable indices, representing a predicate instance
@@ -71,6 +76,26 @@ public class Instance {
 		int result = predicate.hashCode();
 		result = 31 * result + variableIndices.hashCode();
 		return result;
+	}
+
+	/**
+	 * Turns this instance into an atom
+	 * @param variableMap	The variable map to convert variable indices to variables
+	 * @return	An atom
+	 */
+	public Atom makeAtom(Map<Integer, Variable> variableMap) {
+		Term[] terms = new Term[getVariableIndices().size()];
+		for(int i = 0; i < getVariableIndices().size(); i++) {
+			Integer integer = getVariableIndices().get(i);
+			if(!variableMap.containsKey(integer))
+				variableMap.put(integer, getVariable(i, integer));
+			terms[i] = variableMap.get(integer);
+		}
+		return getPredicate().getInstance(terms);
+	}
+
+	private Variable getVariable(int i, Integer integer) {
+		return new Variable(getPredicate().getTypes().get(i).getName() + (integer + 1));
 	}
 
 	//endregion

@@ -73,7 +73,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 		Log.LOG.printLine("Calculating...");
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
-			theories.add(new Theory(formula));
+			theories.add(getTheory(formula));
 		LogicProgram program = new LogicProgram(getBase().getVocabulary(), theories, getStructures());
 		boolean[] validity = getExecutor().areValid(program);
 		for(int i = 0; i < formulas.size(); i++)
