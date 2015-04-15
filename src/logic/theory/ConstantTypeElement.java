@@ -22,7 +22,7 @@ class ConstantTypeElement extends Structure.TypeElement {
 		super(type);
 		this.constants = constants;
 		for(Constant constant : constants)
-			if(!getType().equals(constant.getType()))
+			if(!getType().isSuperTypeOf(constant.getType()))
 				throw new IllegalArgumentException("Incorrect constant type");
 	}
 

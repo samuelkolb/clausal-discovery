@@ -2,7 +2,9 @@ package logic.example;
 
 import association.Association;
 import association.HashAssociation;
+import association.ListAssociation;
 import clausal_discovery.core.PredicateDefinition;
+import log.Log;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
@@ -73,7 +75,7 @@ public class Example {
 	}
 
 	private void buildTypes(StructureBuilder builder) {
-		Association<Type, Constant> typeAssociation = new HashAssociation<>();
+		Association<Type, Constant> typeAssociation = new ListAssociation<>(false, false);
 		buildConstants(typeAssociation);
 		for(Type type : getSetup().getTypes())
 			if(typeAssociation.containsKey(type))
@@ -83,7 +85,7 @@ public class Example {
 	}
 
 	private void buildPredicates(StructureBuilder builder) {
-		Association<Predicate, PredicateInstance> predicateAssociation = new HashAssociation<>();
+		Association<Predicate, PredicateInstance> predicateAssociation = new ListAssociation<>(false, false);
 		buildPredicates(predicateAssociation);
 		for(PredicateDefinition definition : getSetup().getVocabulary().getDefinitions()) {
 			Predicate predicate = definition.getPredicate();
