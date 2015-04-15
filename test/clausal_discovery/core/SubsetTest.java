@@ -1,13 +1,10 @@
 package clausal_discovery.core;
 
-import clausal_discovery.core.StatusClause;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
-import log.Log;
 import logic.expression.formula.Predicate;
 import org.junit.Test;
 import vector.Vector;
-import vector.WriteOnceVector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,10 +28,23 @@ public class SubsetTest {
 	//endregion
 
 	//region Public methods
+
+	/**
+	 * Creates a clause from list (incrementally builds a clause)
+	 * @param instances	The instances to add to the clause
+	 * @return	A clause
+	 */
+	public static StatusClause buildClauseFromList(List<PositionedInstance> instances) {
+		StatusClause clause = new StatusClause();
+		for(PositionedInstance instance : instances)
+			clause = clause.addIfValid(instance).get();
+		return clause;
+	}
+
 	@Test
 	public void testSubsetSymmetry_True() {
-		Predicate n = new Predicate("n", true, 2);
-		InstanceList list = new InstanceList(new Vector<Predicate>(n), 4);
+		PredicateDefinition definition = new PredicateDefinition(new Predicate("n", 2), true, false);
+		InstanceList list = new InstanceList(new Vector<PredicateDefinition>(definition), 4);
 		StatusClause accepted = getStatusClause(Arrays.asList(list.getInstance(0, true), list.getInstance(1, true)));
 		StatusClause tested = getStatusClause(Arrays.asList(list.getInstance(0, true), list.getInstance(2, true)));
 		assertTrue(accepted.equalsSymmetric(tested));
@@ -42,7 +52,7 @@ public class SubsetTest {
 	}
 
 	private StatusClause getStatusClause(List<PositionedInstance> instances) {
-		return StatusClause.buildClauseFromList(instances);
+		return buildClauseFromList(instances);
 	}
 	//endregion
 }

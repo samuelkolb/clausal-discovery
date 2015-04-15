@@ -37,14 +37,20 @@ public class Environment {
 	 * @return	True iff the given instance is consistent
 	 */
 	public boolean isValidInstance(Instance instance) {
-		return isValidInstance(instance.getPredicate(), instance.getVariableIndices());
+		return isValidInstance(instance.getDefinition(), instance.getVariableIndices());
 	}
 
-	public boolean isValidInstance(Predicate predicate, Vector<Integer> indices) {
+	/**
+	 * Determines whether a definition and indices are consistent with the typing information stored in this environment
+	 * @param definition	The definition to check
+	 * @param indices		The variable indices
+	 * @return	True iff the given instance is consistent
+	 */
+	public boolean isValidInstance(PredicateDefinition definition, Vector<Integer> indices) {
 		Map<Integer, Type> variables = new HashMap<>(variableTypes);
-		for(int i = 0; i < predicate.getArity(); i++) {
+		for(int i = 0; i < definition.getArity(); i++) {
 			Integer integer = indices.get(i);
-			Type type = predicate.getTypes().get(i);
+			Type type = definition.getTypes().get(i);
 			if(!variables.containsKey(integer) || variables.get(integer).isSuperTypeOf(type))
 				variables.put(integer, type);
 			else if(!type.isSuperTypeOf(variables.get(integer)))

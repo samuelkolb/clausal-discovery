@@ -1,5 +1,6 @@
 package logic.expression.formula;
 
+import logic.bias.Type;
 import vector.Vector;
 import logic.expression.term.Term;
 import logic.expression.visitor.ExpressionVisitor;
@@ -44,8 +45,12 @@ public class PredicateInstance extends Atom {
 		int arity = getPredicate().getArity();
 		if(getTerms().length != arity)
 			throw new IllegalArgumentException(String.format(arityError, getTerms().length, predicate.getName(), arity));
-		for(int i = 0; i < getPredicate().getArity(); i++)
-			getTerm(i).setType(getPredicate().getTypes().e(i));
+		for(int i = 0; i < getPredicate().getArity(); i++) {
+			Type type = getPredicate().getTypes().e(i);
+			Term term = getTerm(i);
+			if(!type.isSuperTypeOf(term.getType()))
+				throw new IllegalArgumentException("Term " + term + " should be " + type + ", was " + term.getType());
+		}
 	}
 
 	//endregion

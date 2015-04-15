@@ -3,7 +3,7 @@ package clausal_discovery.instance;
 import association.HashPairing;
 import association.Pairing;
 import basic.StringUtil;
-import logic.expression.formula.Predicate;
+import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
 import vector.Vector;
 
@@ -26,7 +26,7 @@ public class InstanceList {
 	 * @param predicates	The predicates to use
 	 * @param variables		The number of variables to be used
 	 */
-	public InstanceList(Vector<Predicate> predicates, int variables) {
+	public InstanceList(Vector<PredicateDefinition> predicates, int variables) {
 		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
 	}
 
@@ -68,8 +68,8 @@ public class InstanceList {
 		return this.pairing.getKey(instance);
 	}
 
-	private Pairing<Integer, Instance> getInstances(Vector<Predicate> predicates, int variables) {
-		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(predicates);
+	private Pairing<Integer, Instance> getInstances(Vector<PredicateDefinition> definitions, int variables) {
+		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(definitions);
 		List<Instance> instanceList = new ArrayList<>();
 		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.length)) {
 			InstanceSetPrototype instanceSetPrototype = instanceSetPrototypes.get(choice.getDistinctCount() - 1);
@@ -90,10 +90,10 @@ public class InstanceList {
 		return choices;
 	}
 
-	private int getMaximalVariables(int variables, Vector<Predicate> predicates) {
+	private int getMaximalVariables(int variables, Vector<PredicateDefinition> predicates) {
 		int max = 0;
-		for(Predicate predicate : predicates)
-			max = Math.max(max, predicate.getArity());
+		for(PredicateDefinition definition : predicates)
+			max = Math.max(max, definition.getPredicate().getArity());
 		return  max > 1 ? variables : 1;
 	}
 

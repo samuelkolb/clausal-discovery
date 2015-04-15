@@ -1,13 +1,13 @@
 package clausal_discovery.core;
 
 import clausal_discovery.instance.InstanceList;
-import clausal_discovery.instance.PositionedInstance;
 import clausal_discovery.validity.ParallelValidityCalculator;
 import clausal_discovery.validity.ValidityCalculator;
 import log.Log;
 import logic.example.Example;
-import logic.expression.formula.*;
-import logic.expression.term.Variable;
+import logic.expression.formula.Clause;
+import logic.expression.formula.Formula;
+import logic.expression.formula.InfixPredicate;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Structure;
@@ -17,11 +17,15 @@ import vector.Vector;
 import vector.WriteOnceVector;
 import version3.algorithm.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * The variable refinement class implements the ExpansionOperator and ResultPolicy for clausal discovery.
@@ -46,7 +50,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		@Override
 		public void run() {
 			Log.LOG.saveState()/*.off()/**/;
-			if(!executor.entails(getProgram(), new Theory(getClause(node.getValue())))) {
+			if(!entails(result.getSolutions(), node.getValue())) {
 				result.addNode(node);
 				Log.LOG.print("NEW      ");
 			} else {
@@ -54,22 +58,9 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			}
 			Log.LOG.printLine(node.getValue()).revert();
 		}
-
-		private LogicProgram getProgram() {
-			List<Formula> formulas = new ArrayList<>();
-			for(StatusClause statusClause : result.getSolutions())
-				formulas.add(VariableRefinement.this.getClause(statusClause));
-
-			formulas.addAll(getLogicBase().getSymmetryFormulas());
-			Vector<Theory> theories = new WriteOnceVector<>(new Theory[1]);
-			theories.add(new Theory(formulas));
-			//Log.LOG.printLine("Does " + new IdpProgramPrinter().printTheory(new Theory(formulas), "T", "V") + " entail " + IdpExpressionPrinter.print(getClause(node.getValue())) + "?");
-			return new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
-		}
-
 	}
 
-	private static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
+	public static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
 
 	// region Variables
 
@@ -180,7 +171,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	public boolean processSolution(Result<StatusClause> result, Node<StatusClause> node) {
 		if(!isValid(node))
 			return true;
-		new EntailmentTestRunnable(result, node).run();
+		//result.addNode(node);
+		new EntailmentTestRunnable(result, node).run(); // TODO
 		//resultQueue.execute(new EntailmentTestRunnable(result, node));
 		return false;
 	}
@@ -192,6 +184,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		getExcessTimer().start();
 		try {
 			resultQueue.awaitTermination(10, TimeUnit.DAYS);
+			prune(result);
 		} catch(InterruptedException e) {
 			throw new IllegalStateException(e);
 		} finally {
@@ -200,17 +193,29 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	}
 
 	/**
-	 * Returns the Formula represented by the given status clause
-	 * @param statusClause	The status clause
-	 * @return	A logical Formula
+	 * Returns whether the given set of clauses entails the given clause
+	 * @param clauses	The set of clauses
+	 * @param clause	The potentially entailed clause
+	 * @return	True iff the set of clauses logically entails the given clause
 	 */
-	public Clause getClause(StatusClause statusClause) {
-		return getClause(statusClause.getInstances());
+	public boolean entails(List<StatusClause> clauses, StatusClause clause) {
+		return executor.entails(getProgram(clauses), new Theory(getClause(clause)));
 	}
 
 	// endregion
 
 	// region Private methods
+
+	protected LogicProgram getProgram(List<StatusClause> clauses) {
+		List<Formula> formulas = clauses.stream().map(this::getClause).collect(Collectors.toList());
+		formulas.addAll(getLogicBase().getSymmetryFormulas());
+		Vector<Theory> theories = new Vector<Theory>(new Theory(formulas));
+		return new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
+	}
+
+	protected Clause getClause(StatusClause clause) {
+		return new StatusClauseConverter().apply(clause);
+	}
 
 	private List<StatusClause> getChildren(StatusClause clause) {
 		List<StatusClause> children = new ArrayList<>();
@@ -229,25 +234,6 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return validityCalculator.isValid(getClause(node.getValue()));
 	}
 
-	protected Clause getClause(Vector<PositionedInstance> instances) {
-		List<Atom> bodyAtoms = new ArrayList<>();
-		List<Atom> headAtoms = new ArrayList<>();
-		Map<Integer, Variable> variableMap = new HashMap<>();
-		for(PositionedInstance instance : instances)
-			(instance.isInBody() ? bodyAtoms : headAtoms).add(instance.getInstance().makeAtom(variableMap));
-		applyOI(variableMap.values(), bodyAtoms);
-		return Clause.clause(bodyAtoms, headAtoms);
-	}
-
-	private void applyOI(Collection<Variable> variables, List<Atom> bodyAtoms) {
-		Variable[] array = variables.toArray(new Variable[variables.size()]);
-		for(int i = 0; i < array.length; i++)
-			for(int j = i + 1; j < array.length; j++)
-				if(array[i].getType().isSuperTypeOf(array[j].getType())
-						|| array[j].getType().isSuperTypeOf(array[i].getType()))
-					bodyAtoms.add(INEQUALITY.getInstance(array[i], array[j]));
-	}
-
 	private boolean subsetOccurs(StatusClause statusClause) {
 		for(StatusClause resultClause : resultSet)
 			if(resultClause.isSubsetOf(statusClause)) {
@@ -260,5 +246,25 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 			Log.LOG.printLine("INFO ");
 		return false;
 	}
+
+	protected void prune(Result<StatusClause> result) {
+		pruneOne(result, 0);
+	}
+
+	protected void pruneOne(Result<StatusClause> result, int index) {
+		List<StatusClause> clauses = result.getSolutions();
+		for(int i = index; i < result.getSolutionCount() - 1; i++) {
+			List<StatusClause> list = new ArrayList<>(result.getSolutionCount() - 1);
+			for(int j = 0; j < result.getSolutionCount(); j++)
+				if(j != i)
+					list.add(clauses.get(j));
+			if(entails(list, clauses.get(i))) {
+				result.removeNode(i);
+				pruneOne(result, i);
+				return;
+			}
+		}
+	}
+
 	// endregion
 }

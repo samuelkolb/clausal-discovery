@@ -1,6 +1,7 @@
 package clausal_discovery.run;
 
 import clausal_discovery.core.StatusClause;
+import clausal_discovery.core.StatusClauseConverter;
 import clausal_discovery.core.VariableRefinement;
 import log.Log;
 import version3.algorithm.Node;
@@ -73,7 +74,7 @@ public class ClausePrintingPlugin implements Plugin<StatusClause> {
 	}
 
 	private String toString(Node<StatusClause> node) {
-		return IdpExpressionPrinter.print(refinement.getClause(node.getValue()));
+		return IdpExpressionPrinter.print(new StatusClauseConverter().apply(node.getValue()));
 	}
 
 	//endregion

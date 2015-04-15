@@ -1,5 +1,6 @@
 package logic.parse;
 
+import clausal_discovery.core.PredicateDefinition;
 import log.Log;
 import util.Pair;
 import vector.Vector;
@@ -11,8 +12,10 @@ import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.expression.term.Term;
+import vector.WriteOnceVector;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The logic parser state stores state information that is added during the parsing of a logic file
@@ -24,7 +27,7 @@ public class LogicParserState {
 	//region Variables
 	private final Map<String, Type> types = new HashMap<>();
 
-	private final Map<String, Predicate> predicates = new HashMap<>();
+	private final Map<String, PredicateDefinition> predicates = new HashMap<>();
 
 	private final Map<String, Example> examples = new HashMap<>();
 
@@ -34,7 +37,7 @@ public class LogicParserState {
 
 	private final Map<String, Constant> constants = new HashMap<>();
 
-	private final List<Predicate> searchPredicates = new ArrayList<>();
+	private final List<PredicateDefinition> searchPredicates = new ArrayList<>();
 	//endregion
 
 	//region Construction
@@ -92,15 +95,16 @@ public class LogicParserState {
 	 * Adds a predicate definition with the given name and type names
 	 * @param predicateName	The name of the predicate
 	 * @param symmetric		Whether or not this is a symmetric predicate
+	 * @param calculated	Whether or not this is a calculated predicate
 	 * @param typeNames		The names of the predicate arguments types
 	 */
-	public void addPredicate(String predicateName, boolean symmetric, String[] typeNames) {
+	public void addPredicate(String predicateName, boolean symmetric, boolean calculated, String[] typeNames) {
 		Log.LOG.printLine("INFO added predicate " + predicateName + Arrays.toString(typeNames));
 		Type[] types = new Type[typeNames.length];
 		for(int i = 0; i < typeNames.length; i++)
 			types[i] = this.types.get(typeNames[i]);
-		Predicate predicate = new Predicate(predicateName, symmetric, types);
-		predicates.put(predicateName, predicate);
+		Predicate predicate = new Predicate(predicateName, types);
+		predicates.put(predicateName, new PredicateDefinition(predicate, symmetric, calculated));
 	}
 
 	/**
@@ -141,7 +145,7 @@ public class LogicParserState {
 		Term[] terms = new Term[constantNames.length];
 		for(int i = 0; i < constantNames.length; i++)
 			terms[i] = constants.get(constantNames[i]);
-		instances.add(new PredicateInstance(predicates.get(predicateName), terms));
+		instances.add(new PredicateInstance(predicates.get(predicateName).getPredicate(), terms));
 	}
 
 	/**
@@ -172,20 +176,21 @@ public class LogicParserState {
 	}
 
 	public Setup getSetup() {
-		Collection<Predicate> values = this.predicates.values();
-		Vector<Predicate> predicates = new Vector<>(values.toArray(new Predicate[values.size()]));
-		return new Setup(predicates);
+		Collection<PredicateDefinition> values = this.predicates.values();
+		Vector<PredicateDefinition> definitions = new Vector<>(PredicateDefinition.class, values);
+		Vector<Constant> constants = new Vector<>(Constant.class, this.constants.values());
+		return new Setup(definitions, constants);
 	}
 
 	public LogicBase getLogicBase() {
 		Collection<Example> values = this.examples.values();
 		Vector<Example> examples = new Vector<>(values.toArray(new Example[values.size()]));
 
-		Vector<Predicate> search;
+		Vector<PredicateDefinition> search;
 		if(searchPredicates.isEmpty())
-			search = new Vector<>(predicates.values().toArray(new Predicate[predicates.values().size()]));
+			search = new Vector<>(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
 		else
-			search = new Vector<>(searchPredicates.toArray(new Predicate[searchPredicates.size()]));
+			search = new Vector<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
 		return new Knowledge(getSetup().getVocabulary(), examples, search);
 	}
 

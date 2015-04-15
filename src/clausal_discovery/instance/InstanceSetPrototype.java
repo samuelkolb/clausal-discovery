@@ -1,6 +1,7 @@
 package clausal_discovery.instance;
 
 import clausal_discovery.core.Environment;
+import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
 import vector.Vector;
 import vector.WriteOnceVector;
@@ -52,39 +53,39 @@ public class InstanceSetPrototype {
 		return instances;
 	}
 
-	public static Vector<InstanceSetPrototype> createInstanceSets(Vector<Predicate> predicates) {
-		int maxArity = predicates.get(0).getArity();
-		for(int i = 1; i < predicates.size(); i++)
-			maxArity = Math.max(maxArity, predicates.get(i).getArity());
+	public static Vector<InstanceSetPrototype> createInstanceSets(Vector<PredicateDefinition> definitions) {
+		int maxArity = definitions.get(0).getArity();
+		for(int i = 1; i < definitions.size(); i++)
+			maxArity = Math.max(maxArity, definitions.get(i).getArity());
 
 		Vector<InstanceSetPrototype> instanceSetPrototypes = new WriteOnceVector<>(new InstanceSetPrototype[maxArity]);
-		List<Predicate> predicateSet = new ArrayList<>(predicates);
+		List<PredicateDefinition> definitionsSet = new ArrayList<>(definitions);
 		for(int i = 0; i < maxArity; i++) {
-			List<Predicate> newSet = new ArrayList<>();
-			for(Predicate predicate : predicateSet)
-				if(predicate.getArity() > i)
-					newSet.add(predicate);
-			predicateSet = newSet;
-			instanceSetPrototypes.add(createInstanceSet(predicateSet, i + 1));
+			List<PredicateDefinition> newSet = new ArrayList<>();
+			for(PredicateDefinition definition : definitionsSet)
+				if(definition.getArity() > i)
+					newSet.add(definition);
+			definitionsSet = newSet;
+			instanceSetPrototypes.add(createInstanceSet(definitionsSet, i + 1));
 		}
 		return instanceSetPrototypes;
 	}
 
-	public static InstanceSetPrototype createInstanceSet(Collection<Predicate> predicateSet, int rank) {
+	public static InstanceSetPrototype createInstanceSet(Collection<PredicateDefinition> definitions, int rank) {
 		List<InstancePrototype> prototypes = new ArrayList<>();
-		for(Predicate predicate : predicateSet) {
-			List<Numbers.Permutation> permutations = Numbers.take(rank, predicate.getArity());
+		for(PredicateDefinition definition : definitions) {
+			List<Numbers.Permutation> permutations = Numbers.take(rank, definition.getArity());
 			for(Numbers.Permutation permutation : permutations)
-				if(new Environment().isValidInstance(predicate, new Vector<>(permutation.getIntegerArray())))
-					prototypes.add(new InstancePrototype(predicate, permutation));
+				if(new Environment().isValidInstance(definition, new Vector<>(permutation.getIntegerArray())))
+					prototypes.add(new InstancePrototype(definition, permutation));
 		}
 		return new InstanceSetPrototype(new Vector<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
 	}
 
 	public static void main(String[] args) {
 		Type type = new Type("H");
-		Predicate p = new Predicate("p", type, Type.UNDEFINED, new Type("T"), type);
-		System.out.println(new Environment().isValidInstance(p, new Vector<Integer>(1, 1, 3, 2)));
+		PredicateDefinition d = new PredicateDefinition(new Predicate("p", type, Type.UNDEFINED, new Type("T"), type));
+		System.out.println(new Environment().isValidInstance(d, new Vector<Integer>(1, 1, 3, 2)));
 	}
 	//endregion
 }

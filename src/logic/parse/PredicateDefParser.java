@@ -24,16 +24,16 @@ public class PredicateDefParser extends MatchParser<LogicParserState> {
 
 	@Override
 	public boolean matches(String string, LogicParserState parseState) throws ParsingError {
-		if(!string.matches("(pred|symm)\\s+.*\\n"))
+		if(!string.matches("(pred|symm|calc)\\s+.*\\n"))
 			return false;
 		String[] parts = string.split("\\s+", 2);
 		if(parts.length < 2)
 			throw new ParsingError("Predicate declaration expects one argument");
-		readPredicateDefinition(parts[1], parts[0].equals("symm"), parseState);
+		readPredicateDefinition(parts[1], parts[0], parseState);
 		return true;
 	}
 
-	private void readPredicateDefinition(String string, boolean symmetric, LogicParserState state) throws ParsingError {
+	private void readPredicateDefinition(String string, String type, LogicParserState state) throws ParsingError {
 		Pair<String, String[]> predicate;
 		try {
 			predicate = state.parsePredicate(string);
@@ -46,7 +46,7 @@ public class PredicateDefParser extends MatchParser<LogicParserState> {
 		for(String arg : predicate.getSecond())
 			if(!state.containsType(arg))
 				throw new ParsingError("Use of unknown type '" + arg + "'");
-		state.addPredicate(predicate.getFirst(), symmetric, predicate.getSecond());
+		state.addPredicate(predicate.getFirst(), type.equals("symm"), type.equals("calc"), predicate.getSecond());
 	}
 	//endregion
 }

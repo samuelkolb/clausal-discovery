@@ -67,6 +67,8 @@ public class FileManager {
 		}
 		try {
 			File propertiesFile = new File(getTempDir(), fileName);
+			if(!propertiesFile.exists())
+				propertiesFile.createNewFile();
 			getProperties().load(new FileInputStream(propertiesFile));
 		} catch(IllegalArgumentException e) {
 			throw new IllegalStateException("Missing file: /" + folder + "/" + fileName, e);

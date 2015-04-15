@@ -1,15 +1,15 @@
-type index > int
+type number > int
 
 // position(queen, row)
-pred position(index, index)
+pred position(number, number)
 
 // gap(index1, index2, distance)
-pred gap(index, index, index)
+calc gap(number, number, number)
 
-search position
+search position gap
 
 example 1 {
-	const index 1 2 3 4
+	const number 1 2 3 4 0
 
 	position(1, 2)
 	position(2, 4)
@@ -18,7 +18,20 @@ example 1 {
 }
 
 example 2 {
-	const index 1
+	const number 1 2 3 4 0
 
-	position(1, 1)
+	position(1, 3)
+	position(2, 1)
+	position(3, 4)
+	position(4, 2)
+}
+
+example 3 {
+	const number 1 2 3 4 5 0
+
+	position(1, 2)
+	position(2, 4)
+	position(3, 1)
+	position(4, 3)
+	position(5, 5)
 }

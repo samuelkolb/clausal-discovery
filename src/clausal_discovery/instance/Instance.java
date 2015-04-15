@@ -1,5 +1,7 @@
 package clausal_discovery.instance;
 
+import clausal_discovery.core.PredicateDefinition;
+import logic.bias.Type;
 import logic.expression.formula.Atom;
 import logic.expression.formula.Predicate;
 import logic.expression.term.Term;
@@ -16,10 +18,14 @@ import java.util.Map;
 public class Instance {
 
 	//region Variables
-	private Predicate predicate;
+	private PredicateDefinition definition;
+
+	public PredicateDefinition getDefinition() {
+		return definition;
+	}
 
 	public Predicate getPredicate() {
-		return predicate;
+		return getDefinition().getPredicate();
 	}
 
 	private Vector<Integer> variableIndices;
@@ -40,12 +46,12 @@ public class Instance {
 
 	/**
 	 * Creates an instance
-	 * @param predicate         The predicate of this instance
+	 * @param definition        The predicate definition of this instance
 	 * @param variableIndices   The variable indices
 	 */
-	public Instance(Predicate predicate, Vector<Integer> variableIndices) {
-		assert predicate.getArity() == variableIndices.size();
-		this.predicate = predicate;
+	public Instance(PredicateDefinition definition, Vector<Integer> variableIndices) {
+		assert definition.getPredicate().getArity() == variableIndices.size();
+		this.definition = definition;
 		this.variableIndices = variableIndices;
 		this.max = variableIndices.get(0);
 		for(int i = 1; i < variableIndices.size(); i++)
@@ -58,7 +64,7 @@ public class Instance {
 
 	@Override
 	public String toString() {
-		return predicate.getName() + variableIndices.toString();
+		return getPredicate().getName() + variableIndices.toString();
 	}
 
 	@Override
@@ -67,13 +73,13 @@ public class Instance {
 		if(o == null || getClass() != o.getClass()) return false;
 
 		Instance instance = (Instance) o;
-		return predicate.equals(instance.predicate) && variableIndices.equals(instance.variableIndices);
+		return getPredicate().equals(instance.getPredicate()) && variableIndices.equals(instance.variableIndices);
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = predicate.hashCode();
+		int result = getPredicate().hashCode();
 		result = 31 * result + variableIndices.hashCode();
 		return result;
 	}
@@ -89,13 +95,18 @@ public class Instance {
 			Integer integer = getVariableIndices().get(i);
 			if(!variableMap.containsKey(integer))
 				variableMap.put(integer, getVariable(i, integer));
+			else if(variableMap.get(integer).getType().isSuperTypeOf(getPredicate().getTypes().get(i)))
+				variableMap.get(integer).setType(getPredicate().getTypes().get(i));
+			else if(!getPredicate().getTypes().get(i).isSuperTypeOf(variableMap.get(integer).getType()))
+				throw new IllegalStateException();
 			terms[i] = variableMap.get(integer);
 		}
 		return getPredicate().getInstance(terms);
 	}
 
 	private Variable getVariable(int i, Integer integer) {
-		return new Variable(getPredicate().getTypes().get(i).getName() + (integer + 1));
+		Type type = getPredicate().getTypes().get(i);
+		return new Variable(getPredicate().getTypes().get(i).getName() + (integer + 1), type);
 	}
 
 	//endregion

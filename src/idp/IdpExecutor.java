@@ -2,17 +2,24 @@ package idp;
 
 import basic.FileUtil;
 import basic.StringUtil;
+import clausal_discovery.core.StatusClause;
+import clausal_discovery.core.VariableRefinement;
 import idp.program.EntailsProgram;
 import idp.program.IdpProgram;
 import idp.program.ValidProgram;
 import log.Log;
+import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.LogicProgram;
 import logic.theory.Theory;
 import runtime.Terminal;
 import time.Stopwatch;
+import vector.Vector;
+import vector.WriteOnceVector;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -106,6 +113,9 @@ public class IdpExecutor implements LogicExecutor {
 	}
 
 	private boolean executeTest(IdpProgram idpProgram) throws IllegalStateException {
+		//Log.LOG.printLine(getDebugString(idpProgram));
+		//Log.LOG.printTitle("Program");
+		//Log.LOG.printLine(idpProgram.print()).newLine().newLine();
 		String string = executeSafe(idpProgram).trim();
 		try {
 			return getBoolean(string);

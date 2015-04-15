@@ -54,13 +54,6 @@ public class StatusClause {
 
 	// region Construction
 
-	public static StatusClause buildClauseFromList(List<PositionedInstance> instances) {
-		StatusClause clause = new StatusClause();
-		for(PositionedInstance instance : instances)
-			clause = clause.addIfValid(instance).get();
-		return clause;
-	}
-
 	/**
 	 * Creates a new status clause
 	 */
@@ -230,7 +223,7 @@ public class StatusClause {
 		Instance containedInstance = positionedInstance.getInstance();
 		if(!containedInstance.getPredicate().equals(instance.getPredicate()))
 			return false;
-		if(!instance.getPredicate().isSymmetric())
+		if(!instance.getDefinition().isSymmetric())
 			return containedInstance.getVariableIndices().equals(instance.getVariableIndices());
 		return containedInstance.getVariableIndices().sort().equals(instance.getVariableIndices().sort());
 	}
@@ -325,7 +318,7 @@ public class StatusClause {
 			PositionedInstance positionedInstance = list.get(i);
 			Instance instance = positionedInstance.getInstance();
 			InstanceList instanceList = positionedInstance.getInstanceList();
-			Instance newInstance = new Instance(instance.getPredicate(), getVariables(mapping, instance));
+			Instance newInstance = new Instance(instance.getDefinition(), getVariables(mapping, instance));
 			list.set(i, instanceList.getInstance(instanceList.getIndex(newInstance), positionedInstance.isInBody()));
 		}
 	}

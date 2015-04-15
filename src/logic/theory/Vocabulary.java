@@ -1,5 +1,6 @@
 package logic.theory;
 
+import clausal_discovery.core.PredicateDefinition;
 import vector.Vector;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
@@ -8,24 +9,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by samuelkolb on 30/10/14.
+ * Collects definitions and their typing information
+ *
+ * @author Samuel Kolb
  */
 public class Vocabulary {
 
-	private final Vector<Predicate> predicates;
+	private final Vector<PredicateDefinition> definitions;
 
-	public Vector<Predicate> getPredicates() {
-		return predicates;
+	public Vector<PredicateDefinition> getDefinitions() {
+		return definitions;
 	}
 
-	public Vocabulary(Vector<Predicate> predicates) {
-		this.predicates = predicates;
+	/**
+	 * Creates a new vocabulary with the given definitions
+	 * @param definitions	The definitions
+	 */
+	public Vocabulary(Vector<PredicateDefinition> definitions) {
+		this.definitions = definitions;
 	}
 
 	public Set<Type> getTypes() {
 		Set<Type> types = new HashSet<>();
-		for(Predicate predicate : getPredicates())
-			types.addAll(predicate.getTypes());
+		for(PredicateDefinition definition : getDefinitions())
+			types.addAll(definition.getTypes());
 		return types;
 	}
 }

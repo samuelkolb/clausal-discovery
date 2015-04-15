@@ -31,14 +31,6 @@ public class Predicate {
 		return types;
 	}
 
-	// IVAR symmetric - Whether this predicate is symmetric
-
-	private final boolean symmetric;
-
-	public boolean isSymmetric() {
-		return symmetric;
-	}
-
 	//endregion
 
 	//region Construction
@@ -50,37 +42,16 @@ public class Predicate {
 	 * @param arity	The arity (number of parameters) of the predicate
 	 */
 	public Predicate(String name, int arity) {
-		this(name, false, arity);
+		this(name, ArrayUtil.fill(new Type[arity], Type.UNDEFINED));
 	}
 
 	/**
 	 * Creates a new predicate
 	 * @param name		The predicate name
-	 * @param symmetric	Whether this predicate is symmetric or not
-	 * @param arity		The arity (number of parameters) of the predicate
-	 */
-	public Predicate(String name, boolean symmetric, int arity) {
-		this(name, symmetric, ArrayUtil.fill(new Type[arity], Type.UNDEFINED));
-	}
-
-	/**
-	 * Creates a new non-symmetric predicate with the given name, mode- and type declaration
-	 * @param name	The predicate name
-	 * @param types	The types of the parameters
-	 */
-	public Predicate(String name, Type... types) {
-		this(name, false, types);
-	}
-
-	/**
-	 * Creates a new predicate
-	 * @param name		The predicate name
-	 * @param symmetric	Whether this predicate is symmetric or not
 	 * @param types		The types of the parameters
 	 */
-	public Predicate(String name, boolean symmetric, Type... types) {
+	public Predicate(String name, Type... types) {
 		this.name = name;
-		this.symmetric = symmetric;
 		this.types = ArrayUtil.wrap(types);
 	}
 

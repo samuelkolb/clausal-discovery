@@ -37,7 +37,10 @@ public class Variable extends NamedTerm {
 		return false;
 	}
 
-
+	@Override
+	public String toString() {
+		return getName();
+	}
 
 	//endregion
 }

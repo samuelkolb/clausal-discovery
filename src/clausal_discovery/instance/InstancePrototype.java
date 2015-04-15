@@ -1,5 +1,6 @@
 package clausal_discovery.instance;
 
+import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
 import vector.Vector;
 import logic.expression.formula.Predicate;
@@ -12,10 +13,14 @@ import logic.expression.formula.Predicate;
  */
 public class InstancePrototype {
 
-	private Predicate predicate;
+	private PredicateDefinition definition;
 
-	public Predicate getPredicate() {
-		return predicate;
+	public PredicateDefinition getDefinition() {
+		return definition;
+	}
+
+	private Predicate getPredicate() {
+		return getDefinition().getPredicate();
 	}
 
 	private Numbers.Permutation permutation;
@@ -32,15 +37,15 @@ public class InstancePrototype {
 
 	/**
 	 * Create a prototype instance
-	 * @param predicate     The associated predicate
+	 * @param definition    The associated predicate definition
 	 * @param permutation   The permutation indicating the variable order
 	 */
-	public InstancePrototype(Predicate predicate, Numbers.Permutation permutation) {
-		assert permutation.getArray().length == predicate.getArity();
+	public InstancePrototype(PredicateDefinition definition, Numbers.Permutation permutation) {
+		assert permutation.getArray().length == definition.getPredicate().getArity();
 		int max = permutation.getArray()[0];
 		for(int i = 1; i < permutation.getArray().length; i++)
 			max = Math.max(permutation.getArray()[i], max);
-		this.predicate = predicate;
+		this.definition = definition;
 		this.permutation = permutation;
 		this.rank = max + 1;
 	}
@@ -52,7 +57,7 @@ public class InstancePrototype {
 	 */
 	public Instance instantiate(int[] indices) {
 		Vector<Integer> variableIndices = new Vector<>(getPermutation().substitute(indices).getIntegerArray());
-		return new Instance(getPredicate(), variableIndices);
+		return new Instance(getDefinition(), variableIndices);
 	}
 
 	@Override

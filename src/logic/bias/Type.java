@@ -10,12 +10,19 @@ import java.util.Optional;
 public class Type {
 
 	//region Variables
-	public static final Type UNDEFINED = new Type();
+	public static final Type INT = createBuiltIn("int");
+	public static final Type UNDEFINED = createBuiltIn("Undefined");
 
 	private final String name;
 
 	public String getName() {
 		return name;
+	}
+
+	private final boolean builtIn;
+
+	public boolean isBuiltIn() {
+		return builtIn;
 	}
 
 	private final Optional<Type> parent;
@@ -42,26 +49,34 @@ public class Type {
 
 	//region Public methods
 
-	private Type() {
-		this.name = "Undefined";
-		this.parent = Optional.empty();
-	}
-
+	/**
+	 * Create a new type without parent
+	 * @param name	The name of the new type
+	 */
 	public Type(String name) {
-		this(name, UNDEFINED);
+		this(name, false, Optional.of(UNDEFINED));
 	}
 
-	private Type(String name, Type parent) {
-		if(UNDEFINED.name.equals(name))
-			throw new IllegalArgumentException("The name \"Undefined\" is reserved");
+	private Type(String name, boolean builtIn, Optional<Type> parent) {
 		this.name = name;
-		this.parent = Optional.of(parent);
+		this.builtIn = builtIn;
+		this.parent = parent;
 	}
 
+	/**
+	 * Create a subtype whose parent type will be this tye
+	 * @param name	The name of the new type
+	 * @return	A new type where <code>return.getName().equals(name)</code> and <code>return.getParent() == this</code>
+	 */
 	public Type getSubtype(String name) {
-		return new Type(name, this);
+		return new Type(name, false, Optional.of(this));
 	}
 
+	/**
+	 * Determines whether this type is a super type of the given type
+	 * @param type	The potential subtype
+	 * @return	True if the given type is a subtype of this type
+	 */
 	public boolean isSuperTypeOf(Type type) {
 		return type.equals(this) || type.hasParent() && isSuperTypeOf(type.getParent());
 	}
@@ -69,6 +84,10 @@ public class Type {
 	@Override
 	public String toString() {
 		return getName();
+	}
+
+	protected static Type createBuiltIn(String name) {
+		return new Type(name, true, Optional.empty());
 	}
 
 	//endregion

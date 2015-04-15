@@ -12,6 +12,6 @@ public class NQueensSmartClient {
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		new RunClient().run(new Configuration.FullFileConfiguration("nqueens_smart", 4, 4));
+		new RunClient().run(new Configuration.FullFileConfiguration("nqueens_smart", 3, 4));
 	}
 }

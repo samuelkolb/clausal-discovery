@@ -1,5 +1,7 @@
 package logic.example;
 
+import clausal_discovery.core.PredicateDefinition;
+import logic.expression.term.Constant;
 import vector.Vector;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
@@ -16,25 +18,45 @@ import java.util.Set;
 public class Setup {
 
 	//region Variables
+
+	// IVAR vocabulary - The vocabulary of this setup
+
 	private final Vocabulary vocabulary;
 
 	public Vocabulary getVocabulary() {
 		return vocabulary;
 	}
 
+	// IVAR constants - The constants defined in this setup
+
+	private final Vector<Constant> constants;
+
+	public Vector<Constant> getConstants() {
+		return constants;
+	}
+
 	//endregion
 
 	//region Construction
 
-	public Setup(Vector<Predicate> predicates) {
-		this.vocabulary = new Vocabulary(predicates);
+	/**
+	 * Creates a new setup
+	 * @param definitions	The predicate definitions to be used
+	 * @param constants		The constants to be used
+	 */
+	public Setup(Vector<PredicateDefinition> definitions, Vector<Constant> constants) {
+		this.vocabulary = new Vocabulary(definitions);
+		this.constants = constants;
 	}
 
 	//endregion
 
 	//region Public methods
 	public Set<Predicate> getPredicates() {
-		return new HashSet<>(getVocabulary().getPredicates());
+		HashSet<Predicate> predicates = new HashSet<>();
+		for(PredicateDefinition definition : getVocabulary().getDefinitions())
+			predicates.add(definition.getPredicate());
+		return predicates;
 	}
 
 	public Set<Type> getTypes() {

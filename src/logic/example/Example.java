@@ -2,15 +2,15 @@ package logic.example;
 
 import association.Association;
 import association.HashAssociation;
-import vector.Vector;
+import clausal_discovery.core.PredicateDefinition;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
-import logic.expression.term.Term;
 import logic.expression.visitor.ExpressionLogicPrinter;
 import logic.theory.Structure;
 import logic.theory.StructureBuilder;
+import vector.Vector;
 
 import java.util.Set;
 
@@ -85,11 +85,15 @@ public class Example {
 	private void buildPredicates(StructureBuilder builder) {
 		Association<Predicate, PredicateInstance> predicateAssociation = new HashAssociation<>();
 		buildPredicates(predicateAssociation);
-		for(Predicate predicate : getSetup().getPredicates())
-			if(predicateAssociation.containsKey(predicate))
-				builder.addPredicateInstances(predicate, predicateAssociation.getValues(predicate));
-			else
-				builder.addEmptyPredicate(predicate);
+		for(PredicateDefinition definition : getSetup().getVocabulary().getDefinitions()) {
+			Predicate predicate = definition.getPredicate();
+			if(!definition.isCalculated()) {
+				if(predicateAssociation.containsKey(predicate))
+					builder.addPredicateInstances(predicate, predicateAssociation.getValues(predicate));
+				else
+					builder.addEmptyPredicate(predicate);
+			}
+		}
 	}
 
 	private void buildPredicates(Association<Predicate, PredicateInstance> association) {
@@ -98,12 +102,14 @@ public class Example {
 	}
 
 	private void buildConstants(Association<Type, Constant> constants) {
-		for(PredicateInstance instance : instances)
-			for(Term term : instance.getTerms())
-				if(term instanceof Constant) {
-					Constant constant = (Constant) term;
-					constants.associate(constant.getType(), constant);
-				}
+		for(Constant constant : getSetup().getConstants())
+			addConstant(constants, constant.getType(), constant);
+	}
+
+	private void addConstant(Association<Type, Constant> constants, Type type, Constant constant) {
+		constants.associate(type, constant);
+		if(type.hasParent() && type.getParent().isBuiltIn())
+			addConstant(constants, type.getParent(), constant);
 	}
 
 	@Override

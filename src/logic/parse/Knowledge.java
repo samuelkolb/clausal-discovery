@@ -3,6 +3,7 @@ package logic.parse;
 import basic.ArrayUtil;
 import basic.StringUtil;
 import clausal_discovery.core.LogicBase;
+import clausal_discovery.core.PredicateDefinition;
 import clausal_discovery.instance.Instance;
 import idp.IdpProgramPrinter;
 import logic.bias.Type;
@@ -41,10 +42,10 @@ public class Knowledge implements LogicBase {
 		return examples;
 	}
 
-	private final Vector<Predicate> searchPredicates;
+	private final Vector<PredicateDefinition> searchPredicates;
 
 	@Override
-	public Vector<Predicate> getSearchPredicates() {
+	public Vector<PredicateDefinition> getSearchPredicates() {
 		return searchPredicates;
 	}
 
@@ -54,7 +55,7 @@ public class Knowledge implements LogicBase {
 	 * @param examples         	The list of examples
 	 * @param searchPredicates  The list of search predicates
 	 */
-	public Knowledge(Vocabulary vocabulary, Vector<Example> examples, Vector<Predicate> searchPredicates) {
+	public Knowledge(Vocabulary vocabulary, Vector<Example> examples, Vector<PredicateDefinition> searchPredicates) {
 		this.vocabulary = vocabulary;
 		this.examples = examples;
 		this.searchPredicates = searchPredicates;
@@ -69,17 +70,18 @@ public class Knowledge implements LogicBase {
 	@Override
 	public List<Formula> getSymmetryFormulas() {
 		List<Formula> formulas = new ArrayList<>();
-		for(Predicate predicate : getSearchPredicates().filter(Predicate::isSymmetric)) {
+		for(PredicateDefinition definition : getSearchPredicates().filter(PredicateDefinition::isSymmetric)) {
+			Predicate predicate = definition.getPredicate();
 			Vector<Integer> variableIndices = ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1));
 			Map<Integer, Variable> variableMap = new HashMap<>();
 			for(Integer index : variableIndices) {
 				Type type = predicate.getTypes().get(index);
 				variableMap.put(index, new Variable(type.getName() + index, type));
 			}
-			Instance body = new Instance(predicate, variableIndices);
+			Instance body = new Instance(definition, variableIndices);
 			List<Numbers.Permutation> permutations = Numbers.getPermutations(predicate.getArity());
 			for(int i = 1; i < permutations.size(); i++) {
-				Instance head = new Instance(predicate, new Vector<>(permutations.get(i).getIntegerArray()));
+				Instance head = new Instance(definition, new Vector<>(permutations.get(i).getIntegerArray()));
 				formulas.add(Clause.horn(head.makeAtom(variableMap), body.makeAtom(variableMap)));
 			}
 		}

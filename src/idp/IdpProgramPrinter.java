@@ -1,8 +1,8 @@
 package idp;
 
+import clausal_discovery.core.PredicateDefinition;
 import logic.bias.Type;
 import logic.expression.formula.Formula;
-import logic.expression.formula.Predicate;
 import logic.theory.*;
 
 /**
@@ -42,13 +42,15 @@ public class IdpProgramPrinter extends ProgramPrinter {
 		StringBuilder builder = new StringBuilder();
 		builder.append("vocabulary ").append(name).append(" {\n");
 		for(Type type : vocabulary.getTypes()) {
+			if(type.isBuiltIn())
+				continue;
 			builder.append("\ttype ").append(type.getName());
 			if(type.hasParent() && !type.getParent().equals(Type.UNDEFINED))
 				builder.append(" isa ").append(type.getParent().getName());
 			builder.append('\n');
 		}
-		for(Predicate predicate : vocabulary.getPredicates())
-			builder.append("\t").append(predicate).append("\n");
+		for(PredicateDefinition definition : vocabulary.getDefinitions())
+			builder.append("\t").append(definition.getPredicate()).append("\n");
 		builder.append("}\n\n");
 		return builder.toString();
 	}
@@ -57,8 +59,11 @@ public class IdpProgramPrinter extends ProgramPrinter {
 	public String printStructure(Structure structure, String name, String vocabularyName) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("structure ").append(name).append(":").append(vocabularyName).append(" {\n");
-		for(Structure.TypeElement typeElement : structure.getTypeElements())
+		for(Structure.TypeElement typeElement : structure.getTypeElements()) {
+			if(typeElement.getType().getName().equals("int"))
+				continue;
 			builder.append("\t").append(typeElement.print()).append("\n");
+		}
 		for(Structure.PredicateElement predicateElement : structure.getPredicateElements())
 			builder.append("\t").append(predicateElement.print()).append("\n");
 		builder.append("}\n\n");

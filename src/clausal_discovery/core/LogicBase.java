@@ -31,7 +31,7 @@ public interface LogicBase {
 	 * Returns the predicates that can be used in clauses
 	 * @return	A list of predicates
 	 */
-	public Vector<Predicate> getSearchPredicates();
+	public Vector<PredicateDefinition> getSearchPredicates();
 
 	/**
 	 * Returns the formulas that describe the symmetries of predicates in this logic base

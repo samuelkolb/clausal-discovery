@@ -1,5 +1,7 @@
 package logic.expression.term;
 
+import basic.StringUtil;
+import log.Log;
 import logic.bias.Type;
 import logic.expression.Expression;
 
@@ -11,17 +13,32 @@ import logic.expression.Expression;
 public abstract class Term implements Expression {
 
 	//region Variables
+
 	private Type type;
 
 	public Type getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
-		if(this.type == Type.UNDEFINED)
+	/**
+	 * Tests whether the given type can be assigned to this term
+	 * @param type	The type to assign
+	 * @return	True iff the given type can be assigned
+	 */
+	public boolean canAssign(Type type) {
+		return getType().isSuperTypeOf(type);
+	}
+
+	/**
+	 * Sets the type of this term to the given type
+	 * @param type	The type to assign
+	 * @throws java.lang.IllegalArgumentException	Iff <code>!canAssign(type)</code>
+	 */
+	public void setType(Type type) throws IllegalArgumentException {
+		if(canAssign(type))
 			this.type = type;
-		else if(type != Type.UNDEFINED && this.type != type)
-			throw new IllegalStateException("Type " + type + " could not be assigned to variable of type " +this.type);
+		else
+			throw new IllegalArgumentException("Cannot set type of " + this + "(" + getType() + ") to " + type);
 	}
 	//endregion
 
