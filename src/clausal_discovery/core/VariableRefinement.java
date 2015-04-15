@@ -171,8 +171,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	public boolean processSolution(Result<StatusClause> result, Node<StatusClause> node) {
 		if(!isValid(node))
 			return true;
-		//result.addNode(node);
-		new EntailmentTestRunnable(result, node).run(); // TODO
+		new EntailmentTestRunnable(result, node).run();
 		//resultQueue.execute(new EntailmentTestRunnable(result, node));
 		return false;
 	}
