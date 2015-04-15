@@ -108,7 +108,7 @@ public class Example {
 
 	private void addConstant(Association<Type, Constant> constants, Type type, Constant constant) {
 		constants.associate(type, constant);
-		if(type.hasParent() && type.getParent().isBuiltIn())
+		if(type.hasParent() && !type.getParent().isBuiltIn())
 			addConstant(constants, type.getParent(), constant);
 	}
 

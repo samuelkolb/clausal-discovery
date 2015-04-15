@@ -1,7 +1,5 @@
 package logic.expression.term;
 
-import basic.StringUtil;
-import log.Log;
 import logic.bias.Type;
 import logic.expression.Expression;
 
@@ -45,7 +43,7 @@ public abstract class Term implements Expression {
 	//region Construction
 
 	Term() {
-		this(Type.UNDEFINED);
+		this(Type.GENERIC);
 	}
 
 	Term(Type type) {

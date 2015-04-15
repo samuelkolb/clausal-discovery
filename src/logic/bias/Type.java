@@ -9,20 +9,37 @@ import java.util.Optional;
  */
 public class Type {
 
+	private static class GenericType extends Type {
+
+		private GenericType() {
+			super("Generic", Optional.empty());
+		}
+
+		@Override
+		public boolean isSuperTypeOf(Type type) {
+			return true;
+		}
+	}
+
+	private static class BuiltInType extends Type {
+
+		private BuiltInType(String name) {
+			super(name);
+		}
+
+		@Override
+		public boolean isBuiltIn() {
+			return true;
+		}
+	}
+
 	//region Variables
-	public static final Type INT = createBuiltIn("int");
-	public static final Type UNDEFINED = createBuiltIn("Undefined");
+	public static final Type GENERIC = new GenericType();
 
 	private final String name;
 
 	public String getName() {
 		return name;
-	}
-
-	private final boolean builtIn;
-
-	public boolean isBuiltIn() {
-		return builtIn;
 	}
 
 	private final Optional<Type> parent;
@@ -45,23 +62,24 @@ public class Type {
 
 	//region Construction
 
-	//endregion
-
-	//region Public methods
-
 	/**
 	 * Create a new type without parent
 	 * @param name	The name of the new type
 	 */
 	public Type(String name) {
-		this(name, false, Optional.of(UNDEFINED));
+		this(name, Optional.empty());
+		if(name.equals("Generic"))
+			throw new IllegalArgumentException("Generic is a reserved name");
 	}
 
-	private Type(String name, boolean builtIn, Optional<Type> parent) {
+	private Type(String name, Optional<Type> parent) {
 		this.name = name;
-		this.builtIn = builtIn;
 		this.parent = parent;
 	}
+
+	//endregion
+
+	//region Public methods
 
 	/**
 	 * Create a subtype whose parent type will be this tye
@@ -69,7 +87,7 @@ public class Type {
 	 * @return	A new type where <code>return.getName().equals(name)</code> and <code>return.getParent() == this</code>
 	 */
 	public Type getSubtype(String name) {
-		return new Type(name, false, Optional.of(this));
+		return new Type(name, Optional.of(this));
 	}
 
 	/**
@@ -86,8 +104,17 @@ public class Type {
 		return getName();
 	}
 
-	protected static Type createBuiltIn(String name) {
-		return new Type(name, true, Optional.empty());
+	public boolean isBuiltIn() {
+		return false;
+	}
+
+	/**
+	 * Create a built-in type
+	 * @param name	The name of the built in type
+	 * @return	A built-in type
+	 */
+	public static Type createBuiltIn(String name) {
+		return new BuiltInType(name);
 	}
 
 	//endregion

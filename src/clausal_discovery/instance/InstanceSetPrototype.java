@@ -81,11 +81,5 @@ public class InstanceSetPrototype {
 		}
 		return new InstanceSetPrototype(new Vector<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
 	}
-
-	public static void main(String[] args) {
-		Type type = new Type("H");
-		PredicateDefinition d = new PredicateDefinition(new Predicate("p", type, Type.UNDEFINED, new Type("T"), type));
-		System.out.println(new Environment().isValidInstance(d, new Vector<Integer>(1, 1, 3, 2)));
-	}
 	//endregion
 }

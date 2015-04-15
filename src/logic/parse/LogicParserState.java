@@ -12,10 +12,8 @@ import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.expression.term.Term;
-import vector.WriteOnceVector;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The logic parser state stores state information that is added during the parsing of a logic file
@@ -46,8 +44,8 @@ public class LogicParserState {
 	 * Creates a new logic parser state containing only the unknown type and the integer type
 	 */
 	public LogicParserState() {
-		types.put("?", Type.UNDEFINED);
-		types.put("int", new Type("int"));
+		types.put("?", Type.GENERIC);
+		types.put("int", Type.createBuiltIn("int"));
 	}
 
 	//endregion

@@ -42,7 +42,7 @@ public class Predicate {
 	 * @param arity	The arity (number of parameters) of the predicate
 	 */
 	public Predicate(String name, int arity) {
-		this(name, ArrayUtil.fill(new Type[arity], Type.UNDEFINED));
+		this(name, ArrayUtil.fill(new Type[arity], Type.GENERIC));
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class Predicate {
 
 	@Override
 	public String toString() {
-		return getName() + "(" + StringUtil.join(", ", getTypes().getArray()) + ")";
+		return getName() + "(" + StringUtil.join(", ", (Object[]) getTypes().getArray()) + ")";
 	}
 
 	@Override

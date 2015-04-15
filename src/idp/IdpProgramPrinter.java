@@ -45,7 +45,7 @@ public class IdpProgramPrinter extends ProgramPrinter {
 			if(type.isBuiltIn())
 				continue;
 			builder.append("\ttype ").append(type.getName());
-			if(type.hasParent() && !type.getParent().equals(Type.UNDEFINED))
+			if(type.hasParent())
 				builder.append(" isa ").append(type.getParent().getName());
 			builder.append('\n');
 		}

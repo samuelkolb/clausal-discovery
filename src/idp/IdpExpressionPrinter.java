@@ -43,7 +43,7 @@ public class IdpExpressionPrinter extends ExpressionLogicPrinter {
 	}
 
 	private static String print(Variable variable) {
-		return variable.getType().equals(Type.UNDEFINED)
+		return variable.getType().equals(Type.GENERIC)
 				? variable.getName()
 				: variable.getName() + "[" + variable.getType().getName() + "]";
 	}
