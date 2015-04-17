@@ -38,4 +38,10 @@ public interface LogicBase {
 	 * @return	A list of formulas
 	 */
 	public List<Formula> getSymmetryFormulas();
+
+	/**
+	 * Splits the logic base into a list of logic bases containing one example each
+	 * @return	A list of logic bases, each of which contains one example
+	 */
+	public List<LogicBase> split();
 }

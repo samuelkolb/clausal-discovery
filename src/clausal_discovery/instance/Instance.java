@@ -9,6 +9,7 @@ import logic.expression.term.Variable;
 import vector.Vector;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An instance holds a predicate and variable indices, representing a predicate instance
@@ -64,7 +65,7 @@ public class Instance {
 
 	@Override
 	public String toString() {
-		return getPredicate().getName() + variableIndices.toString();
+		return getPredicate().getName() + variableIndices.stream().map(i -> "v" + i).collect(Collectors.toList());
 	}
 
 	@Override

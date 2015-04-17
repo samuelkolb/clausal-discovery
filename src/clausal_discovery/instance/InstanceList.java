@@ -101,7 +101,7 @@ public class InstanceList {
 	public String toString() {
 		List<String> strings = new ArrayList<>();
 		for(Integer key : this.pairing.keySet())
-			strings.add(key + " => " + get(key));
+			strings.add(key + ": " + get(key));
 		return StringUtil.join(", ", strings.toArray());
 	}
 }

@@ -7,6 +7,8 @@ pred position(pos, pos)
 // gap(index1, index2, distance)
 calc gap(pos, pos, number)
 
+// calc diagonal(pos, pos)
+
 search position gap
 
 example 1 {
@@ -38,4 +40,15 @@ example 3 {
 	position(3, 1)
 	position(4, 3)
 	position(5, 5)
+}
+
+example 4 {
+	const number 0
+	const pos 1 2 3 4 5
+
+	position(1, 1)
+	position(2, 3)
+	position(3, 5)
+	position(4, 2)
+	position(5, 4)
 }

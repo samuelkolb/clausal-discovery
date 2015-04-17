@@ -5,13 +5,13 @@ package clausal_discovery.run;
  *
  * @author Samuel Kolb
  */
-public class NQueensSmartClient {
+public class HousingClient {
 
 	/**
-	 * Run the nqueens smart example
+	 * Run the housing smart example
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		new RunClient().run(new Configuration.FullFileConfiguration("nqueens_smart", 3, 2));
+		new RunClient().run(new Configuration.FullFileConfiguration("housing", 4, 4));
 	}
 }

@@ -248,7 +248,6 @@ public class StatusClause {
 	}
 
 	protected boolean isRepresentativeWith(StatusClause clause, PositionedInstance instance) {
-		Log.LOG.printLine("INFO ");
 		for(int i = 0; i < getInstances().size(); i++)
 			if(!isRepresentativeWith(clause, i, instance))
 				return false;
@@ -267,7 +266,7 @@ public class StatusClause {
 
 		Optional<StatusClause> builtClause = getClause(instances);
 		boolean representative = !builtClause.isPresent() || isRepresentative(clause, builtClause.get());
-		Log.LOG.printLine("INFO " + (representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
+		Log.LOG.printLine("INFO SUBSET " + (representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
 		// TODO
 		return representative;
 	}

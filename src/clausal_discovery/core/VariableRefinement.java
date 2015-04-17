@@ -116,7 +116,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 */
 	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
 		this.instanceList = new InstanceList(logicBase.getSearchPredicates(), variables);
-		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
+		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n").printLine(getInstanceList()).newLine();
 		this.logicBase = logicBase;
 		this.executor = executor;
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
@@ -258,7 +258,8 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 				if(j != i)
 					list.add(clauses.get(j));
 			if(entails(list, clauses.get(i))) {
-				result.removeNode(i);
+				Node<StatusClause> pruned = result.removeNode(i);
+				Log.LOG.printLine("PRUNED   " + pruned);
 				pruneOne(result, i);
 				return;
 			}

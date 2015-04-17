@@ -43,8 +43,10 @@ public class EntailsProgram extends IdpProgram {
 		printProgram(builder);
 		builder.append(new IdpProgramPrinter().printTheory(theory, "T1", "V"));
 		StringBuilder procedure = new StringBuilder();
+		// TODO Check if valid
 		if(getBackgroundFile().isPresent())
-			procedure.append("t0 = merge(T0, B)\nt1 = merge(T1, B)\n");
+			/*procedure.append("t0 = merge(T0, B)\nt1 = T1\n");
+			/*/procedure.append("t0 = merge(T0, B)\nt1 = merge(T1, B)\n");/**/
 		else
 			procedure.append("t0 = T0\nt1 = T1\n");
 		procedure.append(ENTAIL_PROCEDURE.printProgram("t0", "t1"));

@@ -25,7 +25,7 @@ public class LogicParserState {
 	//region Variables
 	private final Map<String, Type> types = new HashMap<>();
 
-	private final Map<String, PredicateDefinition> predicates = new HashMap<>();
+	private final Map<String, PredicateDefinition> predicates = new LinkedHashMap<>();
 
 	private final Map<String, Example> examples = new HashMap<>();
 

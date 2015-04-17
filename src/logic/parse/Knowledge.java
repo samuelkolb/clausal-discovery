@@ -87,4 +87,12 @@ public class Knowledge implements LogicBase {
 		}
 		return formulas;
 	}
+
+	@Override
+	public List<LogicBase> split() {
+		List<LogicBase> logicBases = new ArrayList<>();
+		for(Example example : getExamples())
+			logicBases.add(new Knowledge(getVocabulary(), new Vector<Example>(example), getSearchPredicates()));
+		return logicBases;
+	}
 }
