@@ -39,7 +39,7 @@ public abstract class IdpProgram {
 
 	protected String mergeBackground(String theory) {
 		for(int i = 0; i < getKnowledgeBase().getBackgroundTheories().size(); i++)
-			theory = merge("B" + i, theory);
+			theory = merge(theory, "B" + i);
 		return theory;
 	}
 

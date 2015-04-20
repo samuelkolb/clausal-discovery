@@ -13,7 +13,6 @@ import runtime.Terminal;
 import time.Stopwatch;
 
 import java.io.*;
-import java.util.Optional;
 
 /**
  * Created by samuelkolb on 11/11/14.

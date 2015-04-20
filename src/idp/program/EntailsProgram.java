@@ -42,7 +42,7 @@ public class EntailsProgram extends IdpProgram {
 		printProgram(builder);
 		builder.append(new IdpProgramPrinter().printTheory(theory, "T1", "V"));
 		String program = String.format("t0 = %s\n", mergeBackground("T0"))
-				+ String.format("t1 = %s\n", "T1"/*/mergeBackground("T1")/**/)
+				+ String.format("t1 = %s\n", /*"T1"/*/mergeBackground("T1")/**/)
 				+ ENTAIL_PROCEDURE.printProgram("t0", "t1");
 		builder.append(new Procedure(program).print());
 		return builder.toString();
