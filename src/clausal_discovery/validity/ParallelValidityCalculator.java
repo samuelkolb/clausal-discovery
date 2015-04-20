@@ -20,18 +20,14 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 
 		private final Formula formula;
 
-		private final Vector<Structure> structures;
-
-		private CheckValidCallable(Formula formula, Vector<Structure> structures) {
+		private CheckValidCallable(Formula formula) {
 			this.formula = formula;
-			this.structures = structures;
 		}
 
 		@Override
 		public Boolean call() throws Exception {
 			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
-			KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, structures);
-			return getExecutor().testValidityTheory(program);
+			return getExecutor().testValidityTheory(getKnowledgeBase(theories));
 		}
 	}
 
@@ -61,7 +57,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 	@Override
 	public void submitFormula(Formula formula) {
 		if(!validityTable.containsKey(formula))
-			validityTable.put(formula, executorService.submit(new CheckValidCallable(formula, getStructures())));
+			validityTable.put(formula, executorService.submit(new CheckValidCallable(formula)));
 	}
 
 	@Override

@@ -22,18 +22,14 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 
 		private final Formula formula;
 
-		private final Vector<Structure> structures;
-
-		private CheckValidRunnable(Formula formula, Vector<Structure> structures) {
+		private CheckValidRunnable(Formula formula) {
 			this.formula = formula;
-			this.structures = structures;
 		}
 
 		@Override
 		public void run() {
 			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
-			KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, structures);
-			getValidityTable().put(formula, getExecutor().testValidityTheory(program));
+			getValidityTable().put(formula, getExecutor().testValidityTheory(getKnowledgeBase(theories)));
 		}
 	}
 
@@ -62,7 +58,7 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 		Log.LOG.printLine("Calculating...");
 		ExecutorService executorService = Executors.newFixedThreadPool(8);
 		for(Formula formula : getFormulas())
-			executorService.execute(new CheckValidRunnable(formula, getStructures()));
+			executorService.execute(new CheckValidRunnable(formula));
 		getFormulas().clear();
 		executorService.shutdown();
 		try {
