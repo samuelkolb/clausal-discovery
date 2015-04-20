@@ -1,0 +1,24 @@
+type Area
+type Person
+// type Cost > int
+
+pred low_crime(Area)
+pred school(Person, Area)
+
+example 1 {
+	const Area A1 A2
+	const Person P
+
+	school(P, A1)
+	low_crime(A1)
+}
+
+example 2 {
+	const Area A1 A2
+	const Person P
+
+	school(P, A1)
+	low_crime(A1)
+	low_crime(A2)
+
+}
