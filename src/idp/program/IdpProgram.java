@@ -1,7 +1,7 @@
 package idp.program;
 
 import idp.IdpProgramPrinter;
-import logic.theory.LogicProgram;
+import logic.theory.KnowledgeBase;
 
 import java.util.Optional;
 
@@ -13,9 +13,9 @@ import java.util.Optional;
 public abstract class IdpProgram {
 
 	//region Variables
-	private final LogicProgram program;
+	private final KnowledgeBase program;
 
-	public LogicProgram getProgram() {
+	public KnowledgeBase getProgram() {
 		return program;
 	}
 
@@ -34,7 +34,7 @@ public abstract class IdpProgram {
 	 * @param program       	The LogicProgram
 	 * @param backgroundFile	The optional name of the file containing background knowledge
 	 */
-	public IdpProgram(LogicProgram program, Optional<String> backgroundFile) {
+	public IdpProgram(KnowledgeBase program, Optional<String> backgroundFile) {
 		this.program = program;
 		this.backgroundFile = backgroundFile;
 	}

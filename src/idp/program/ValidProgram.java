@@ -1,7 +1,7 @@
 package idp.program;
 
+import logic.theory.KnowledgeBase;
 import vector.Vector;
-import logic.theory.LogicProgram;
 
 import java.util.Optional;
 
@@ -17,7 +17,7 @@ public class ValidProgram extends IdpProgram {
 	 * @param program			The logic program with the theory and structures
 	 * @param backgroundFile	The optional name of the file containing background knowledge
 	 */
-	public ValidProgram(LogicProgram program, Optional<String> backgroundFile) {
+	public ValidProgram(KnowledgeBase program, Optional<String> backgroundFile) {
 		super(program, backgroundFile);
 	}
 

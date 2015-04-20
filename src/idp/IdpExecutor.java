@@ -7,8 +7,8 @@ import idp.program.IdpProgram;
 import idp.program.ValidProgram;
 import log.Log;
 import logic.theory.InlineTheory;
+import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
-import logic.theory.LogicProgram;
 import runtime.Terminal;
 import time.Stopwatch;
 
@@ -77,17 +77,17 @@ public class IdpExecutor implements LogicExecutor {
 	//region Public methods
 
 	@Override
-	public boolean isValid(LogicProgram program) {
+	public boolean isValid(KnowledgeBase program) {
 		return executeTest(new ValidProgram(program, getBackgroundFile()));
 	}
 
 	@Override
-	public boolean[] areValid(LogicProgram program) {
+	public boolean[] areValid(KnowledgeBase program) {
 		return executeTests(new ValidProgram(program, getBackgroundFile()));
 	}
 
 	@Override
-	public boolean entails(LogicProgram program, InlineTheory theory) {
+	public boolean entails(KnowledgeBase program, InlineTheory theory) {
 		entailmentStopwatch.start();
 		boolean test = executeTest(new EntailsProgram(program, theory, getBackgroundFile()));
 		entailmentStopwatch.pause();

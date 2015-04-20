@@ -202,11 +202,11 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	// region Private methods
 
-	protected LogicProgram getProgram(List<StatusClause> clauses) {
+	protected KnowledgeBase getProgram(List<StatusClause> clauses) {
 		List<Formula> formulas = clauses.stream().map(this::getClause).collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());
 		Vector<Theory> theories = new Vector<Theory>(new InlineTheory(formulas));
-		return new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
+		return new KnowledgeBase(logicBase.getVocabulary(), theories, new Vector<>());
 	}
 
 	protected Clause getClause(StatusClause clause) {

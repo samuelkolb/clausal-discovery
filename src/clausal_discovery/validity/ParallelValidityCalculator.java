@@ -30,7 +30,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		@Override
 		public Boolean call() throws Exception {
 			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
-			LogicProgram program = new LogicProgram(getBase().getVocabulary(), theories, structures);
+			KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, structures);
 			return getExecutor().isValid(program);
 		}
 	}

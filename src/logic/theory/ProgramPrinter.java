@@ -12,7 +12,7 @@ public abstract class ProgramPrinter {
 	 * @param program	The program to be printed
 	 * @return	The resulting string
 	 */
-	public abstract String print(LogicProgram program);
+	public abstract String print(KnowledgeBase program);
 
 	public abstract String printTheory(Theory theory, String name, String vocabularyName);
 
@@ -20,7 +20,7 @@ public abstract class ProgramPrinter {
 
 	public abstract String printStructure(Structure structure, String name, String vocabularyName);
 
-	public String printTheories(LogicProgram program, String prefix, String vocabularyName) {
+	public String printTheories(KnowledgeBase program, String prefix, String vocabularyName) {
 		if(program.getTheories().isEmpty())
 			return "";
 		StringBuilder builder = new StringBuilder();
@@ -29,7 +29,7 @@ public abstract class ProgramPrinter {
 		return builder.toString();
 	}
 
-	public String printStructures(LogicProgram program, String prefix, String vocabularyName) {
+	public String printStructures(KnowledgeBase program, String prefix, String vocabularyName) {
 		if(program.getStructures().isEmpty())
 			return "";
 		StringBuilder builder = new StringBuilder();

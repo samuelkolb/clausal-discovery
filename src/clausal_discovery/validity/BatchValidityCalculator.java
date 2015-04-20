@@ -4,8 +4,8 @@ import clausal_discovery.core.LogicBase;
 import idp.IdpExpressionPrinter;
 import log.Log;
 import logic.expression.formula.Formula;
+import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
-import logic.theory.LogicProgram;
 import logic.theory.Theory;
 import vector.Vector;
 import vector.WriteOnceVector;
@@ -74,7 +74,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
 			theories.add(getTheory(formula));
-		LogicProgram program = new LogicProgram(getBase().getVocabulary(), theories, getStructures());
+		KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, getStructures());
 		boolean[] validity = getExecutor().areValid(program);
 		for(int i = 0; i < formulas.size(); i++)
 			validityTable.put(formulas.get(i), validity[i]);

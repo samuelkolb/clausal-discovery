@@ -2,7 +2,7 @@ package idp.program;
 
 import idp.IdpProgramPrinter;
 import logic.theory.InlineTheory;
-import logic.theory.LogicProgram;
+import logic.theory.KnowledgeBase;
 import vector.Vector;
 
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class EntailsProgram extends IdpProgram {
 	 * @param theory	The theory that has to be checked
 	 * @param backgroundFile	The optional name of the file containing background knowledge
 	 */
-	public EntailsProgram(LogicProgram program, InlineTheory theory, Optional<String> backgroundFile) {
+	public EntailsProgram(KnowledgeBase program, InlineTheory theory, Optional<String> backgroundFile) {
 		super(program, backgroundFile);
 		this.theory = theory;
 	}

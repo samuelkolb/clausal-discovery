@@ -7,7 +7,7 @@ import vector.Vector;
  *
  * @author Samuel Kolb
  */
-public class LogicProgram {
+public class KnowledgeBase {
 
 	private final Vocabulary vocabulary;
 
@@ -38,7 +38,7 @@ public class LogicProgram {
 	 * @param theories		The theories
 	 * @param structures	The structures
 	 */
-	public LogicProgram(Vocabulary vocabulary, Vector<Theory> theories, Vector<Structure> structures) {
+	public KnowledgeBase(Vocabulary vocabulary, Vector<Theory> theories, Vector<Structure> structures) {
 		this.vocabulary = vocabulary;
 		this.theories = theories;
 		this.structures = structures;

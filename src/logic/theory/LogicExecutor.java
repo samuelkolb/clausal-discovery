@@ -12,9 +12,9 @@ public interface LogicExecutor {
 	 * @param program	The program to execute
 	 * @return	True iff the given program is valid
 	 */
-	public boolean isValid(LogicProgram program);
+	public boolean isValid(KnowledgeBase program);
 
-	boolean[] areValid(LogicProgram program);
+	boolean[] areValid(KnowledgeBase program);
 
 	/**
 	 * Returns whether the given program entails the given clause
@@ -22,5 +22,5 @@ public interface LogicExecutor {
 	 * @param theory	The theory that should be tested
 	 * @return	True iff the given program entails the given clause
 	 */
-	boolean entails(LogicProgram program, InlineTheory theory);
+	boolean entails(KnowledgeBase program, InlineTheory theory);
 }

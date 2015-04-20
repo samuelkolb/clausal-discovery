@@ -36,17 +36,21 @@ public class IdpProgramPrinter extends ProgramPrinter {
 			return builder.toString();
 		}
 
+		@Override
+		public String visit(FileTheory fileTheory) {
+			return "include \"" + fileTheory.getFile().getAbsolutePath() + "\"\n\n";
+		}
 	}
 
+	public static final String VOCABULARY_NAME = "V";
+	public static final String THEORY_PREFIX = "T";
+	public static final String STRUCTURE_PREFIX = "S";
+
 	@Override
-	public String print(LogicProgram program) {
-		// TODO find a solution for the names
-		String vocabularyName = "V";
-		String theoryName = "T";
-		String structureName = "S";
-		return printVocabulary(program.getVocabulary(), vocabularyName)
-				+ printTheories(program, theoryName, vocabularyName)
-				+ printStructures(program, structureName, vocabularyName);
+	public String print(KnowledgeBase program) {
+		return printVocabulary(program.getVocabulary(), VOCABULARY_NAME)
+				+ printTheories(program, THEORY_PREFIX, VOCABULARY_NAME)
+				+ printStructures(program, STRUCTURE_PREFIX, VOCABULARY_NAME);
 	}
 
 	@Override

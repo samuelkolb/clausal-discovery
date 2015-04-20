@@ -32,7 +32,7 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 		@Override
 		public void run() {
 			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
-			LogicProgram program = new LogicProgram(getBase().getVocabulary(), theories, structures);
+			KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, structures);
 			getValidityTable().put(formula, getExecutor().isValid(program));
 		}
 	}

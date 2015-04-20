@@ -15,6 +15,13 @@ public interface Theory {
 		 * @return	The result
 		 */
 		public T visit(InlineTheory inlineTheory);
+
+		/**
+		 * Visit the given file theory
+		 * @param fileTheory	The theory to visit
+		 * @return	The result
+		 */
+		public T visit(FileTheory fileTheory);
 	}
 
 	/**
