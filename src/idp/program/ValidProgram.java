@@ -3,8 +3,6 @@ package idp.program;
 import logic.theory.KnowledgeBase;
 import vector.Vector;
 
-import java.util.Optional;
-
 /**
  * Represents a program that tests whether the given theory is valid on the structures in the logic program
  *
@@ -14,11 +12,10 @@ public class ValidProgram extends IdpProgram {
 
 	/**
 	 * Constructs a new valid program
-	 * @param program			The logic program with the theory and structures
-	 * @param backgroundFile	The optional name of the file containing background knowledge
+	 * @param knowledgeBase			The logic program with the theory and structures
 	 */
-	public ValidProgram(KnowledgeBase program, Optional<String> backgroundFile) {
-		super(program, backgroundFile);
+	public ValidProgram(KnowledgeBase knowledgeBase) {
+		super(knowledgeBase);
 	}
 
 	@Override
@@ -27,11 +24,8 @@ public class ValidProgram extends IdpProgram {
 		printProgram(builder);
 
 		StringBuilder procedure = new StringBuilder();
-		for(int i = 0; i < getProgram().getTheories().size(); i++) {
-			if(getBackgroundFile().isPresent())
-				procedure.append("t").append(i).append(" = merge(B, T").append(i).append(")\n");
-			else
-				procedure.append("t").append(i).append(" = T").append(i).append("\n");
+		for(int i = 0; i < getKnowledgeBase().getTheories().size(); i++) {
+			procedure.append("t").append(i).append(" = ").append(mergeBackground("T" + i)).append("\n");
 			queryTheory("t" + i, procedure);
 		}
 		procedure.append("print(\"\")\n");
@@ -43,7 +37,7 @@ public class ValidProgram extends IdpProgram {
 
 	private void queryTheory(String theoryName, StringBuilder procedure) {
 		procedure.append("if true");
-		for(int i = 0; i < getProgram().getStructures().size(); i++)
+		for(int i = 0; i < getKnowledgeBase().getStructures().size(); i++)
 			procedure.append(" and isValid(").append(theoryName).append(", S").append(i).append(")");
 		procedure.append(" then\n\tprint(\"YES\")\nelse\n\tprint(\"NO\")\nend\n");
 	}

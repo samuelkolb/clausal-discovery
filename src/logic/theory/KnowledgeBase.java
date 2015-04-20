@@ -17,13 +17,14 @@ public class KnowledgeBase {
 
 	private final Vector<Theory> theories;
 
-	@Deprecated
-	public Theory getTheory() {
-		throw new UnsupportedOperationException();
-	}
-
 	public Vector<Theory> getTheories() {
 		return theories;
+	}
+
+	private final Vector<Theory> backgroundTheories;
+
+	public Vector<Theory> getBackgroundTheories() {
+		return backgroundTheories;
 	}
 
 	private final Vector<Structure> structures;
@@ -33,14 +34,27 @@ public class KnowledgeBase {
 	}
 
 	/**
-	 * Creates a new logic program
+	 * Creates a new logic program without background theories
 	 * @param vocabulary	The type and predicate definitions
 	 * @param theories		The theories
 	 * @param structures	The structures
 	 */
 	public KnowledgeBase(Vocabulary vocabulary, Vector<Theory> theories, Vector<Structure> structures) {
+		this(vocabulary, theories, new Vector<>(), structures);
+	}
+
+	/**
+	 * Creates a new logic program
+	 * @param vocabulary			The type and predicate definitions
+	 * @param theories				The theories
+	 * @param backgroundTheories	The background theories
+	 * @param structures			The structures
+	 */
+	public KnowledgeBase(Vocabulary vocabulary, Vector<Theory> theories,
+						 Vector<Theory> backgroundTheories, Vector<Structure> structures) {
 		this.vocabulary = vocabulary;
 		this.theories = theories;
+		this.backgroundTheories = backgroundTheories;
 		this.structures = structures;
 	}
 }

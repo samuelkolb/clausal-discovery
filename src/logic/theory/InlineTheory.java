@@ -1,5 +1,6 @@
 package logic.theory;
 
+import log.Log;
 import vector.Vector;
 import logic.expression.formula.Formula;
 

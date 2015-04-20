@@ -3,10 +3,7 @@ package clausal_discovery.validity;
 import clausal_discovery.core.LogicBase;
 import logic.example.Example;
 import logic.expression.formula.Formula;
-import logic.theory.InlineTheory;
-import logic.theory.LogicExecutor;
-import logic.theory.Structure;
-import logic.theory.Theory;
+import logic.theory.*;
 import vector.Vector;
 import vector.WriteOnceVector;
 
@@ -34,13 +31,20 @@ public abstract class ValidityCalculator {
 		return executor;
 	}
 
+	private final Vector<Theory> backgroundTheories;
+
+	Vector<Theory> getBackgroundTheories() {
+		return backgroundTheories;
+	}
+
 	//endregion
 
 	//region Construction
 
-	ValidityCalculator(LogicBase base, LogicExecutor executor) {
+	ValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
 		this.base = base;
 		this.executor = executor;
+		this.backgroundTheories = backgroundTheories;
 	}
 
 	//endregion
@@ -79,6 +83,10 @@ public abstract class ValidityCalculator {
 		formulas.add(formula);
 		//formulas.addAll(getBase().getSymmetryFormulas());
 		return new InlineTheory(formulas);
+	}
+
+	protected KnowledgeBase getKnowledgeBase(Vector<Theory> theories) {
+		return new KnowledgeBase(getBase().getVocabulary(), theories, getBackgroundTheories(), getStructures());
 	}
 
 	//endregion

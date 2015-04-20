@@ -47,16 +47,6 @@ public class IdpExecutor implements LogicExecutor {
 
 	public int noEntailmentCount = 0;
 
-	private Optional<String> backgroundFile = Optional.empty();
-
-	public void setBackgroundFile(String backgroundFile) {
-		this.backgroundFile = Optional.of(backgroundFile);
-	}
-
-	private Optional<String> getBackgroundFile() {
-		return backgroundFile;
-	}
-
 	// IVAR fileManager - The file manager used for temporary files
 
 	private final FileManager fileManager;
@@ -77,19 +67,14 @@ public class IdpExecutor implements LogicExecutor {
 	//region Public methods
 
 	@Override
-	public boolean isValid(KnowledgeBase program) {
-		return executeTest(new ValidProgram(program, getBackgroundFile()));
+	public boolean[] testValidityTheories(KnowledgeBase knowledgeBase) {
+		return executeTests(new ValidProgram(knowledgeBase));
 	}
 
 	@Override
-	public boolean[] areValid(KnowledgeBase program) {
-		return executeTests(new ValidProgram(program, getBackgroundFile()));
-	}
-
-	@Override
-	public boolean entails(KnowledgeBase program, InlineTheory theory) {
+	public boolean entails(KnowledgeBase knowledgeBase, InlineTheory theory) {
 		entailmentStopwatch.start();
-		boolean test = executeTest(new EntailsProgram(program, theory, getBackgroundFile()));
+		boolean test = executeTest(new EntailsProgram(knowledgeBase, theory));
 		entailmentStopwatch.pause();
 		entailmentCount++;
 		if(!test)
@@ -131,6 +116,7 @@ public class IdpExecutor implements LogicExecutor {
 		try {
 			return execute(idpProgram);
 		} catch(Exception e) {
+			e.printStackTrace();
 			Log.LOG.printTitle("Error occurred:").printLine(e.getMessage()).newLine();
 			Log.LOG.printTitle("Program:").printLine(getDebugString(idpProgram));
 			throw new IllegalStateException(e);

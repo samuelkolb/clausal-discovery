@@ -1,4 +1,4 @@
-theory B : V {
+theory B0 : V {
 	/*! p[Person] : ?1 a[Area] : work(p, a).
 	! p[Person] : ?1 a[Area] : in_area(p, a).
 	! p[Person] : ?1 a[Area] : school(p, a).*/

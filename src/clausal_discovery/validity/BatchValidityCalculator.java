@@ -41,11 +41,12 @@ public class BatchValidityCalculator extends ValidityCalculator {
 
 	/**
 	 * Creates a new batch validity calculator
-	 * @param base		The logic base
-	 * @param executor	The executor to be used for validity tests
+	 * @param base					The logic base
+	 * @param executor				The executor to be used for validity tests
+	 * @param backgroundTheories	The background theories
 	 */
-	public BatchValidityCalculator(LogicBase base, LogicExecutor executor) {
-		super(base, executor);
+	public BatchValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+		super(base, executor, backgroundTheories);
 	}
 
 	//endregion
@@ -74,12 +75,12 @@ public class BatchValidityCalculator extends ValidityCalculator {
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
 			theories.add(getTheory(formula));
-		KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, getStructures());
-		boolean[] validity = getExecutor().areValid(program);
+		boolean[] validity = getExecutor().testValidityTheories(getKnowledgeBase(theories));
 		for(int i = 0; i < formulas.size(); i++)
 			validityTable.put(formulas.get(i), validity[i]);
 		formulas.clear();
 		Log.LOG.printLine("...Done");
 	}
+
 	//endregion
 }

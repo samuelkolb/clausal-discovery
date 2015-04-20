@@ -8,13 +8,22 @@ package logic.theory;
 public interface LogicExecutor {
 
 	/**
-	 * Returns whether the given program is valid, a.k.a. has a model
-	 * @param program	The program to execute
+	 * Returns whether the given program is valid, a.k.a. has a model (requires exactly one theory)
+	 * @param knowledgeBase	The knowledge base to test
 	 * @return	True iff the given program is valid
 	 */
-	public boolean isValid(KnowledgeBase program);
+	public default boolean testValidityTheory(KnowledgeBase knowledgeBase) {
+		if(knowledgeBase.getTheories().size() != 1)
+			throw new IllegalArgumentException("Requires exactly one theory");
+		return testValidityTheories(knowledgeBase)[0];
+	}
 
-	boolean[] areValid(KnowledgeBase program);
+	/**
+	 * Returns whether the theories in the given program are valid, a.k.a. have a model
+	 * @param knowledgeBase	The knowledge base to test
+	 * @return	An array containing the truth value of the validity test per theory
+	 */
+	public boolean[] testValidityTheories(KnowledgeBase knowledgeBase);
 
 	/**
 	 * Returns whether the given program entails the given clause
@@ -22,5 +31,5 @@ public interface LogicExecutor {
 	 * @param theory	The theory that should be tested
 	 * @return	True iff the given program entails the given clause
 	 */
-	boolean entails(KnowledgeBase program, InlineTheory theory);
+	public boolean entails(KnowledgeBase program, InlineTheory theory);
 }

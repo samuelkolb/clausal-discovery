@@ -2,6 +2,9 @@ package clausal_discovery.core;
 
 import clausal_discovery.run.Configuration;
 import idp.IdpExecutor;
+import logic.theory.FileTheory;
+import logic.theory.Theory;
+import vector.Vector;
 import version3.algorithm.*;
 import version3.algorithm.implementation.BreadthFirstSearch;
 import version3.plugin.DuplicateEliminationPlugin;
@@ -66,13 +69,13 @@ public class ClausalDiscovery {
 	}
 
 	private List<StatusClause> run(Configuration configuration) {
-		if(configuration.getBackgroundFile().isPresent())
-			getExecutor().setBackgroundFile(configuration.getBackgroundFile().get());
-
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
 		int variableCount = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
-		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor());
+		Vector<Theory> background = configuration.getBackgroundFile().isPresent()
+				? new Vector<Theory>(new FileTheory(configuration.getBackgroundFile().get()))
+				: new Vector<>();
+		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor(), background);
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
 
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);

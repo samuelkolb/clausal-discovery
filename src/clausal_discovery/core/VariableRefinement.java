@@ -81,6 +81,14 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	private final LogicExecutor executor;
 
+	// IVAR backgroundTheories - The background theories provided to the search
+
+	private final Vector<Theory> backgroundTheories;
+
+	public Vector<Theory> getBackgroundTheories() {
+		return backgroundTheories;
+	}
+
 	// IVAR validityCalculator - The validity calculator used for validity tests
 
 	private final ValidityCalculator validityCalculator;
@@ -107,16 +115,19 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 
 	/**
 	 * Creates a new variable refinement operator
-	 * @param logicBase	The logic base holding the vocabulary and examples
-	 * @param variables	The number of variables that can be introduced
-	 * @param executor	The logic executor responsible for executing logical queries
+	 * @param logicBase    			The logic base holding the vocabulary and examples
+	 * @param variables    			The number of variables that can be introduced
+	 * @param executor    			The logic executor responsible for executing logical queries
+	 * @param backgroundTheories	The background theories provided to the search
 	 */
-	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor) {
+	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor,
+							  Vector<Theory> backgroundTheories) {
+		this.backgroundTheories = backgroundTheories;
 		this.instanceList = new InstanceList(logicBase.getSearchPredicates(), variables);
-		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n").printLine(getInstanceList()).newLine();
+		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
 		this.executor = executor;
-		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor);
+		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor, backgroundTheories);
 		this.resultQueue = Executors.newSingleThreadExecutor();
 	}
 
@@ -206,7 +217,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		List<Formula> formulas = clauses.stream().map(this::getClause).collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());
 		Vector<Theory> theories = new Vector<Theory>(new InlineTheory(formulas));
-		return new KnowledgeBase(logicBase.getVocabulary(), theories, new Vector<>());
+		return new KnowledgeBase(logicBase.getVocabulary(), theories, getBackgroundTheories(), new Vector<>());
 	}
 
 	protected Clause getClause(StatusClause clause) {

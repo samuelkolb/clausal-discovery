@@ -20,10 +20,12 @@ public abstract class ProgramPrinter {
 
 	public abstract String printStructure(Structure structure, String name, String vocabularyName);
 
-	public String printTheories(KnowledgeBase program, String prefix, String vocabularyName) {
+	public String printTheories(KnowledgeBase program, String prefix, String backgroundPrefix,  String vocabularyName) {
 		if(program.getTheories().isEmpty())
 			return "";
 		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < program.getBackgroundTheories().size(); i++)
+			builder.append(printTheory(program.getBackgroundTheories().get(i), backgroundPrefix + i, vocabularyName));
 		for(int i = 0; i < program.getTheories().size(); i++)
 			builder.append(printTheory(program.getTheories().get(i), prefix + i, vocabularyName));
 		return builder.toString();

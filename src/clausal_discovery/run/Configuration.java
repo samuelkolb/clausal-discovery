@@ -9,8 +9,8 @@ import version3.algorithm.SearchAlgorithm;
 import version3.plugin.CountingPlugin;
 import version3.plugin.FileLoggingPlugin;
 
+import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,10 +31,10 @@ public abstract class Configuration {
 			return logicBase;
 		}
 
-		private final Optional<String> backgroundFile;
+		private final Optional<File> backgroundFile;
 
 		@Override
-		public Optional<String> getBackgroundFile() {
+		public Optional<File> getBackgroundFile() {
 			return backgroundFile;
 		}
 
@@ -43,10 +43,10 @@ public abstract class Configuration {
 			URL url = Configuration.class.getResource("/examples/" + name + ".background");
 			this.backgroundFile = url == null
 					? Optional.empty()
-					: Optional.of(FileUtil.getLocalFile(url).getAbsolutePath());
+					: Optional.of(FileUtil.getLocalFile(url));
 		}
 
-		protected FileConfiguration(LogicBase logicBase, Optional<String> backgroundFile) {
+		protected FileConfiguration(LogicBase logicBase, Optional<File> backgroundFile) {
 			this.logicBase = logicBase;
 			this.backgroundFile = backgroundFile;
 		}
@@ -80,7 +80,7 @@ public abstract class Configuration {
 			this.clauseLength = clauseLength;
 		}
 
-		private FullFileConfiguration(LogicBase base, Optional<String> background, int variables, int clauseLength) {
+		private FullFileConfiguration(LogicBase base, Optional<File> background, int variables, int clauseLength) {
 			super(base, background);
 			this.variableCount = variables;
 			this.clauseLength = clauseLength;
@@ -116,7 +116,7 @@ public abstract class Configuration {
 
 	public abstract LogicBase getLogicBase();
 
-	public abstract Optional<String> getBackgroundFile();
+	public abstract Optional<File> getBackgroundFile();
 
 	public abstract int getVariableCount();
 

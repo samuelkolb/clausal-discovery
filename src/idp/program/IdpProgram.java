@@ -3,8 +3,6 @@ package idp.program;
 import idp.IdpProgramPrinter;
 import logic.theory.KnowledgeBase;
 
-import java.util.Optional;
-
 /**
  * Created by samuelkolb on 11/11/14.
  *
@@ -13,16 +11,10 @@ import java.util.Optional;
 public abstract class IdpProgram {
 
 	//region Variables
-	private final KnowledgeBase program;
+	private final KnowledgeBase knowledgeBase;
 
-	public KnowledgeBase getProgram() {
-		return program;
-	}
-
-	private final Optional<String> backgroundFile;
-
-	public Optional<String> getBackgroundFile() {
-		return backgroundFile;
+	public KnowledgeBase getKnowledgeBase() {
+		return knowledgeBase;
 	}
 
 	//endregion
@@ -30,13 +22,11 @@ public abstract class IdpProgram {
 	//region Construction
 
 	/**
-	 * Creates an IDP program which containsInstance a LogicProgram
-	 * @param program       	The LogicProgram
-	 * @param backgroundFile	The optional name of the file containing background knowledge
+	 * Creates an IDP knowledgeBase which containsInstance a LogicProgram
+	 * @param knowledgeBase       	The LogicProgram
 	 */
-	public IdpProgram(KnowledgeBase program, Optional<String> backgroundFile) {
-		this.program = program;
-		this.backgroundFile = backgroundFile;
+	public IdpProgram(KnowledgeBase knowledgeBase) {
+		this.knowledgeBase = knowledgeBase;
 	}
 
 	//endregion
@@ -44,14 +34,22 @@ public abstract class IdpProgram {
 	//region Public methods
 
 	protected void printProgram(StringBuilder builder) {
-		builder.append(new IdpProgramPrinter().print(this.program));
-		if(getBackgroundFile().isPresent())
-			builder.append("include \"").append(getBackgroundFile().get()).append("\"\n\n");
+		builder.append(new IdpProgramPrinter().print(getKnowledgeBase()));
+	}
+
+	protected String mergeBackground(String theory) {
+		for(int i = 0; i < getKnowledgeBase().getBackgroundTheories().size(); i++)
+			theory = merge("B" + i, theory);
+		return theory;
+	}
+
+	protected String merge(String theory1, String theory2) {
+		return String.format("merge(%s, %s)", theory1, theory2);
 	}
 
 	/**
-	 * Prints out the program
-	 * @return	A string containing the printed version of the program
+	 * Prints out the knowledgeBase
+	 * @return	A string containing the printed version of the knowledgeBase
 	 */
 	public abstract String print();
 

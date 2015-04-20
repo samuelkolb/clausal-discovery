@@ -44,12 +44,13 @@ public class IdpProgramPrinter extends ProgramPrinter {
 
 	public static final String VOCABULARY_NAME = "V";
 	public static final String THEORY_PREFIX = "T";
+	public static final String BACKGROUND_PREFIX = "B";
 	public static final String STRUCTURE_PREFIX = "S";
 
 	@Override
 	public String print(KnowledgeBase program) {
 		return printVocabulary(program.getVocabulary(), VOCABULARY_NAME)
-				+ printTheories(program, THEORY_PREFIX, VOCABULARY_NAME)
+				+ printTheories(program, THEORY_PREFIX, BACKGROUND_PREFIX, VOCABULARY_NAME)
 				+ printStructures(program, STRUCTURE_PREFIX, VOCABULARY_NAME);
 	}
 

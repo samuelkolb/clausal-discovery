@@ -31,7 +31,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		public Boolean call() throws Exception {
 			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
 			KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, structures);
-			return getExecutor().isValid(program);
+			return getExecutor().testValidityTheory(program);
 		}
 	}
 
@@ -45,11 +45,12 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 
 	/**
 	 * Creates a new parallel validity calculator
-	 * @param base		The logic base
-	 * @param executor	The executor to be used for validity tests
+	 * @param base					The logic base
+	 * @param executor				The executor to be used for validity tests
+	 * @param backgroundTheories	The background theories
 	 */
-	public ParallelValidityCalculator(LogicBase base, LogicExecutor executor) {
-		super(base, executor);
+	public ParallelValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+		super(base, executor, backgroundTheories);
 		this.executorService = Executors.newFixedThreadPool(8);
 	}
 

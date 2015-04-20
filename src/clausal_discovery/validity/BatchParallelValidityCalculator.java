@@ -33,7 +33,7 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 		public void run() {
 			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
 			KnowledgeBase program = new KnowledgeBase(getBase().getVocabulary(), theories, structures);
-			getValidityTable().put(formula, getExecutor().isValid(program));
+			getValidityTable().put(formula, getExecutor().testValidityTheory(program));
 		}
 	}
 
@@ -45,11 +45,12 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 
 	/**
 	 * Creates a new batch-parallel validity calculator
-	 * @param base		The logic base
-	 * @param executor	The executor to be used for validity tests
+	 * @param base					The logic base
+	 * @param executor				The executor to be used for validity tests
+	 * @param backgroundTheories	The background theories
 	 */
-	public BatchParallelValidityCalculator(LogicBase base, LogicExecutor executor) {
-		super(base, executor);
+	public BatchParallelValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+		super(base, executor, backgroundTheories);
 	}
 
 	//endregion

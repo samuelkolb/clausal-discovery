@@ -36,6 +36,10 @@ public class Procedure {
 
 	//region Construction
 
+	protected Procedure(String program) {
+		this(program, new Vector<>(), new Vector<>());
+	}
+
 	protected Procedure(String program, Vector<String> parameters, Vector<Function> functions) {
 		this.program = program;
 		this.parameters = parameters;
