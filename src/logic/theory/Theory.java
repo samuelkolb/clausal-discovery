@@ -1,33 +1,26 @@
 package logic.theory;
 
-import vector.Vector;
-import vector.WriteOnceVector;
-import logic.expression.formula.Formula;
-
-import java.util.Collection;
-
 /**
- * Created by samuelkolb on 09/11/14.
+ * A logical theory that consists of a set of formulas
+ *
+ * @author Samuel Kolb
  */
-public class Theory {
+public interface Theory {
 
-	private final Vector<Formula> formulas;
+	public static interface Visitor<T> {
 
-	public Vector<Formula> getFormulas() {
-		return formulas;
+		/**
+		 * Visit the given inline theory
+		 * @param inlineTheory	The theory to visit
+		 * @return	The result
+		 */
+		public T visit(InlineTheory inlineTheory);
 	}
 
-	public Theory(Formula... formulas) {
-		this(new Vector<>(formulas));
-	}
-
-	public <T extends Formula> Theory(Collection<T> formulas) {
-		this.formulas = new WriteOnceVector<>(new Formula[formulas.size()]);
-		for(Formula formula : formulas)
-			this.formulas.add(formula);
-	}
-
-	public Theory addFormula(Formula formula) {
-		return new Theory(formulas.grow(formula));
-	}
+	/**
+	 * Accept the given visitor by calling the appropriate method
+	 * @param visitor	The visitor to accept
+	 * @return	The result of visiting the visitor
+	 */
+	public <T> T accept(Visitor<T> visitor);
 }

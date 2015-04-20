@@ -2,14 +2,9 @@ package clausal_discovery.validity;
 
 import clausal_discovery.core.LogicBase;
 import logic.expression.formula.Formula;
-import logic.theory.LogicExecutor;
-import logic.theory.LogicProgram;
-import logic.theory.Structure;
-import logic.theory.Theory;
+import logic.theory.*;
 import vector.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 

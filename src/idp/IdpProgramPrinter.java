@@ -12,6 +12,32 @@ import logic.theory.*;
  */
 public class IdpProgramPrinter extends ProgramPrinter {
 
+	private class TheoryVisitor implements Theory.Visitor<String> {
+
+		private final String theoryName;
+		private final String vocabularyName;
+
+		private TheoryVisitor(String theoryName, String vocabularyName) {
+			this.theoryName = theoryName;
+			this.vocabularyName = vocabularyName;
+		}
+
+		@Override
+		public String visit(InlineTheory inlineTheory) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("theory ").append(theoryName).append(":").append(vocabularyName).append(" {\n");
+			for(Formula formula : inlineTheory.getFormulas()) {
+				String string = IdpExpressionPrinter.print(formula);
+				for(String line : string.split("\n"))
+					builder.append('\t').append(line);
+				builder.append(".\n");
+			}
+			builder.append("}\n\n");
+			return builder.toString();
+		}
+
+	}
+
 	@Override
 	public String print(LogicProgram program) {
 		// TODO find a solution for the names
@@ -25,16 +51,7 @@ public class IdpProgramPrinter extends ProgramPrinter {
 
 	@Override
 	public String printTheory(Theory theory, String name, String vocabularyName) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("theory ").append(name).append(":").append(vocabularyName).append(" {\n");
-		for(Formula formula : theory.getFormulas()) {
-			String string = IdpExpressionPrinter.print(formula);
-			for(String line : string.split("\n"))
-				builder.append('\t').append(line);
-			builder.append(".\n");
-		}
-		builder.append("}\n\n");
-		return builder.toString();
+		return theory.accept(new TheoryVisitor(name, vocabularyName));
 	}
 
 	@Override

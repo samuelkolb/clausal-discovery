@@ -40,7 +40,7 @@ public class RunClient {
 		ClausalDiscovery clausalDiscovery = new ClausalDiscovery(configuration);
 		Stopwatch stopwatch = new Stopwatch(true);
 		try {
-			List<StatusClause> clauses = clausalDiscovery.findConstraints();
+			List<StatusClause> clauses = clausalDiscovery.findHardConstraints();
 			Log.LOG.printLine("\nSearch finished in " + round(stopwatch.stop()) + "s:");
 			for(int i = 0; i < clauses.size(); i++)
 				Log.LOG.printLine("\t" + (i + 1) + ": " + clauses.get(i));

@@ -8,10 +8,7 @@ import logic.example.Example;
 import logic.expression.formula.Clause;
 import logic.expression.formula.Formula;
 import logic.expression.formula.InfixPredicate;
-import logic.theory.LogicExecutor;
-import logic.theory.LogicProgram;
-import logic.theory.Structure;
-import logic.theory.Theory;
+import logic.theory.*;
 import time.Stopwatch;
 import vector.Vector;
 import vector.WriteOnceVector;
@@ -198,7 +195,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	 * @return	True iff the set of clauses logically entails the given clause
 	 */
 	public boolean entails(List<StatusClause> clauses, StatusClause clause) {
-		return executor.entails(getProgram(clauses), new Theory(getClause(clause)));
+		return executor.entails(getProgram(clauses), new InlineTheory(getClause(clause)));
 	}
 
 	// endregion
@@ -208,7 +205,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	protected LogicProgram getProgram(List<StatusClause> clauses) {
 		List<Formula> formulas = clauses.stream().map(this::getClause).collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());
-		Vector<Theory> theories = new Vector<Theory>(new Theory(formulas));
+		Vector<Theory> theories = new Vector<Theory>(new InlineTheory(formulas));
 		return new LogicProgram(logicBase.getVocabulary(), theories, new Vector<>());
 	}
 

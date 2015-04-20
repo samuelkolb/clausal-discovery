@@ -22,5 +22,5 @@ public interface LogicExecutor {
 	 * @param theory	The theory that should be tested
 	 * @return	True iff the given program entails the given clause
 	 */
-	boolean entails(LogicProgram program, Theory theory);
+	boolean entails(LogicProgram program, InlineTheory theory);
 }

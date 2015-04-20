@@ -50,21 +50,36 @@ public class ClausalDiscovery {
 	 * Use the given configuration to find hard constraints in the data
 	 * @return	A list of status clauses that represent hard constraints
 	 */
-	public List<StatusClause> findConstraints() {
-		if(getConfiguration().getBackgroundFile().isPresent())
-			getExecutor().setBackgroundFile(getConfiguration().getBackgroundFile().get());
+	public List<StatusClause> findHardConstraints() {
+		return run(getConfiguration());
+	}
+
+	/**
+	 * Use the given configuration to find constraints per example
+	 * @return	A list of status clauses that hold on at least one example
+	 */
+	public List<StatusClause> findAllConstraints() {
+		List<StatusClause> clauses = new ArrayList<>();
+		for(Configuration config : getConfiguration().split())
+			clauses.addAll(run(config));
+		return clauses;
+	}
+
+	private List<StatusClause> run(Configuration configuration) {
+		if(configuration.getBackgroundFile().isPresent())
+			getExecutor().setBackgroundFile(configuration.getBackgroundFile().get());
 
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
-		int variableCount = getConfiguration().getVariableCount();
-		LogicBase logicBase = getConfiguration().getLogicBase();
+		int variableCount = configuration.getVariableCount();
+		LogicBase logicBase = configuration.getLogicBase();
 		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor());
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
 
 		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
-		algorithm.addPlugin(new MaximalDepthPlugin<>(getConfiguration().getClauseLength()));
+		algorithm.addPlugin(new MaximalDepthPlugin<>(configuration.getClauseLength()));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		algorithm.addPlugin(refinement);
-		getConfiguration().addPlugins(algorithm);
+		configuration.addPlugins(algorithm);
 
 		List<StatusClause> statusClauses = makeList(algorithm.search(initialNodes));
 		this.excessTime = refinement.getExcessTimer().stop();

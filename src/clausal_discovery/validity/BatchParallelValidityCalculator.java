@@ -3,10 +3,7 @@ package clausal_discovery.validity;
 import clausal_discovery.core.LogicBase;
 import log.Log;
 import logic.expression.formula.Formula;
-import logic.theory.LogicExecutor;
-import logic.theory.LogicProgram;
-import logic.theory.Structure;
-import logic.theory.Theory;
+import logic.theory.*;
 import vector.Vector;
 
 import java.util.concurrent.ExecutorService;

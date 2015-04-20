@@ -3,6 +3,7 @@ package clausal_discovery.validity;
 import clausal_discovery.core.LogicBase;
 import logic.example.Example;
 import logic.expression.formula.Formula;
+import logic.theory.InlineTheory;
 import logic.theory.LogicExecutor;
 import logic.theory.Structure;
 import logic.theory.Theory;
@@ -77,7 +78,7 @@ public abstract class ValidityCalculator {
 		List<Formula> formulas = new ArrayList<>();
 		formulas.add(formula);
 		//formulas.addAll(getBase().getSymmetryFormulas());
-		return new Theory(formulas);
+		return new InlineTheory(formulas);
 	}
 
 	//endregion

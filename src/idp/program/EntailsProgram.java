@@ -1,8 +1,8 @@
 package idp.program;
 
 import idp.IdpProgramPrinter;
+import logic.theory.InlineTheory;
 import logic.theory.LogicProgram;
-import logic.theory.Theory;
 import vector.Vector;
 
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class EntailsProgram extends IdpProgram {
 	//region Variables
 	private static final Procedure ENTAIL_PROCEDURE = Procedures.ENTAILS.getProcedure();
 
-	private final Theory theory;
+	private final InlineTheory theory;
 	//endregion
 
 	//region Construction
@@ -28,7 +28,7 @@ public class EntailsProgram extends IdpProgram {
 	 * @param theory	The theory that has to be checked
 	 * @param backgroundFile	The optional name of the file containing background knowledge
 	 */
-	public EntailsProgram(LogicProgram program, Theory theory, Optional<String> backgroundFile) {
+	public EntailsProgram(LogicProgram program, InlineTheory theory, Optional<String> backgroundFile) {
 		super(program, backgroundFile);
 		this.theory = theory;
 	}

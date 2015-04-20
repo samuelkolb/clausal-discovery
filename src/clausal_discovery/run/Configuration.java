@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by samuelkolb on 13/04/15.
@@ -44,6 +45,11 @@ public abstract class Configuration {
 					? Optional.empty()
 					: Optional.of(FileUtil.getLocalFile(url).getAbsolutePath());
 		}
+
+		protected FileConfiguration(LogicBase logicBase, Optional<String> backgroundFile) {
+			this.logicBase = logicBase;
+			this.backgroundFile = backgroundFile;
+		}
 	}
 
 	public static class FullFileConfiguration extends FileConfiguration {
@@ -72,6 +78,19 @@ public abstract class Configuration {
 			super(name);
 			this.variableCount = variableCount;
 			this.clauseLength = clauseLength;
+		}
+
+		private FullFileConfiguration(LogicBase base, Optional<String> background, int variables, int clauseLength) {
+			super(base, background);
+			this.variableCount = variables;
+			this.clauseLength = clauseLength;
+		}
+
+		@Override
+		public List<Configuration> split() {
+			return getLogicBase().split().stream()
+					.map(b -> new FullFileConfiguration(b, getBackgroundFile(), getVariableCount(), getClauseLength()))
+					.collect(Collectors.toList());
 		}
 	}
 
@@ -102,4 +121,10 @@ public abstract class Configuration {
 	public abstract int getVariableCount();
 
 	public abstract int getClauseLength();
+
+	/**
+	 * Splits the configuration into multiple configurations, one for every example
+	 * @return	A list of configurations
+	 */
+	public abstract List<Configuration> split();
 }
