@@ -14,6 +14,7 @@ import version3.plugin.MaximalDepthPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -70,13 +71,29 @@ public class ClausalDiscovery {
 		return clauses;
 	}
 
+	/**
+	 * Finds constraints that are true on at least one example
+	 * // TODO Prune soft constraints?
+	 * @param clauses	The hard constraints that are used as background knowledge
+	 * @return	A list of soft constraints
+	 */
 	public List<StatusClause> findSoftConstraints(List<StatusClause> clauses) {
+		ExecutorService service = Executors.newFixedThreadPool(2);
 		List<Formula> constraints = clauses.stream().map(new StatusClauseConverter()).collect(Collectors.toList());
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
-		List<StatusClause> result = new ArrayList<>();
+		List<Future<List<StatusClause>>> result = new ArrayList<>();
 		for(Configuration config : newConfig.split())
-			result.addAll(run(config));
-		return result;
+			result.add(service.submit(() -> run(config)));
+		List<StatusClause> softClauses = new ArrayList<>();
+		try {
+			for(Future<List<StatusClause>> future : result)
+				softClauses.addAll(future.get());
+		} catch(InterruptedException | ExecutionException e) {
+			throw new IllegalStateException(e);
+		} finally {
+			service.shutdownNow();
+		}
+		return softClauses;
 	}
 
 	private List<StatusClause> run(Configuration configuration) {

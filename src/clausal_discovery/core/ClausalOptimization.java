@@ -1,9 +1,12 @@
 package clausal_discovery.core;
 
+import basic.ArrayUtil;
 import basic.FileUtil;
+import basic.StringUtil;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.validity.ParallelValidityCalculator;
 import clausal_discovery.validity.ValidityCalculator;
+import com.sun.deploy.trace.LoggerTraceListener;
 import idp.FileManager;
 import idp.IdpExecutor;
 import log.Log;
@@ -11,6 +14,8 @@ import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.Theory;
 import runtime.Terminal;
+import time.Stopwatch;
+import util.TemporaryFile;
 import vector.Vector;
 
 import java.io.File;
@@ -20,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static basic.StringUtil.*;
+import static basic.StringUtil.join;
 
 /**
  * Created by samuelkolb on 21/04/15.
@@ -54,40 +62,50 @@ public class ClausalOptimization {
 	//region Public methods
 
 	public void run() {
+		Stopwatch stopwatch = new Stopwatch(true);
 		Log.LOG.saveState().off();
 		ClausalDiscovery clausalDiscovery = new ClausalDiscovery(getConfiguration());
 		List<StatusClause> hardConstraints = clausalDiscovery.findHardConstraints();
 		prettyPrint("Hard Constraints", hardConstraints).off();
 		List<StatusClause> softConstraints = clausalDiscovery.findSoftConstraints(hardConstraints);
-		prettyPrint("All Constraints", softConstraints).revert();
+		prettyPrint("Soft Constraints", softConstraints).revert();
 		List<boolean[]> exampleValidity = validateExamples(softConstraints);
 		for(int i = 0; i < getConfiguration().getLogicBase().getExamples().size(); i++)
 			Log.LOG.printLine("Example " + i + ": " + Arrays.toString(exampleValidity.get(i)));
 		Log.LOG.newLine();
 		List<int[]> preferences = Arrays.asList(new int[]{0, 1}, new int[]{1, 2});
+		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < preferences.size(); i++) {
 			int[] order = preferences.get(i);
 			for(int j = 0; j < order.length; j++) {
-				StringBuilder builder = new StringBuilder();
 				builder.append(order.length - j).append(" qid:").append(i + 1);
 				for(int c = 0; c < softConstraints.size(); c++)
 					builder.append(" ").append(c + 1).append(":").append(exampleValidity.get(order[j])[c] ? 1 : 0);
-				builder.append(" #");
-				System.out.println(builder.toString());
+				builder.append(" #\n");
 			}
 		}
-		File inputFile = FILE_MANAGER.createRandomFile(".txt");
-		try {
-			inputFile.createNewFile();
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
+		File inputFile = FILE_MANAGER.createRandomFile("txt");
+		TemporaryFile temporaryFile = new TemporaryFile(inputFile, builder.toString());
 
-		File outputFile = FILE_MANAGER.createRandomFile(".txt");
+		File outputFile = FILE_MANAGER.createRandomFile("txt");
 		String relativePath = "/executable/mac/svm_rank/svm_rank_learn";
 		String path = FileUtil.getLocalFile(getClass().getResource(relativePath)).getAbsolutePath();
-		Terminal.get().runCommand(path + " -c " + exampleValidity.size() + " " + inputFile.getAbsolutePath() + " " + outputFile.getAbsolutePath());
-		String output = FileUtil.readFile(outputFile);
+		String command = path + " -c " + preferences.size()*0.15 + " " + inputFile.getAbsolutePath() + " " + outputFile.getAbsolutePath();
+		Log.LOG.printLine("Ready to run: " + command);
+		Terminal.get().execute(command, true);
+		Log.LOG.printLine("Command finished");
+		temporaryFile.delete();
+		String[] output = FileUtil.readFile(outputFile).split("\n");
+		String[] lastLine = substring(output[output.length - 1], 2, -2).split(" ");
+		double[] score = new double[softConstraints.size()];
+		Log.LOG.formatLine("Calculations done in %.2f seconds", stopwatch.stop() / 1000).newLine();
+		for(String attribute : lastLine) {
+			String[] parts = attribute.split(":");
+			score[Integer.parseInt(parts[0]) - 1] = Double.parseDouble(parts[1]);
+		}
+		for(int i = 0; i < score.length; i++)
+			Log.LOG.printLine(i + ": " + frontPadCut(String.format("%f", score[i]), ' ', 10, true) + " : " + softConstraints.get(i));
+
 	}
 
 	private List<boolean[]> validateExamples(List<StatusClause> statusClauses) {
