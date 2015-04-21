@@ -1,8 +1,6 @@
-package logic.parse;
+package parse;
 
 import basic.FileUtil;
-import parse.BaseScopeParser;
-import parse.ParseCursor;
 import clausal_discovery.core.LogicBase;
 
 import java.io.File;

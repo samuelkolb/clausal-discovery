@@ -1,7 +1,4 @@
-package logic.parse;
-
-import parse.MatchParser;
-import parse.ParsingError;
+package parse;
 
 /**
  * Created by samuelkolb on 24/02/15.

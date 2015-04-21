@@ -1,4 +1,4 @@
-package logic.parse;
+package parse;
 
 import clausal_discovery.core.PredicateDefinition;
 import log.Log;
@@ -27,7 +27,7 @@ public class LogicParserState {
 
 	private final Map<String, PredicateDefinition> predicates = new LinkedHashMap<>();
 
-	private final Map<String, Example> examples = new HashMap<>();
+	private final List<Example> examples = new ArrayList<>();
 
 	private final List<PredicateInstance> instances = new ArrayList<>();
 
@@ -36,6 +36,8 @@ public class LogicParserState {
 	private final Map<String, Constant> constants = new HashMap<>();
 
 	private final List<PredicateDefinition> searchPredicates = new ArrayList<>();
+
+	private final List<Vector<Integer>> preferences = new ArrayList<>();
 	//endregion
 
 	//region Construction
@@ -125,15 +127,6 @@ public class LogicParserState {
 	}
 
 	/**
-	 * Checks whether this state containsInstance an example with the given name
-	 * @param exampleName	The name of the example to check for
-	 * @return	True iff an example with the given name has already been added to this state
-	 */
-	public boolean containsExample(String exampleName) {
-		return examples.containsKey(exampleName);
-	}
-
-	/**
 	 * Add a predicate instance with the given name and constant names
 	 * @param predicateName	The name of the predicate
 	 * @param constantNames	The names of the constant arguments of the predicate
@@ -148,12 +141,11 @@ public class LogicParserState {
 
 	/**
 	 * Add an example and reset the current example properties (instances, constants, ...)
-	 * @param exampleName	The name of the example
 	 */
-	public void addExample(String exampleName) {
-		Log.LOG.printLine("INFO added example " + exampleName);
+	public void addExample() {
+		Log.LOG.printLine("INFO added example");
 		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
-		examples.put(exampleName, new Example(getSetup(), instances1, positiveExample));
+		examples.add(new Example(getSetup(), instances1, positiveExample));
 		instances.clear();
 		constants.clear();
 		positiveExample = true;
@@ -173,6 +165,14 @@ public class LogicParserState {
 		searchPredicates.add(predicates.get(predicateName));
 	}
 
+	/**
+	 * Add a preference
+	 * @param examples	The list of examples in their order of preference (examples[0] > ... > examples[n])
+	 */
+	public void addPreference(Vector<Integer> examples) {
+		this.preferences.add(examples);
+	}
+
 	public Setup getSetup() {
 		Collection<PredicateDefinition> values = this.predicates.values();
 		Vector<PredicateDefinition> definitions = new Vector<>(PredicateDefinition.class, values);
@@ -181,8 +181,7 @@ public class LogicParserState {
 	}
 
 	public LogicBase getLogicBase() {
-		Collection<Example> values = this.examples.values();
-		Vector<Example> examples = new Vector<>(values.toArray(new Example[values.size()]));
+		Vector<Example> examples = new Vector<>(this.examples.toArray(new Example[this.examples.size()]));
 
 		Vector<PredicateDefinition> search;
 		if(searchPredicates.isEmpty())
@@ -190,6 +189,10 @@ public class LogicParserState {
 		else
 			search = new Vector<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
 		return new Knowledge(getSetup().getVocabulary(), examples, search);
+	}
+
+	public List<Vector<Integer>> getPreferences() {
+		return new ArrayList<>(this.preferences);
 	}
 
 	/**

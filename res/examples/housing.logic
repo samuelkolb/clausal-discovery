@@ -19,7 +19,7 @@ pred car(Person)
 // car(P)
 // has_school(A2)
 
-example 1 {
+example {
 	const Area A1 A2
 	const Person P
 
@@ -31,7 +31,7 @@ example 1 {
 	car(P)
 }
 
-example 2 {
+example {
 	const Area A1 A2
 	const Person P
 
@@ -43,7 +43,7 @@ example 2 {
 	car(P)
 }
 
-example 3 {
+example {
 	const Area A1 A2 A3
 	const Person P
 
@@ -57,7 +57,7 @@ example 3 {
 	car(P)
 }
 
-example 4 {
+example {
 	const Area A1
 	const Person P
 
@@ -67,7 +67,7 @@ example 4 {
 	work(P, A1)
 }
 
-example 5 {
+example {
 	const Area A1 A2
 	const Person P
 
@@ -79,7 +79,7 @@ example 5 {
 	car(P)
 }
 
-example 6 {
+example {
 	const Area A1 A2
 	const Person P
 
@@ -91,7 +91,7 @@ example 6 {
 	car(P)
 }
 
-example 7 {
+example {
 	const Area A1 A2
 	const Person P
 

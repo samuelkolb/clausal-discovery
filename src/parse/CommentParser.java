@@ -1,8 +1,4 @@
-package logic.parse;
-
-import parse.MatchParser;
-import parse.ParsingError;
-import parse.ScopeParser;
+package parse;
 
 import java.util.Arrays;
 import java.util.List;

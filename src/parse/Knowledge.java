@@ -1,4 +1,4 @@
-package logic.parse;
+package parse;
 
 import basic.ArrayUtil;
 import basic.StringUtil;

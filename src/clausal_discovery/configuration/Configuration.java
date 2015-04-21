@@ -4,7 +4,7 @@ import basic.FileUtil;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import idp.FileManager;
-import logic.parse.LogicParser;
+import parse.LogicParser;
 import logic.theory.FileTheory;
 import logic.theory.Theory;
 import parse.ParseException;

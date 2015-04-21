@@ -1,9 +1,7 @@
-package logic.parse;
+package parse;
 
 import log.Log;
 import util.Pair;
-import parse.MatchParser;
-import parse.ParsingError;
 
 /**
  * Created by samuelkolb on 24/02/15.
