@@ -4,6 +4,7 @@ type Person
 
 pred low_crime(Area)
 pred school(Person, Area)
+pred work(Person, Area)
 
 example 1 {
 	const Area A1 A2
@@ -11,6 +12,8 @@ example 1 {
 
 	school(P, A1)
 	low_crime(A1)
+
+	work(P, A2)
 }
 
 example 2 {
@@ -19,6 +22,15 @@ example 2 {
 
 	school(P, A1)
 	low_crime(A1)
-	low_crime(A2)
 
+	work(P, A2)
+	low_crime(A2)
+}
+
+example 3 {
+	const Area A1 A2
+	const Person P
+
+	school(P, A1)
+	work(P, A1)
 }

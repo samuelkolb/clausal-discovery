@@ -1,6 +1,7 @@
 package clausal_discovery.run;
 
 import basic.FileUtil;
+import clausal_discovery.configuration.Configuration;
 import log.Log;
 
 import java.io.File;
@@ -36,7 +37,7 @@ public class InteractiveClient {
 		Log.LOG.printLine("\nWhat is the maximal clause length?");
 		int clauseLength = Integer.parseInt(args.length > 2 ? args[2] : scanner.nextLine());
 
-		new RunClient().run(new Configuration.FullFileConfiguration(name, variableCount, clauseLength));
+		new RunClient().run(Configuration.fromLocalFile(name, variableCount, clauseLength));
 	}
 
 	private static String[] getExamples() {

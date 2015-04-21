@@ -1,6 +1,7 @@
 package clausal_discovery.run;
 
 import basic.MathUtil;
+import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.ClausalDiscovery;
 import clausal_discovery.core.StatusClause;
 import idp.IdpExecutor;

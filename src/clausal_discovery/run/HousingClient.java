@@ -1,5 +1,7 @@
 package clausal_discovery.run;
 
+import clausal_discovery.configuration.Configuration;
+
 /**
  * Created by samuelkolb on 13/04/15.
  *
@@ -12,6 +14,6 @@ public class HousingClient {
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		new RunClient().run(new Configuration.FullFileConfiguration("housing", 4, 4));
+		new RunClient().run(Configuration.fromLocalFile("housing", 4, 4));
 	}
 }

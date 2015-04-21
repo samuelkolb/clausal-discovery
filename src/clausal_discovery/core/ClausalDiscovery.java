@@ -1,8 +1,9 @@
 package clausal_discovery.core;
 
-import clausal_discovery.run.Configuration;
+import clausal_discovery.configuration.Configuration;
 import idp.IdpExecutor;
-import logic.theory.FileTheory;
+import logic.expression.formula.Formula;
+import logic.theory.InlineTheory;
 import logic.theory.Theory;
 import vector.Vector;
 import version3.algorithm.*;
@@ -13,6 +14,7 @@ import version3.plugin.MaximalDepthPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The clausal discovery class sets up the search
@@ -63,18 +65,25 @@ public class ClausalDiscovery {
 	 */
 	public List<StatusClause> findAllConstraints() {
 		List<StatusClause> clauses = new ArrayList<>();
-		for(Configuration config : getConfiguration().split())
-			clauses.addAll(run(config));
+		clauses.addAll(findHardConstraints());
+		clauses.addAll(clauses);
 		return clauses;
+	}
+
+	public List<StatusClause> findSoftConstraints(List<StatusClause> clauses) {
+		List<Formula> constraints = clauses.stream().map(new StatusClauseConverter()).collect(Collectors.toList());
+		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
+		List<StatusClause> result = new ArrayList<>();
+		for(Configuration config : newConfig.split())
+			result.addAll(run(config));
+		return result;
 	}
 
 	private List<StatusClause> run(Configuration configuration) {
 		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
 		int variableCount = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
-		Vector<Theory> background = configuration.getBackgroundFile().isPresent()
-				? new Vector<Theory>(new FileTheory(configuration.getBackgroundFile().get()))
-				: new Vector<>();
+		Vector<Theory> background = configuration.getBackgroundTheories();
 		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor(), background);
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
 
