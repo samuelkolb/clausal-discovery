@@ -167,10 +167,10 @@ public class LogicParserState {
 
 	/**
 	 * Add a preference
-	 * @param examples	The list of examples in their order of preference (examples[0] > ... > examples[n])
+	 * @param preference	The list of examples in their order of preference (examples[0] > ... > examples[n])
 	 */
-	public void addPreference(Vector<Integer> examples) {
-		this.preferences.add(examples);
+	public void addPreference(Vector<Integer> preference) {
+		this.preferences.add(preference);
 	}
 
 	public Setup getSetup() {

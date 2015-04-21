@@ -1,36 +1,27 @@
 package parse;
 
-import basic.FileUtil;
 import clausal_discovery.core.LogicBase;
 
-import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The logic parser parses logic files
  *
  * @author Samuel Kolb
  */
-public class LogicParser {
+public class LogicParser implements LocalParser<LogicBase> {
 
-	/**
-	 * Read and parse the local file with the given name. (Local files reside under res/examples/)
-	 * @param name	The name of the file (including the extension)
-	 * @return	The LogicBase parsed from the file
-	 */
-	public LogicBase readLocalFile(String name) {
-		File file = FileUtil.getLocalFile(getClass().getResource("/examples/" + name));
-		String program = FileUtil.readFile(file);
-
-		LogicParserState state = new BaseScopeParser<>(Arrays.asList(
-			new CommentParser(),
-			new TypeDefParser(),
-			new PredicateDefParser(),
-			new ExampleParser(),
-			new SearchParser(),
-			new LineRemover()
-		)).parse(new ParseCursor(program), new LogicParserState());
-
-		return state.getLogicBase();
+	@Override
+	public LogicBase parse(String content) {
+		List<ScopeParser<LogicParserState>> parsers = new ArrayList<>();
+		parsers.add(new CommentParser());
+		parsers.add(new TypeDefParser());
+		parsers.add(new PredicateDefParser());
+		parsers.add(new ExampleParser());
+		parsers.add(new SearchParser());
+		parsers.add(new PreferenceParser.PreferenceIgnoreParser());
+		parsers.add(new LineRemover());
+		return new BaseScopeParser<>(parsers).parse(new ParseCursor(content), new LogicParserState()).getLogicBase();
 	}
 }

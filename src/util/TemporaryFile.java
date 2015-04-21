@@ -1,6 +1,5 @@
 package util;
 
-import log.Log;
 import runtime.Terminal;
 
 import java.io.*;
@@ -25,14 +24,12 @@ public class TemporaryFile {
 			PrintWriter writer = null;
 			try {
 				writer = new PrintWriter(new BufferedWriter(new FileWriter(getFile())));
-				Log.LOG.printLine("Ready to write");
 				writer.write(this.content);
 			} catch(IOException e) {
 				throw new IllegalStateException("Unexpected error.", e);
 			} finally {
 				if(writer != null)
 					writer.close();
-				Log.LOG.printLine("Signing off");
 			}
 		}
 	}
@@ -59,7 +56,6 @@ public class TemporaryFile {
 	public TemporaryFile(File file, String content) {
 		this.file = file;
 		//Terminal.get().execute("mkfifo " + getFile().getAbsolutePath(), true);
-		Log.LOG.printLine("Created temp file");
 		this.thread = new Thread(new Writer(content));
 		this.thread.start();
 	}

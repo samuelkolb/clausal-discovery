@@ -61,26 +61,25 @@ public class ClausalOptimization {
 
 	//region Public methods
 
-	public void run() {
+	public void run(List<Vector<Integer>> preferences) {
 		Stopwatch stopwatch = new Stopwatch(true);
 		Log.LOG.saveState().off();
 		ClausalDiscovery clausalDiscovery = new ClausalDiscovery(getConfiguration());
 		List<StatusClause> hardConstraints = clausalDiscovery.findHardConstraints();
 		prettyPrint("Hard Constraints", hardConstraints).off();
 		List<StatusClause> softConstraints = clausalDiscovery.findSoftConstraints(hardConstraints);
-		prettyPrint("Soft Constraints", softConstraints).revert();
+		Log.LOG.revert();
 		List<boolean[]> exampleValidity = validateExamples(softConstraints);
 		for(int i = 0; i < getConfiguration().getLogicBase().getExamples().size(); i++)
 			Log.LOG.printLine("Example " + i + ": " + Arrays.toString(exampleValidity.get(i)));
 		Log.LOG.newLine();
-		List<int[]> preferences = Arrays.asList(new int[]{0, 1}, new int[]{1, 2});
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < preferences.size(); i++) {
-			int[] order = preferences.get(i);
+			Vector<Integer> order = preferences.get(i);
 			for(int j = 0; j < order.length; j++) {
 				builder.append(order.length - j).append(" qid:").append(i + 1);
 				for(int c = 0; c < softConstraints.size(); c++)
-					builder.append(" ").append(c + 1).append(":").append(exampleValidity.get(order[j])[c] ? 1 : 0);
+					builder.append(" ").append(c + 1).append(":").append(exampleValidity.get(order.get(j))[c] ? 1 : 0);
 				builder.append(" #\n");
 			}
 		}
@@ -91,9 +90,7 @@ public class ClausalOptimization {
 		String relativePath = "/executable/mac/svm_rank/svm_rank_learn";
 		String path = FileUtil.getLocalFile(getClass().getResource(relativePath)).getAbsolutePath();
 		String command = path + " -c " + preferences.size()*0.15 + " " + inputFile.getAbsolutePath() + " " + outputFile.getAbsolutePath();
-		Log.LOG.printLine("Ready to run: " + command);
 		Terminal.get().execute(command, true);
-		Log.LOG.printLine("Command finished");
 		temporaryFile.delete();
 		String[] output = FileUtil.readFile(outputFile).split("\n");
 		String[] lastLine = substring(output[output.length - 1], 2, -2).split(" ");

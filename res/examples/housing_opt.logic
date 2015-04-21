@@ -34,3 +34,6 @@ example {
 	school(P, A1)
 	work(P, A1)
 }
+
+pref 1 > 2
+pref 2 > 3

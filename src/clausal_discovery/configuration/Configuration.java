@@ -112,7 +112,7 @@ public class Configuration {
 	 * @throws ParseException	Iff a parsing exception occurs while parsing the logic file
 	 */
 	public static Configuration fromLocalFile(String name, int variableCount, int clauseLength) throws ParseException {
-		LogicBase logicBase = new LogicParser().readLocalFile(name + ".logic");
+		LogicBase logicBase = new LogicParser().parseLocalFile(name + ".logic");
 		URL url = Configuration.class.getResource("/examples/" + name + ".background");
 		Vector<Theory> background = url == null
 				? new Vector<>()
