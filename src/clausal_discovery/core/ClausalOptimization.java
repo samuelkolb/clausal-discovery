@@ -3,6 +3,7 @@ package clausal_discovery.core;
 import basic.ArrayUtil;
 import basic.FileUtil;
 import clausal_discovery.configuration.Configuration;
+import clausal_discovery.validity.ValidityTable;
 import idp.FileManager;
 import log.Log;
 import runtime.Terminal;
@@ -50,7 +51,7 @@ public class ClausalOptimization {
 			prettyPrint("Hard Constraints", hardConstraints).off();
 			softConstraints = new Vector<>(StatusClause.class, clausalDiscovery.findSoftConstraints(hardConstraints));
 			prettyPrint("Soft Constraints", softConstraints).revert();
-			validity = new ValidityTable(config.getLogicBase(), config.getBackgroundTheories(), softConstraints);
+			validity = ValidityTable.create(config.getLogicBase(), config.getBackgroundTheories(), softConstraints);
 			Log.LOG.formatLine("Calculations done in %.2f seconds", stopwatch.stop() / 1000).newLine();
 			Double[] scores = getScores(preferences, validity);
 			for(int i = 0; i < scores.length; i++)
@@ -120,7 +121,7 @@ public class ClausalOptimization {
 		temporaryFile.delete();
 		String[] output = FileUtil.readFile(outputFile).split("\n");
 		String[] lastLine = substring(output[output.length - 1], 2, -2).split(" ");
-		Double[] scores = new Double[validity.getClauses().size()];
+		Double[] scores = new Double[validity.getClauseCount()];
 		ArrayUtil.fill(scores, 0.0);
 		for(String attribute : lastLine) {
 			String[] parts = attribute.split(":");

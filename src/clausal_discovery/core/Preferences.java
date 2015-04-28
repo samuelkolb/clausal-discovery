@@ -1,5 +1,6 @@
 package clausal_discovery.core;
 
+import clausal_discovery.validity.ValidityTable;
 import logic.example.Example;
 import vector.Vector;
 
