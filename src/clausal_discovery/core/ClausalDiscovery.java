@@ -13,6 +13,7 @@ import version3.plugin.MaximalDepthPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -77,7 +78,7 @@ public class ClausalDiscovery {
 	 * @param clauses	The hard constraints that are used as background knowledge
 	 * @return	A list of soft constraints
 	 */
-	public List<StatusClause> findSoftConstraints(List<StatusClause> clauses) {
+	public List<StatusClause> findSoftConstraints(Collection<StatusClause> clauses) {
 		ExecutorService service = Executors.newFixedThreadPool(2);
 		List<Formula> constraints = clauses.stream().map(new StatusClauseConverter()).collect(Collectors.toList());
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));

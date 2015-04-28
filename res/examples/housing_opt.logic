@@ -35,5 +35,4 @@ example {
 	work(P, A1)
 }
 
-pref 1 > 2
-pref 2 > 3
+pref 1 > 2 > 3

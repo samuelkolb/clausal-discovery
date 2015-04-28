@@ -1,12 +1,12 @@
 package clausal_discovery.run;
 
+import basic.ArrayUtil;
 import clausal_discovery.configuration.Configuration;
-import clausal_discovery.core.ClausalDiscovery;
-import clausal_discovery.core.ClausalOptimization;
-import clausal_discovery.core.StatusClause;
+import clausal_discovery.core.*;
 import log.Log;
 import parse.ParseException;
 import parse.PreferenceParser;
+import util.Numbers;
 import vector.Vector;
 
 import java.util.Arrays;
@@ -30,8 +30,10 @@ public class HousingOptimizationClient {
 	public static void main(String[] args) {
 		try {
 			Configuration configuration = Configuration.fromLocalFile("housing_opt", 4, 3);
-			List<Vector<Integer>> preferences = new PreferenceParser().parseLocalFile("housing_opt.logic");
-			new ClausalOptimization(configuration).run(preferences);
+			PreferenceParser preferenceParser = new PreferenceParser(configuration.getLogicBase().getExamples());
+			Preferences preferences = preferenceParser.parseLocalFile("housing_opt.logic");
+			ScoringFunction function = new ClausalOptimization(configuration).run(preferences);
+
 		} catch(ParseException e) {
 			Log.LOG.on().printLine("Error occurred while parsing " + "housing_opt.logic").printLine(e.getMessage());
 		}
