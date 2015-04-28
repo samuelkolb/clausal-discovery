@@ -3,6 +3,7 @@ package clausal_discovery.core;
 import basic.ArrayUtil;
 import basic.FileUtil;
 import clausal_discovery.configuration.Configuration;
+import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityTable;
 import idp.FileManager;
 import log.Log;
@@ -34,9 +35,9 @@ public class ClausalOptimization {
 			this.preferences = preferences;
 		}
 
-		private Vector<StatusClause> hardConstraints;
+		private Vector<ValidatedClause> hardConstraints;
 
-		private Vector<StatusClause> softConstraints;
+		private Vector<ValidatedClause> softConstraints;
 
 		private ValidityTable validity;
 
@@ -47,11 +48,12 @@ public class ClausalOptimization {
 			Log.LOG.saveState().off();
 			Configuration config = getConfiguration();
 			ClausalDiscovery clausalDiscovery = new ClausalDiscovery(config);
-			hardConstraints = new Vector<>(StatusClause.class, clausalDiscovery.findHardConstraints());
+			hardConstraints = new Vector<>(ValidatedClause.class, clausalDiscovery.findHardConstraints());
 			prettyPrint("Hard Constraints", hardConstraints).off();
-			softConstraints = new Vector<>(StatusClause.class, clausalDiscovery.findSoftConstraints(hardConstraints));
+			softConstraints = new Vector<>(ValidatedClause.class, clausalDiscovery.findSoftConstraints(hardConstraints));
 			prettyPrint("Soft Constraints", softConstraints).revert();
-			validity = ValidityTable.create(config.getLogicBase(), config.getBackgroundTheories(), softConstraints);
+			Vector<StatusClause> statusClauses = softConstraints.map(StatusClause.class, ValidatedClause::getClause);
+			validity = ValidityTable.create(config.getLogicBase(), config.getBackgroundTheories(), statusClauses);
 			Log.LOG.formatLine("Calculations done in %.2f seconds", stopwatch.stop() / 1000).newLine();
 			Double[] scores = getScores(preferences, validity);
 			for(int i = 0; i < scores.length; i++)
@@ -132,11 +134,11 @@ public class ClausalOptimization {
 
 	//endregion
 
-	private static Log prettyPrint(String title, Collection<StatusClause> clauses) {
+	private static Log prettyPrint(String title, Collection<ValidatedClause> clauses) {
 		Log.LOG.on();
 		Log.LOG.printTitle(title);
 		int i = 0;
-		for(StatusClause clause : clauses)
+		for(ValidatedClause clause : clauses)
 			Log.LOG.printLine(++i + ": " + clause);
 		Log.LOG.newLine();
 		return Log.LOG;

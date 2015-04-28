@@ -1,5 +1,6 @@
 package clausal_discovery.validity;
 
+import basic.ArrayUtil;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import vector.Vector;
@@ -35,7 +36,10 @@ public class ValidatedClause {
 
 	public Vector<Boolean> getValidity() {
 		try {
-			return this.validity.get();
+			Vector<Boolean> vector = this.validity.get();
+			if(vector.size() != getLogicBase().getExamples().size())
+				throw new IllegalArgumentException(String.format("Expected %d values, got %d", getLogicBase().getExamples().size(), vector.size()));
+			return vector;
 		} catch(InterruptedException | ExecutionException e) {
 			throw new IllegalStateException(e);
 		}
@@ -52,6 +56,14 @@ public class ValidatedClause {
 	//endregion
 
 	//region Construction
+
+	/**
+	 * Creates a new validated clause with an empty status clause and all false validity values
+	 * @param logicBase	The logic base
+	 */
+	public ValidatedClause(LogicBase logicBase) {
+		this(logicBase, new StatusClause(), Vector.create(ArrayUtil.fill(logicBase.getExamples().size(), false)));
+	}
 
 	/**
 	 * Creates a validated clause
@@ -79,6 +91,11 @@ public class ValidatedClause {
 	 */
 	public boolean coversAll() {
 		return getValidCount() == getLogicBase().getExamples().size();
+	}
+
+	@Override
+	public String toString() {
+		return getClause().toString();
 	}
 
 	//endregion

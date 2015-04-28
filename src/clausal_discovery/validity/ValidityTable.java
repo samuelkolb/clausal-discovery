@@ -70,11 +70,15 @@ public class ValidityTable {
 	 * @return	The validity table
 	 */
 	public static ValidityTable create(LogicBase logicBase, Vector<Theory> background, Vector<StatusClause> clauses) {
-		return new ValidityTable(clauses.size(), createValidityMap(logicBase, background, clauses));
+		ValidityCalculator calculator = new ParallelValidityCalculator(logicBase, IdpExecutor.get(), background);
+		ValidityTable table = create(clauses.map(ValidatedClause.class, calculator::getValidatedClause));
+		calculator.shutdown();
+		return table;
 	}
 
-	private static Map<Example, Vector<Boolean>> createValidityMap(LogicBase logicBase, Vector<Theory> background,
+	/*private static Map<Example, Vector<Boolean>> createValidityMap(LogicBase logicBase, Vector<Theory> background,
 															Vector<StatusClause> clauses) {
+
 		Map<Example, Vector<Boolean>> validity = new LinkedHashMap<>();
 		ValidityCalculator[] calculators = new ValidityCalculator[logicBase.getExamples().size()];
 		List<LogicBase> logicBases = logicBase.split();
@@ -92,7 +96,7 @@ public class ValidityTable {
 			validity.put(logicBase.getExamples().get(i), new Vector<>(booleans));
 		}
 		return validity;
-	}
+	}*/
 
 	//endregion
 

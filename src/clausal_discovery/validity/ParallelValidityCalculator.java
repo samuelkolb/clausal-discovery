@@ -17,21 +17,6 @@ import java.util.concurrent.*;
  */
 public class ParallelValidityCalculator extends ValidityCalculator {
 
-	private class CheckValidCallable implements Callable<Boolean> {
-
-		private final Formula formula;
-
-		private CheckValidCallable(Formula formula) {
-			this.formula = formula;
-		}
-
-		@Override
-		public Boolean call() throws Exception {
-			Vector<Theory> theories = new Vector<>(getTheory(formula));
-			return getExecutor().testValidityTheory(getKnowledgeBase(theories));
-		}
-	}
-
 	private class CheckValidityCallable implements Callable<Vector<Boolean>> {
 
 		private final Formula formula;
@@ -43,7 +28,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		@Override
 		public Vector<Boolean> call() throws Exception {
 			Vector<Theory> theories = new Vector<>(getTheory(formula));
-			return Vector.create(getExecutor().testValidityTheories(getKnowledgeBase(theories)));
+			return getExecutor().testValidityTheories(getKnowledgeBase(theories));
 		}
 	}
 
@@ -69,21 +54,6 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 	//endregion
 
 	//region Public methods
-
-	@Override
-	public void submitFormula(Formula formula) {
-		if(!validityTable.containsKey(formula))
-			validityTable.put(formula, executorService.submit(new CheckValidCallable(formula)));
-	}
-
-	@Override
-	public boolean isValid(Formula formula) {
-		try {
-			return validityTable.get(formula).get();
-		} catch(InterruptedException | ExecutionException e) {
-			throw new IllegalStateException(e);
-		}
-	}
 
 	@Override
 	public ValidatedClause getValidatedClause(StatusClause clause) {

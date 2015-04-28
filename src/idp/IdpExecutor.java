@@ -4,13 +4,14 @@ import basic.FileUtil;
 import basic.StringUtil;
 import idp.program.EntailsProgram;
 import idp.program.IdpProgram;
-import idp.program.ValidProgram;
+import idp.program.ValidityProgram;
 import log.Log;
 import logic.theory.InlineTheory;
 import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
 import runtime.Terminal;
 import time.Stopwatch;
+import vector.Vector;
 
 import java.io.*;
 
@@ -66,8 +67,10 @@ public class IdpExecutor implements LogicExecutor {
 	//region Public methods
 
 	@Override
-	public boolean[] testValidityTheories(KnowledgeBase knowledgeBase) {
-		return executeTests(new ValidProgram(knowledgeBase));
+	public Vector<Boolean> testValidityTheories(KnowledgeBase knowledgeBase) {
+		String result = executeSafe(new ValidityProgram(knowledgeBase));
+		Vector<String> strings = new Vector<>(result.trim().split(" "));
+		return strings.map(Boolean.class, this::getBoolean);
 	}
 
 	@Override

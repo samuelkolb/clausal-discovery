@@ -55,7 +55,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 	//region Public methods
 
 
-	@Override
+	/*@Override
 	public void submitFormula(Formula formula) {
 		Log.LOG.printLine("INFO Submitted " + IdpExpressionPrinter.print(formula));
 		if(!validityTable.containsKey(formula))
@@ -69,7 +69,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 			return validityTable.get(formula);
 		extendValidityTable();
 		return validityTable.get(formula);
-	}
+	}*/
 
 	@Override
 	public ValidatedClause getValidatedClause(StatusClause statusClause) {
@@ -81,9 +81,9 @@ public class BatchValidityCalculator extends ValidityCalculator {
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
 			theories.add(getTheory(formula));
-		boolean[] validity = getExecutor().testValidityTheories(getKnowledgeBase(theories));
+		Vector<Boolean> validity = getExecutor().testValidityTheories(getKnowledgeBase(theories));
 		for(int i = 0; i < formulas.size(); i++)
-			validityTable.put(formulas.get(i), validity[i]);
+			validityTable.put(formulas.get(i), validity.get(i));
 		formulas.clear();
 		Log.LOG.printLine("...Done");
 	}

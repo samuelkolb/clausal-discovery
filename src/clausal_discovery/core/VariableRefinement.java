@@ -2,16 +2,15 @@ package clausal_discovery.core;
 
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.validity.ParallelValidityCalculator;
+import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityCalculator;
 import log.Log;
-import logic.example.Example;
 import logic.expression.formula.Clause;
 import logic.expression.formula.Formula;
 import logic.expression.formula.InfixPredicate;
 import logic.theory.*;
 import time.Stopwatch;
 import vector.Vector;
-import vector.WriteOnceVector;
 import version3.algorithm.*;
 
 import java.util.ArrayList;
@@ -30,16 +29,16 @@ import java.util.stream.Collectors;
  *
  * @author Samuel Kolb
  */
-public class VariableRefinement implements ExpansionOperator<StatusClause>, ResultPolicy<StatusClause>,
-		Plugin<StatusClause> {
+public class VariableRefinement implements ExpansionOperator<ValidatedClause>, ResultPolicy<ValidatedClause>,
+		Plugin<ValidatedClause> {
 
 	private class EntailmentTestRunnable implements Runnable {
 
-		private final Result<StatusClause> result;
+		private final Result<ValidatedClause> result;
 
-		private final Node<StatusClause> node;
+		private final Node<ValidatedClause> node;
 
-		private EntailmentTestRunnable(Result<StatusClause> result, Node<StatusClause> node) {
+		private EntailmentTestRunnable(Result<ValidatedClause> result, Node<ValidatedClause> node) {
 			this.result = result;
 			this.node = node;
 		}
@@ -47,7 +46,9 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		@Override
 		public void run() {
 			Log.LOG.saveState()/*.off()/**/;
-			if(!entails(result.getSolutions(), node.getValue())) {
+			List<StatusClause> statusClauses = result.getSolutions().stream().map(ValidatedClause::getClause)
+					.collect(Collectors.toList());
+			if(!entails(statusClauses, node.getValue().getClause())) {
 				result.addNode(node);
 				Log.LOG.print("NEW      ");
 			} else {
@@ -136,48 +137,45 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	// region Public methods
 
 	@Override
-	public List<StatusClause> expandNode(Node<StatusClause> node) {
+	public List<ValidatedClause> expandNode(Node<ValidatedClause> node) {
 		if(node.shouldPruneChildren())
 			return new ArrayList<>();
 		return getChildren(node.getValue());
 	}
 
 	@Override
-	public void initialise(List<Node<StatusClause>> initialNodes, Result<StatusClause> result) {
-		for(Node<StatusClause> node : initialNodes)
-			validityCalculator.submitFormula(getClause(node.getValue()));
-		result.addDelegate(new Result.Delegate<StatusClause>() {
+	public void initialise(List<Node<ValidatedClause>> initialNodes, Result<ValidatedClause> result) {
+		result.addDelegate(new Result.Delegate<ValidatedClause>() {
 			@Override
-			public void processResultNodeAdded(Result<StatusClause> result, Node<StatusClause> node) {
-				resultSet.add(node.getValue());
+			public void processResultNodeAdded(Result<ValidatedClause> result, Node<ValidatedClause> node) {
+				resultSet.add(node.getValue().getClause());
 			}
 
 			@Override
-			public void processResultNodeRemoved(Result<StatusClause> result, Node<StatusClause> node) {
+			public void processResultNodeRemoved(Result<ValidatedClause> result, Node<ValidatedClause> node) {
 
 			}
 		});
 	}
 
 	@Override
-	public boolean nodeSelected(Node<StatusClause> node) {
-		return !subsetOccurs(node.getValue());
+	public boolean nodeSelected(Node<ValidatedClause> node) {
+		return !subsetOccurs(node.getValue().getClause());
 	}
 
 	@Override
-	public void nodeProcessed(Node<StatusClause> node, Result<StatusClause> result) {
+	public void nodeProcessed(Node<ValidatedClause> node, Result<ValidatedClause> result) {
 
 	}
 
 	@Override
-	public void nodeExpanded(Node<StatusClause> node, List<Node<StatusClause>> childNodes) {
-		for(Node<StatusClause> childNode : childNodes)
-			validityCalculator.submitFormula(getClause(childNode.getValue()));
+	public void nodeExpanded(Node<ValidatedClause> node, List<Node<ValidatedClause>> childNodes) {
+
 	}
 
 	@Override
-	public boolean processSolution(Result<StatusClause> result, Node<StatusClause> node) {
-		if(!isValid(node))
+	public boolean processSolution(Result<ValidatedClause> result, Node<ValidatedClause> node) {
+		if(!node.getValue().coversAll())
 			return true;
 		new EntailmentTestRunnable(result, node).run();
 		//resultQueue.execute(new EntailmentTestRunnable(result, node));
@@ -185,7 +183,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	}
 
 	@Override
-	public void searchComplete(Result<StatusClause> result) {
+	public void searchComplete(Result<ValidatedClause> result) {
 		validityCalculator.shutdown();
 		resultQueue.shutdown();
 		getExcessTimer().start();
@@ -216,7 +214,7 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 	protected KnowledgeBase getProgram(List<StatusClause> clauses) {
 		List<Formula> formulas = clauses.stream().map(this::getClause).collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());
-		Vector<Theory> theories = new Vector<Theory>(new InlineTheory(formulas));
+		Vector<Theory> theories = new Vector<>(new InlineTheory(formulas));
 		return new KnowledgeBase(logicBase.getVocabulary(), theories, getBackgroundTheories(), new Vector<>());
 	}
 
@@ -224,21 +222,15 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return new StatusClauseConverter().apply(clause);
 	}
 
-	private List<StatusClause> getChildren(StatusClause clause) {
+	private List<ValidatedClause> getChildren(ValidatedClause validatedClause) {
+		StatusClause clause = validatedClause.getClause();
 		List<StatusClause> children = new ArrayList<>();
 		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
 			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
 		if(clause.inBody())
 			for(int i = 0; i < getInstanceList().size(); i++)
 				clause.processIfRepresentative(getInstanceList().getInstance(i, false)).ifPresent(children::add);
-		return children;
-	}
-
-	private boolean isValid(Node<StatusClause> node) {
-		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getLogicBase().getExamples().size()]);
-		for(Example example : getLogicBase().getExamples())
-			structures.add(example.getStructure());
-		return validityCalculator.isValid(getClause(node.getValue()));
+		return children.stream().map(validityCalculator::getValidatedClause).collect(Collectors.toList());
 	}
 
 	private boolean subsetOccurs(StatusClause statusClause) {
@@ -254,19 +246,20 @@ public class VariableRefinement implements ExpansionOperator<StatusClause>, Resu
 		return false;
 	}
 
-	protected void prune(Result<StatusClause> result) {
+	protected void prune(Result<ValidatedClause> result) {
 		pruneOne(result, 0);
 	}
 
-	protected void pruneOne(Result<StatusClause> result, int index) {
-		List<StatusClause> clauses = result.getSolutions();
+	protected void pruneOne(Result<ValidatedClause> result, int index) {
+		List<StatusClause> clauses = result.getSolutions().stream().map(ValidatedClause::getClause)
+				.collect(Collectors.toList());
 		for(int i = index; i < result.getSolutionCount() - 1; i++) {
 			List<StatusClause> list = new ArrayList<>(result.getSolutionCount() - 1);
 			for(int j = 0; j < result.getSolutionCount(); j++)
 				if(j != i)
 					list.add(clauses.get(j));
 			if(entails(list, clauses.get(i))) {
-				Node<StatusClause> pruned = result.removeNode(i);
+				Node<ValidatedClause> pruned = result.removeNode(i);
 				Log.LOG.printLine("PRUNED   " + pruned);
 				pruneOne(result, i);
 				return;

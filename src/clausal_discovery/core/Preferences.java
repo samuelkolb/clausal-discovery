@@ -1,6 +1,7 @@
 package clausal_discovery.core;
 
 import clausal_discovery.validity.ValidityTable;
+import log.Log;
 import logic.example.Example;
 import vector.Vector;
 
@@ -91,6 +92,7 @@ public class Preferences {
 			Vector<Example> ordering = getGroups().get(i).getOrdering();
 			for(int j = 0; j < ordering.size(); j++) {
 				builder.append(ordering.length - j).append(" qid:").append(i + 1);
+				Log.LOG.printLine(validity.getValidity(ordering.get(j)));
 				for(int c = 0; c < validity.getValidity(ordering.get(j)).size(); c++)
 					builder.append(" ").append(c + 1).append(":").append(validity.getValidity(ordering.get(j)).get(c) ? 1 : 0);
 				builder.append(" #\n");

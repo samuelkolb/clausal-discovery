@@ -2,11 +2,11 @@ package clausal_discovery.configuration;
 
 import basic.FileUtil;
 import clausal_discovery.core.LogicBase;
-import clausal_discovery.core.StatusClause;
+import clausal_discovery.validity.ValidatedClause;
 import idp.FileManager;
-import parse.LogicParser;
 import logic.theory.FileTheory;
 import logic.theory.Theory;
+import parse.LogicParser;
 import parse.ParseException;
 import vector.Vector;
 import version3.algorithm.SearchAlgorithm;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by samuelkolb on 13/04/15.
+ * Holds all information to steer a clausal discovery search
  *
  * @author Samuel Kolb
  */
@@ -28,9 +28,9 @@ public class Configuration {
 
 	// IVAR countingPlugin - The last used counting plugin
 
-	private CountingPlugin<StatusClause> countingPlugin;
+	private CountingPlugin<ValidatedClause> countingPlugin;
 
-	public CountingPlugin<StatusClause> getCountingPlugin() {
+	public CountingPlugin<ValidatedClause> getCountingPlugin() {
 		return countingPlugin;
 	}
 
@@ -77,7 +77,7 @@ public class Configuration {
 	 * Add plugins to monitor the algorithms execution
 	 * @param algorithm	The search algorithm
 	 */
-	public void addPlugins(SearchAlgorithm<StatusClause> algorithm) {
+	public void addPlugins(SearchAlgorithm<ValidatedClause> algorithm) {
 		this.countingPlugin = new CountingPlugin<>();
 		algorithm.addPlugin(getCountingPlugin());
 		algorithm.addPlugin(new FileLoggingPlugin<>(FILE_MANAGER.createRandomFile("txt")));

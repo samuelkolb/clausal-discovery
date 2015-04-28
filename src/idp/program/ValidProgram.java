@@ -35,7 +35,7 @@ public class ValidProgram extends IdpProgram {
 		return builder.toString();
 	}
 
-	private void queryTheory(String theoryName, StringBuilder procedure) {
+	protected void queryTheory(String theoryName, StringBuilder procedure) {
 		procedure.append("if true");
 		for(int i = 0; i < getKnowledgeBase().getStructures().size(); i++)
 			procedure.append(" and isValid(").append(theoryName).append(", S").append(i).append(")");

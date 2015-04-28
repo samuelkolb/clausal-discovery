@@ -12,10 +12,7 @@ import version3.algorithm.implementation.BreadthFirstSearch;
 import version3.plugin.DuplicateEliminationPlugin;
 import version3.plugin.MaximalDepthPlugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -58,7 +55,7 @@ public class ClausalDiscovery {
 	 * Use the given configuration to find hard constraints in the data
 	 * @return	A list of status clauses that represent hard constraints
 	 */
-	public List<StatusClause> findHardConstraints() {
+	public List<ValidatedClause> findHardConstraints() {
 		return run(getConfiguration());
 	}
 
@@ -66,10 +63,10 @@ public class ClausalDiscovery {
 	 * Use the given configuration to find constraints per example
 	 * @return	A list of status clauses that hold on at least one example
 	 */
-	public List<StatusClause> findAllConstraints() {
-		List<StatusClause> clauses = new ArrayList<>();
+	public List<ValidatedClause> findAllConstraints() {
+		List<ValidatedClause> clauses = new ArrayList<>();
 		clauses.addAll(findHardConstraints());
-		clauses.addAll(clauses);
+		clauses.addAll(findSoftConstraints(clauses));
 		return clauses;
 	}
 
@@ -79,16 +76,16 @@ public class ClausalDiscovery {
 	 * @param clauses	The hard constraints that are used as background knowledge
 	 * @return	A list of soft constraints
 	 */
-	public List<StatusClause> findSoftConstraints(Collection<StatusClause> clauses) {
+	public List<ValidatedClause> findSoftConstraints(Collection<ValidatedClause> clauses) {
 		ExecutorService service = Executors.newFixedThreadPool(2);
-		List<Formula> constraints = clauses.stream().map(new StatusClauseConverter()).collect(Collectors.toList());
+		List<Formula> constraints = clauses.stream().map(ValidatedClause::getClause).map(new StatusClauseConverter()).collect(Collectors.toList());
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
-		List<Future<List<StatusClause>>> result = new ArrayList<>();
+		List<Future<List<ValidatedClause>>> result = new ArrayList<>();
 		for(Configuration config : newConfig.split())
 			result.add(service.submit(() -> run(config)));
-		List<StatusClause> softClauses = new ArrayList<>();
+		List<ValidatedClause> softClauses = new ArrayList<>();
 		try {
-			for(Future<List<StatusClause>> future : result)
+			for(Future<List<ValidatedClause>> future : result)
 				softClauses.addAll(future.get());
 		} catch(InterruptedException | ExecutionException e) {
 			throw new IllegalStateException(e);
@@ -98,27 +95,20 @@ public class ClausalDiscovery {
 		return softClauses;
 	}
 
-	private List<StatusClause> run(Configuration configuration) {
+	private List<ValidatedClause> run(Configuration configuration) {
 		int variableCount = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
 		Vector<Theory> background = configuration.getBackgroundTheories();
 		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor(), background);
-		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
-		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
+		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(logicBase));
+		SearchAlgorithm<ValidatedClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
 		algorithm.addPlugin(new MaximalDepthPlugin<>(configuration.getClauseLength()));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		algorithm.addPlugin(refinement);
 		configuration.addPlugins(algorithm);
 
-		List<StatusClause> statusClauses = makeList(algorithm.search(initialNodes));
+		List<ValidatedClause> clauses = algorithm.search(initialNodes).getSolutions();
 		this.excessTime = refinement.getExcessTimer().stop();
-		return statusClauses;
-	}
-
-	private List<StatusClause> makeList(Result<StatusClause> result) {
-		List<StatusClause> list = new ArrayList<>();
-		for(Node<StatusClause> clause : result)
-			list.add(clause.getValue());
-		return list;
+		return clauses;
 	}
 }

@@ -6,13 +6,13 @@ import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.*;
 import vector.Vector;
-import vector.WriteOnceVector;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by samuelkolb on 02/03/15.
+ * The abstract validity calculator encapsulates different (potentially concurrent) implementations to calculate
+ * validity for clauses.
  *
  * @author Samuel Kolb
  */
@@ -53,21 +53,8 @@ public abstract class ValidityCalculator {
 	//region Public methods
 
 	/**
-	 * Submits the given formula, making it available to be queried later
-	 * @param formula	The formula for which the validity will be queried
-	 */
-	public abstract void submitFormula(Formula formula);
-
-	/**
-	 * Returns whether the given formula is valid or not with respect to the given logic base
-	 * @param formula	The formula for which the validity is to be returned
-	 * @return	True iff the given formula is valid according to the provided logic executor
-	 */
-	public abstract boolean isValid(Formula formula);
-
-	/**
 	 * Returns a validated clause for the given clause
-	 * @param statusClause	The status clause to calculate validty for
+	 * @param statusClause	The status clause to calculate validity for
 	 * @return	A validated clause
 	 */
 	public abstract ValidatedClause getValidatedClause(StatusClause statusClause);
@@ -80,16 +67,13 @@ public abstract class ValidityCalculator {
 	}
 
 	Vector<Structure> getStructures() {
-		Vector<Structure> structures = new WriteOnceVector<>(new Structure[getBase().getExamples().size()]);
-		for(Example example : getBase().getExamples())
-			structures.add(example.getStructure());
-		return structures;
+		return new Vector<>(Structure.class, getBase().getExamples(), Example::getStructure);
 	}
 
 	protected Theory getTheory(Formula formula) {
 		List<Formula> formulas = new ArrayList<>();
 		formulas.add(formula);
-		//formulas.addAll(getBase().getSymmetryFormulas());
+		//formulas.addAll(getBase().getSymmetryFormulas()); // TODO
 		return new InlineTheory(formulas);
 	}
 

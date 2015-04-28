@@ -1,5 +1,7 @@
 package logic.theory;
 
+import vector.Vector;
+
 /**
  * The logic executor abstracts the necessary (external) logical operations from the system in use
  *
@@ -12,18 +14,19 @@ public interface LogicExecutor {
 	 * @param knowledgeBase	The knowledge base to test
 	 * @return	True iff the given program is valid
 	 */
-	public default boolean testValidityTheory(KnowledgeBase knowledgeBase) {
+	@Deprecated
+	default boolean testValidityTheory(KnowledgeBase knowledgeBase) {
 		if(knowledgeBase.getTheories().size() != 1)
 			throw new IllegalArgumentException("Requires exactly one theory");
-		return testValidityTheories(knowledgeBase)[0];
+		return testValidityTheories(knowledgeBase).get(0);
 	}
 
 	/**
 	 * Returns whether the theories in the given program are valid, a.k.a. have a model
-	 * @param knowledgeBase	The knowledge base to test
+	 * @param knowledgeBase    The knowledge base to test
 	 * @return	An array containing the truth value of the validity test per theory
 	 */
-	public boolean[] testValidityTheories(KnowledgeBase knowledgeBase);
+	Vector<Boolean> testValidityTheories(KnowledgeBase knowledgeBase);
 
 	/**
 	 * Returns whether the given program entails the given clause
@@ -31,5 +34,5 @@ public interface LogicExecutor {
 	 * @param theory	The theory that should be tested
 	 * @return	True iff the given program entails the given clause
 	 */
-	public boolean entails(KnowledgeBase program, InlineTheory theory);
+	boolean entails(KnowledgeBase program, InlineTheory theory);
 }

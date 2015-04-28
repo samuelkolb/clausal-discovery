@@ -4,6 +4,7 @@ import basic.MathUtil;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.ClausalDiscovery;
 import clausal_discovery.core.StatusClause;
+import clausal_discovery.validity.ValidatedClause;
 import idp.IdpExecutor;
 import log.LinkTransformer;
 import log.Log;
@@ -41,7 +42,7 @@ public class RunClient {
 		ClausalDiscovery clausalDiscovery = new ClausalDiscovery(configuration);
 		Stopwatch stopwatch = new Stopwatch(true);
 		try {
-			List<StatusClause> clauses = clausalDiscovery.findHardConstraints();
+			List<ValidatedClause> clauses = clausalDiscovery.findHardConstraints();
 			Log.LOG.printLine("\nSearch finished in " + round(stopwatch.stop()) + "s:");
 			for(int i = 0; i < clauses.size(); i++)
 				Log.LOG.printLine("\t" + (i + 1) + ": " + clauses.get(i));
