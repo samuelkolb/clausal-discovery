@@ -1,6 +1,7 @@
 package clausal_discovery.core;
 
 import clausal_discovery.configuration.Configuration;
+import clausal_discovery.validity.ValidatedClause;
 import idp.IdpExecutor;
 import logic.expression.formula.Formula;
 import logic.theory.InlineTheory;
@@ -98,14 +99,12 @@ public class ClausalDiscovery {
 	}
 
 	private List<StatusClause> run(Configuration configuration) {
-		StopCriterion<StatusClause> stopCriterion = new EmptyQueueStopCriterion<>();
 		int variableCount = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
 		Vector<Theory> background = configuration.getBackgroundTheories();
 		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor(), background);
 		List<StatusClause> initialNodes = Arrays.asList(new StatusClause());
-
-		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, stopCriterion, refinement);
+		SearchAlgorithm<StatusClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
 		algorithm.addPlugin(new MaximalDepthPlugin<>(configuration.getClauseLength()));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		algorithm.addPlugin(refinement);

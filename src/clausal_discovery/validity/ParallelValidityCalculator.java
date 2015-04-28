@@ -1,6 +1,7 @@
 package clausal_discovery.validity;
 
 import clausal_discovery.core.LogicBase;
+import clausal_discovery.core.StatusClause;
 import logic.expression.formula.Formula;
 import logic.theory.*;
 import vector.Vector;
@@ -26,8 +27,23 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 
 		@Override
 		public Boolean call() throws Exception {
-			Vector<Theory> theories = new Vector<Theory>(getTheory(formula));
+			Vector<Theory> theories = new Vector<>(getTheory(formula));
 			return getExecutor().testValidityTheory(getKnowledgeBase(theories));
+		}
+	}
+
+	private class CheckValidityCallable implements Callable<Vector<Boolean>> {
+
+		private final Formula formula;
+
+		private CheckValidityCallable(Formula formula) {
+			this.formula = formula;
+		}
+
+		@Override
+		public Vector<Boolean> call() throws Exception {
+			Vector<Theory> theories = new Vector<>(getTheory(formula));
+			return Vector.create(getExecutor().testValidityTheories(getKnowledgeBase(theories)));
 		}
 	}
 
@@ -67,6 +83,12 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		} catch(InterruptedException | ExecutionException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	@Override
+	public ValidatedClause getValidatedClause(StatusClause clause) {
+		Formula formula = clause.getFormula();
+		return new ValidatedClause(getBase(), clause, executorService.submit(new CheckValidityCallable(formula)));
 	}
 
 	@Override

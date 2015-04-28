@@ -1,6 +1,7 @@
 package clausal_discovery.validity;
 
 import clausal_discovery.core.LogicBase;
+import clausal_discovery.core.StatusClause;
 import log.Log;
 import logic.expression.formula.Formula;
 import logic.theory.*;
@@ -52,6 +53,11 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 	//endregion
 
 	//region Public methods
+
+	@Override
+	public ValidatedClause getValidatedClause(StatusClause statusClause) {
+		return null; // TODO
+	}
 
 	@Override
 	void extendValidityTable() {

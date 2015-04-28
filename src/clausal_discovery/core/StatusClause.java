@@ -6,6 +6,7 @@ import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import log.Log;
+import logic.expression.formula.Formula;
 import vector.Vector;
 import vector.WriteOnceVector;
 
@@ -155,6 +156,10 @@ public class StatusClause {
 				.collect(Collectors.toList());
 		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
 				+ (head.isEmpty() ? "false" : StringUtil.join(" | ", head));
+	}
+
+	public Formula getFormula() {
+		return new StatusClauseConverter().apply(this);
 	}
 
 	// endregion

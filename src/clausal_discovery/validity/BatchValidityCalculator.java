@@ -1,6 +1,7 @@
 package clausal_discovery.validity;
 
 import clausal_discovery.core.LogicBase;
+import clausal_discovery.core.StatusClause;
 import idp.IdpExpressionPrinter;
 import log.Log;
 import logic.expression.formula.Formula;
@@ -68,6 +69,11 @@ public class BatchValidityCalculator extends ValidityCalculator {
 			return validityTable.get(formula);
 		extendValidityTable();
 		return validityTable.get(formula);
+	}
+
+	@Override
+	public ValidatedClause getValidatedClause(StatusClause statusClause) {
+		return null; // TODO
 	}
 
 	void extendValidityTable() {

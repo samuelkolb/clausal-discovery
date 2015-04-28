@@ -1,6 +1,7 @@
 package clausal_discovery.validity;
 
 import clausal_discovery.core.LogicBase;
+import clausal_discovery.core.StatusClause;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.*;
@@ -63,6 +64,13 @@ public abstract class ValidityCalculator {
 	 * @return	True iff the given formula is valid according to the provided logic executor
 	 */
 	public abstract boolean isValid(Formula formula);
+
+	/**
+	 * Returns a validated clause for the given clause
+	 * @param statusClause	The status clause to calculate validty for
+	 * @return	A validated clause
+	 */
+	public abstract ValidatedClause getValidatedClause(StatusClause statusClause);
 
 	/**
 	 * Free any retained resources
