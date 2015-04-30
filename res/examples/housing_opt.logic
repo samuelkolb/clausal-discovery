@@ -1,6 +1,5 @@
 type Area
 type Person
-// type Cost > int
 
 pred low_crime(Area)
 pred school(Person, Area)
@@ -35,4 +34,5 @@ example {
 	work(P, A1)
 }
 
-pref 1 > 2 > 3
+pref 1 > 2
+pref 2 > 3
