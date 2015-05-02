@@ -77,7 +77,7 @@ public class ClausalDiscovery {
 	 * @return	A list of soft constraints
 	 */
 	public List<ValidatedClause> findSoftConstraints(Collection<ValidatedClause> clauses) {
-		ExecutorService service = Executors.newFixedThreadPool(2);
+		ExecutorService service = Executors.newFixedThreadPool(4);
 		List<Formula> constraints = clauses.stream().map(ValidatedClause::getClause).map(new StatusClauseConverter()).collect(Collectors.toList());
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
 		List<Future<List<ValidatedClause>>> result = new ArrayList<>();

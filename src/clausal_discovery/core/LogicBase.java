@@ -19,29 +19,29 @@ public interface LogicBase {
 	 * Returns the vocabulary containing all predicates
 	 * @return	A vocabulary
 	 */
-	public Vocabulary getVocabulary();
+	Vocabulary getVocabulary();
 
 	/**
 	 * Returns the examples that can be used to validate clauses
 	 * @return	A list of examples
 	 */
-	public Vector<Example> getExamples();
+	Vector<Example> getExamples();
 
 	/**
 	 * Returns the predicates that can be used in clauses
 	 * @return	A list of predicates
 	 */
-	public Vector<PredicateDefinition> getSearchPredicates();
+	Vector<PredicateDefinition> getSearchPredicates();
 
 	/**
 	 * Returns the formulas that describe the symmetries of predicates in this logic base
 	 * @return	A list of formulas
 	 */
-	public List<Formula> getSymmetryFormulas();
+	List<Formula> getSymmetryFormulas();
 
 	/**
 	 * Splits the logic base into a list of logic bases containing one example each
 	 * @return	A list of logic bases, each of which contains one example
 	 */
-	public List<LogicBase> split();
+	List<LogicBase> split();
 }

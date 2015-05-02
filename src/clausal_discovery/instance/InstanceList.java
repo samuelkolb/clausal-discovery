@@ -31,6 +31,16 @@ public class InstanceList {
 	}
 
 	/**
+	 * Create a specific instance list
+	 * @param instances	The instances in order
+	 */
+	public InstanceList(Vector<Instance> instances) {
+		this.pairing = new HashPairing<>(false, false);
+		for(int i = 0; i < instances.size(); i++)
+			this.pairing.associate(i, instances.get(i));
+	}
+
+	/**
 	 * Returns the instance with the given index
 	 * @param index	The index of the instance
 	 * @return	An instance

@@ -1,11 +1,12 @@
 package logic.theory;
 
 import clausal_discovery.core.PredicateDefinition;
-import vector.Vector;
+import clausal_discovery.instance.Instance;
 import logic.bias.Type;
-import logic.expression.formula.Predicate;
+import vector.Vector;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -34,5 +35,24 @@ public class Vocabulary {
 		for(PredicateDefinition definition : getDefinitions())
 			types.addAll(definition.getTypes());
 		return types;
+	}
+
+	/**
+	 * Returns an instance
+	 * @param predicateName		The name of the predicate definition
+	 * @param variableIndices	The variable indices
+	 * @return	An instance
+	 */
+	public Instance getInstance(String predicateName, Vector<Integer> variableIndices) {
+		return new Instance(getDefinition(predicateName, variableIndices), variableIndices);
+	}
+
+	private PredicateDefinition getDefinition(String predicateName, Vector<Integer> variableIndices) {
+		for(PredicateDefinition candidate : getDefinitions())
+			if(candidate.getPredicate().getName().equals(predicateName)
+					&& candidate.getArity() == variableIndices.length)
+				return candidate;
+		String message = "No predicate with the name %s and arity %d";
+		throw new NoSuchElementException(String.format(message, predicateName,variableIndices.length));
 	}
 }

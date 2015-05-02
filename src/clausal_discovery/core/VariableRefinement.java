@@ -58,8 +58,6 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		}
 	}
 
-	public static final InfixPredicate INEQUALITY = new InfixPredicate("~=");
-
 	// region Variables
 
 	// IVAR instanceList - The instance list used for clause generation

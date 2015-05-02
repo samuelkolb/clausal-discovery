@@ -61,7 +61,15 @@ public class Preferences {
 	}
 
 	/**
-	 * Creates a preference object from a list of vectors containing orderings
+	 * Returns the number of preferences
+	 * @return	An int
+	 */
+	public int size() {
+		return getGroups().size();
+	}
+
+	/**
+	 * Creates a preference object from a list of vectors containing orderings (descending)
 	 * @param orders	A list of vector. Each vector contains a number of integers that represent a single preference.
 	 * @return	A preferences object
 	 */
@@ -92,13 +100,40 @@ public class Preferences {
 			Vector<Example> ordering = getGroups().get(i).getOrdering();
 			for(int j = 0; j < ordering.size(); j++) {
 				builder.append(ordering.length - j).append(" qid:").append(i + 1);
-				Log.LOG.printLine(validity.getValidity(ordering.get(j)));
 				for(int c = 0; c < validity.getValidity(ordering.get(j)).size(); c++)
 					builder.append(" ").append(c + 1).append(":").append(validity.getValidity(ordering.get(j)).get(c) ? 1 : 0);
 				builder.append(" #\n");
 			}
 		}
 		return builder.toString();
+	}
+
+	/**
+	 * Returns a new preferences object that contains a random subset of size old-size * factor
+	 * @param factor	A double between 0 and 1
+	 * @return	A new preferences object
+	 */
+	public Preferences resize(double factor) {
+		if(factor < 0 || factor > 1)
+			throw new IllegalArgumentException("Illegal factor: " + factor);
+		List<Group> groups = new ArrayList<>(getGroups());
+		Collections.shuffle(groups);
+		return new Preferences(new Vector<>(Group.class, groups.subList(0, (int) (groups.size() * factor))));
+	}
+
+	/**
+	 * Returns a new preferences object where a random subset of size old-size * factor has been reversed
+	 * @param factor	A double between 0 and 1
+	 * @return	A new preferences object
+	 */
+	public Preferences induceNoise(double factor) {
+		if(factor < 0 || factor > 1)
+			throw new IllegalArgumentException("Illegal factor: " + factor);
+		List<Group> groups = new ArrayList<>(getGroups());
+		Collections.shuffle(groups);
+		for(int i = 0; i < (int) (groups.size() * factor); i++)
+			groups.set(i, new Group(groups.get(i).getOrdering().reverse()));
+		return new Preferences(new Vector<>(Group.class, groups));
 	}
 
 	//endregion

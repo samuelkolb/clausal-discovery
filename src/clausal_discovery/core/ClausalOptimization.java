@@ -3,6 +3,7 @@ package clausal_discovery.core;
 import basic.ArrayUtil;
 import basic.FileUtil;
 import clausal_discovery.configuration.Configuration;
+import clausal_discovery.core.score.StatusClauseFunction;
 import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityTable;
 import idp.FileManager;
@@ -41,7 +42,7 @@ public class ClausalOptimization {
 
 		private ValidityTable validity;
 
-		private ScoringFunction scoringFunction;
+		private StatusClauseFunction scoringFunction;
 
 		public Run run() {
 			stopwatch.start();
@@ -52,13 +53,13 @@ public class ClausalOptimization {
 			prettyPrint("Hard Constraints", hardConstraints).off();
 			softConstraints = new Vector<>(ValidatedClause.class, clausalDiscovery.findSoftConstraints(hardConstraints));
 			prettyPrint("Soft Constraints", softConstraints).revert();
-			Vector<StatusClause> statusClauses = softConstraints.map(StatusClause.class, ValidatedClause::getClause);
-			validity = ValidityTable.create(config.getLogicBase(), config.getBackgroundTheories(), statusClauses);
+			Vector<StatusClause> clauses = softConstraints.map(StatusClause.class, ValidatedClause::getClause);
+			validity = ValidityTable.create(config, clauses);
 			Log.LOG.formatLine("Calculations done in %.2f seconds", stopwatch.stop() / 1000).newLine();
 			Double[] scores = getScores(preferences, validity);
 			for(int i = 0; i < scores.length; i++)
 				Log.LOG.printLine(i + ": " + frontPadCut(String.format("%f", scores[i]), ' ', 10, true) + " : " + softConstraints.get(i));
-			scoringFunction = new ScoringFunction.ClauseScoringFunction(new Vector<>(scores));
+			scoringFunction = new StatusClauseFunction(clauses, new Vector<>(scores), validity);
 			return this;
 		}
 	}
@@ -90,10 +91,10 @@ public class ClausalOptimization {
 
 	/**
 	 * Run clausal optimization
-	 * @param preferences	The preferences to use
+	 * @param preferences    The preferences to use
 	 * @return	A scoring function learned using the given preferences
 	 */
-	public ScoringFunction run(Preferences preferences) {
+	public StatusClauseFunction run(Preferences preferences) {
 		return new Run(preferences).run().scoringFunction;
 	}
 
@@ -120,12 +121,15 @@ public class ClausalOptimization {
 		String command = String.format("%s -c %f %s %s",
 				path, preferences.getCValue(), inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
 		Terminal.get().execute(command, true);
-		temporaryFile.delete();
-		String[] output = FileUtil.readFile(outputFile).split("\n");
+		//temporaryFile.delete();
+		String fileOutput = FileUtil.readFile(outputFile);
+		Log.LOG.printLine(fileOutput);
+		String[] output = fileOutput.split("\n");
 		String[] lastLine = substring(output[output.length - 1], 2, -2).split(" ");
 		Double[] scores = new Double[validity.getClauseCount()];
 		ArrayUtil.fill(scores, 0.0);
 		for(String attribute : lastLine) {
+			Log.LOG.printLine(attribute);
 			String[] parts = attribute.split(":");
 			scores[Integer.parseInt(parts[0]) - 1] = Double.parseDouble(parts[1]);
 		}

@@ -2,6 +2,8 @@ package logic.theory;
 
 import vector.Vector;
 
+import java.util.List;
+
 /**
  * The logic executor abstracts the necessary (external) logical operations from the system in use
  *
@@ -18,7 +20,7 @@ public interface LogicExecutor {
 	default boolean testValidityTheory(KnowledgeBase knowledgeBase) {
 		if(knowledgeBase.getTheories().size() != 1)
 			throw new IllegalArgumentException("Requires exactly one theory");
-		return testValidityTheories(knowledgeBase).get(0);
+		return testValidityTheories(knowledgeBase).get(0).get(0);
 	}
 
 	/**
@@ -26,7 +28,7 @@ public interface LogicExecutor {
 	 * @param knowledgeBase    The knowledge base to test
 	 * @return	An array containing the truth value of the validity test per theory
 	 */
-	Vector<Boolean> testValidityTheories(KnowledgeBase knowledgeBase);
+	List<Vector<Boolean>> testValidityTheories(KnowledgeBase knowledgeBase);
 
 	/**
 	 * Returns whether the given program entails the given clause

@@ -81,7 +81,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
 			theories.add(getTheory(formula));
-		Vector<Boolean> validity = getExecutor().testValidityTheories(getKnowledgeBase(theories));
+		Vector<Boolean> validity = getExecutor().testValidityTheories(getKnowledgeBase(theories)).get(0);
 		for(int i = 0; i < formulas.size(); i++)
 			validityTable.put(formulas.get(i), validity.get(i));
 		formulas.clear();

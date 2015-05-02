@@ -3,11 +3,13 @@ package clausal_discovery.validity;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import logic.expression.formula.Formula;
-import logic.theory.*;
+import logic.theory.LogicExecutor;
+import logic.theory.Theory;
 import vector.Vector;
 
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The parallel validity calculator starts calculating validity in parallel when a request is submitted. When the
@@ -28,13 +30,11 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		@Override
 		public Vector<Boolean> call() throws Exception {
 			Vector<Theory> theories = new Vector<>(getTheory(formula));
-			return getExecutor().testValidityTheories(getKnowledgeBase(theories));
+			return getExecutor().testValidityTheories(getKnowledgeBase(theories)).get(0);
 		}
 	}
 
 	//region Variables
-	private final Map<Formula, Future<Boolean>> validityTable = new ConcurrentHashMap<>();
-
 	private final ExecutorService executorService;
 	//endregion
 

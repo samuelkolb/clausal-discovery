@@ -1,0 +1,11 @@
+type Area
+type Person
+type Price
+
+pred lives(Person, Area)
+pred low_crime(Area)
+pred school(Person, Area)
+pred work(Person, Area)
+pred price(Area, Price)
+pred cheap(Price)
+symm friends(Person, Person)

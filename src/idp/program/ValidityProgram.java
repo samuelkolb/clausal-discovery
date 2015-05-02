@@ -31,6 +31,5 @@ public class ValidityProgram extends ValidProgram {
 		procedure.append("io.write(\"\\n\")");
 	}
 
-
 	//endregion
 }

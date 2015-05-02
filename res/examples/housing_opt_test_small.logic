@@ -1,0 +1,319 @@
+type Area
+
+pred live_in(Area)
+pred low_crime(Area)
+pred school_in(Area)
+pred work_in(Area)
+pred cheap(Area)
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A1)
+	school_in(A2)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A1)
+	school_in(A2)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A1)
+	school_in(A3)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A1)
+	school_in(A3)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A1)
+	school_in(A4)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A1)
+	school_in(A4)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A2)
+	school_in(A2)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A2)
+	school_in(A2)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A2)
+	school_in(A3)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A2)
+	school_in(A3)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A2)
+	school_in(A4)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A2)
+	school_in(A4)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A3)
+	school_in(A2)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A3)
+	school_in(A2)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A3)
+	school_in(A3)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A3)
+	school_in(A3)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A3)
+	school_in(A4)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A3)
+	school_in(A4)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A4)
+	school_in(A2)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A4)
+	school_in(A2)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A4)
+	school_in(A3)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A4)
+	school_in(A3)
+	work_in(A2)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A4)
+	school_in(A4)
+	work_in(A1)
+}
+
+example {
+	const Area A1 A2 A3 A4
+	cheap(A1)
+	cheap(A3)
+	low_crime(A1)
+	low_crime(A2)
+	low_crime(A4)
+
+	live_in(A4)
+	school_in(A4)
+	work_in(A2)
+}

@@ -14,6 +14,8 @@ import time.Stopwatch;
 import vector.Vector;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by samuelkolb on 11/11/14.
@@ -67,10 +69,13 @@ public class IdpExecutor implements LogicExecutor {
 	//region Public methods
 
 	@Override
-	public Vector<Boolean> testValidityTheories(KnowledgeBase knowledgeBase) {
+	public List<Vector<Boolean>> testValidityTheories(KnowledgeBase knowledgeBase) {
 		String result = executeSafe(new ValidityProgram(knowledgeBase));
-		Vector<String> strings = new Vector<>(result.trim().split(" "));
-		return strings.map(Boolean.class, this::getBoolean);
+		List<Vector<Boolean>> list = new ArrayList<>();
+		for(String line : result.trim().split("\n"))
+			if(line.trim().length() > 0)
+				list.add(new Vector<>(line.trim().split(" ")).map(Boolean.class, this::getBoolean));
+		return list;
 	}
 
 	@Override

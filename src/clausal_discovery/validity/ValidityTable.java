@@ -1,15 +1,18 @@
 package clausal_discovery.validity;
 
+import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import clausal_discovery.core.StatusClauseConverter;
 import idp.IdpExecutor;
+import log.Log;
 import logic.example.Example;
 import logic.expression.formula.Formula;
-import logic.theory.Theory;
+import logic.theory.*;
 import vector.Vector;
 import vector.WriteOnceVector;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +66,16 @@ public class ValidityTable {
 	}
 
 	/**
+	 * Extracts logic base and background from configuration
+	 * @param configuration	The configuration
+	 * @param clauses		The clauses to check validity for
+	 * @return	The validity table
+	 */
+	public static ValidityTable create(Configuration configuration, Vector<StatusClause> clauses) {
+		return create(configuration.getLogicBase(), configuration.getBackgroundTheories(), clauses);
+	}
+
+	/**
 	 * Creates a new validity table for the given examples by calculating the necessary validity values
 	 * @param logicBase		The logic base containing the examples to check
 	 * @param background	The background theories
@@ -74,6 +87,28 @@ public class ValidityTable {
 		ValidityTable table = create(clauses.map(ValidatedClause.class, calculator::getValidatedClause));
 		calculator.shutdown();
 		return table;
+	}
+
+	/**
+	 * Creates a new validity table for the examples in the given logic base. The validity values are calculated for the
+	 * given formulas.
+	 * @param logicBase	The logic base containing the vocabulary and the examples
+	 * @param clauses	The clauses to test validity for
+	 * @return	The validity table
+	 */
+	public static ValidityTable create(LogicBase logicBase, List<Formula> clauses) {
+		Vector<Theory> theories = new Vector<>(Formula.class, clauses).map(Theory.class, InlineTheory::new);
+		Vector<Structure> structures = logicBase.getExamples().map(Structure.class, Example::getStructure);
+		KnowledgeBase base = new KnowledgeBase(logicBase.getVocabulary(), theories, structures);
+		List<Vector<Boolean>> validity = IdpExecutor.get().testValidityTheories(base);
+		Map<Example, Vector<Boolean>> map = new HashMap<>();
+		for(int i = 0; i < logicBase.getExamples().size(); i++) {
+			boolean[] array = new boolean[validity.size()];
+			for(int j = 0; j < array.length; j++)
+				array[j] = validity.get(j).get(i);
+			map.put(logicBase.getExamples().get(i), Vector.create(array));
+		}
+		return new ValidityTable(clauses.size(), map);
 	}
 
 	/*private static Map<Example, Vector<Boolean>> createValidityMap(LogicBase logicBase, Vector<Theory> background,
@@ -112,6 +147,8 @@ public class ValidityTable {
 	 * @return	A vector of booleans, where return.get(i) == true indicates that the example is valid for the ith clause
 	 */
 	public Vector<Boolean> getValidity(Example example) {
+		if(!this.validity.containsKey(example))
+			throw new IllegalArgumentException("Example not in validity table: " + example);
 		return this.validity.get(example);
 	}
 
