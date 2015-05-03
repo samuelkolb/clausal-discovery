@@ -1,6 +1,8 @@
 package parse;
 
 import clausal_discovery.core.LogicBase;
+import log.Log;
+import time.Stopwatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class LogicParser implements LocalParser<LogicBase> {
 
 	@Override
 	public LogicBase parse(String content) {
+		Stopwatch stopwatch = new Stopwatch(true);
 		List<ScopeParser<LogicParserState>> parsers = new ArrayList<>();
 		parsers.add(new CommentParser());
 		parsers.add(new TypeDefParser());
@@ -22,6 +25,8 @@ public class LogicParser implements LocalParser<LogicBase> {
 		parsers.add(new SearchParser());
 		parsers.add(new PreferenceParser.PreferenceIgnoreParser());
 		parsers.add(new LineRemover());
-		return new BaseScopeParser<>(parsers).parse(new ParseCursor(content), new LogicParserState()).getLogicBase();
+		LogicParserState parse = new BaseScopeParser<>(parsers).parse(new ParseCursor(content), new LogicParserState());
+		Log.LOG.formatLine("Parsing logic file took %.2f seconds", stopwatch.stop() / 1000);
+		return parse.getLogicBase();
 	}
 }

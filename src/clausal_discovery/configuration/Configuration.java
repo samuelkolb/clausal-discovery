@@ -116,7 +116,7 @@ public class Configuration {
 		URL url = Configuration.class.getResource("/examples/" + name + ".background");
 		Vector<Theory> background = url == null
 				? new Vector<>()
-				: new Vector<Theory>(new FileTheory(FileUtil.getLocalFile(url)));
+				: new Vector<>(new FileTheory(FileUtil.getLocalFile(url)));
 		return new Configuration(logicBase, background, variableCount, clauseLength);
 	}
 }

@@ -230,7 +230,7 @@ public class StatusClause {
 			return false;
 		if(!instance.getDefinition().isSymmetric())
 			return containedInstance.getVariableIndices().equals(instance.getVariableIndices());
-		return containedInstance.getVariableIndices().sort().equals(instance.getVariableIndices().sort());
+		return containedInstance.getVariableIndices().sortedCopy().equals(instance.getVariableIndices().sortedCopy());
 	}
 
 	private boolean isConnected(Vector<Integer> indices) {

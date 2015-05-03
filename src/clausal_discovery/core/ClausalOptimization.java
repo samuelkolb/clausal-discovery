@@ -46,7 +46,7 @@ public class ClausalOptimization {
 
 		public Run run() {
 			stopwatch.start();
-			Log.LOG.saveState().off();
+			Log.LOG.printLine("Finding hard constraints").saveState().off();
 			Configuration config = getConfiguration();
 			ClausalDiscovery clausalDiscovery = new ClausalDiscovery(config);
 			hardConstraints = new Vector<>(ValidatedClause.class, clausalDiscovery.findHardConstraints());
@@ -123,13 +123,11 @@ public class ClausalOptimization {
 		Terminal.get().execute(command, true);
 		//temporaryFile.delete();
 		String fileOutput = FileUtil.readFile(outputFile);
-		Log.LOG.printLine(fileOutput);
 		String[] output = fileOutput.split("\n");
 		String[] lastLine = substring(output[output.length - 1], 2, -2).split(" ");
 		Double[] scores = new Double[validity.getClauseCount()];
 		ArrayUtil.fill(scores, 0.0);
 		for(String attribute : lastLine) {
-			Log.LOG.printLine(attribute);
 			String[] parts = attribute.split(":");
 			scores[Integer.parseInt(parts[0]) - 1] = Double.parseDouble(parts[1]);
 		}
