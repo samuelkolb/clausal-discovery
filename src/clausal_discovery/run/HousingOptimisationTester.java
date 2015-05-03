@@ -11,6 +11,7 @@ import clausal_discovery.validity.ValidityTable;
 import idp.IdpExpressionPrinter;
 import log.LinkTransformer;
 import log.Log;
+import log.TimeTransformer;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.Vocabulary;
@@ -32,7 +33,7 @@ public class HousingOptimisationTester {
 
 	static {
 		Log.LOG.addMessageFilter(message -> (message.MESSAGE == null || !message.MESSAGE.startsWith("INFO")));
-		Log.LOG.addTransformer(new LinkTransformer());
+		Log.LOG.addTransformer(new TimeTransformer());
 	}
 
 	/**
