@@ -53,7 +53,7 @@ public class RunClient {
 			e.printStackTrace(System.err);
 		}
 
-		IdpExecutor executor = clausalDiscovery.getExecutor();
+		IdpExecutor executor = IdpExecutor.get();
 		double time = round(executor.entailmentStopwatch.stop());
 
 		Log.LOG.newLine().printLine("Selected " + configuration.getCountingPlugin().getSelectedCount() + " nodes");

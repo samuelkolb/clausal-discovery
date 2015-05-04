@@ -4,11 +4,14 @@ import clausal_discovery.instance.InstanceList;
 import clausal_discovery.validity.ParallelValidityCalculator;
 import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityCalculator;
+import idp.IdpExecutor;
 import log.Log;
 import logic.expression.formula.Clause;
 import logic.expression.formula.Formula;
-import logic.expression.formula.InfixPredicate;
-import logic.theory.*;
+import logic.theory.InlineTheory;
+import logic.theory.KnowledgeBase;
+import logic.theory.LogicExecutor;
+import logic.theory.Theory;
 import time.Stopwatch;
 import vector.Vector;
 import version3.algorithm.*;
@@ -21,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -46,9 +50,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		@Override
 		public void run() {
 			Log.LOG.saveState()/*.off()/**/;
-			List<StatusClause> statusClauses = result.getSolutions().stream().map(ValidatedClause::getClause)
-					.collect(Collectors.toList());
-			if(!entails(statusClauses, node.getValue().getClause())) {
+			if(!entails(result.getSolutions(), node.getValue())) {
 				result.addNode(node);
 				Log.LOG.print("NEW      ");
 			} else {
@@ -108,26 +110,31 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		return excessTimer;
 	}
 
+	// IVAR validityAcceptance - Predicate to indicate what validated clauses are accepted as valid clauses
+
+	private final Predicate<ValidatedClause> validityAcceptance;
+
 	// endregion
 
 	// region Construction
 
 	/**
 	 * Creates a new variable refinement operator
-	 * @param logicBase    			The logic base holding the vocabulary and examples
-	 * @param variables    			The number of variables that can be introduced
-	 * @param executor    			The logic executor responsible for executing logical queries
-	 * @param backgroundTheories	The background theories provided to the search
+	 * @param logicBase    	The logic base holding the vocabulary and examples
+	 * @param variables    	The number of variables that can be introduced
+	 * @param background	The background theories provided to the search
+	 * @param validityTest	The validity test
 	 */
-	public VariableRefinement(LogicBase logicBase, int variables, LogicExecutor executor,
-							  Vector<Theory> backgroundTheories) {
-		this.backgroundTheories = backgroundTheories;
+	public VariableRefinement(LogicBase logicBase, int variables, Vector<Theory> background,
+							  Predicate<ValidatedClause> validityTest) {
+		this.backgroundTheories = background;
 		this.instanceList = new InstanceList(logicBase.getSearchPredicates(), variables);
 		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
-		this.executor = executor;
-		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor, backgroundTheories);
+		this.executor = IdpExecutor.get();
+		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor, background);
 		this.resultQueue = Executors.newSingleThreadExecutor();
+		this.validityAcceptance = validityTest;
 	}
 
 	// endregion
@@ -173,6 +180,8 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public boolean processSolution(Result<ValidatedClause> result, Node<ValidatedClause> node) {
+		if(!this.validityAcceptance.test(node.getValue()))
+			return true;
 		if(!node.getValue().coversAll())
 			return true;
 		new EntailmentTestRunnable(result, node).run();
@@ -201,16 +210,19 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	 * @param clause	The potentially entailed clause
 	 * @return	True iff the set of clauses logically entails the given clause
 	 */
-	public boolean entails(List<StatusClause> clauses, StatusClause clause) {
-		return executor.entails(getProgram(clauses), new InlineTheory(getClause(clause)));
+	public boolean entails(List<ValidatedClause> clauses, ValidatedClause clause) {
+		return executor.entails(getProgram(clauses, clause), new InlineTheory(getClause(clause.getClause())));
 	}
 
 	// endregion
 
 	// region Private methods
 
-	protected KnowledgeBase getProgram(List<StatusClause> clauses) {
-		List<Formula> formulas = clauses.stream().map(this::getClause).collect(Collectors.toList());
+	protected KnowledgeBase getProgram(List<ValidatedClause> clauses, ValidatedClause clause) {
+		List<Formula> formulas = clauses.stream()
+				.filter(c -> c.getValidity().equals(clause.getValidity()))
+				.map(ValidatedClause::getClause).map(this::getClause)
+				.collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());
 		Vector<Theory> theories = new Vector<>(new InlineTheory(formulas));
 		return new KnowledgeBase(logicBase.getVocabulary(), theories, getBackgroundTheories(), new Vector<>());
@@ -249,10 +261,9 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	}
 
 	protected void pruneOne(Result<ValidatedClause> result, int index) {
-		List<StatusClause> clauses = result.getSolutions().stream().map(ValidatedClause::getClause)
-				.collect(Collectors.toList());
+		List<ValidatedClause> clauses = result.getSolutions();
 		for(int i = index; i < result.getSolutionCount() - 1; i++) {
-			List<StatusClause> list = new ArrayList<>(result.getSolutionCount() - 1);
+			List<ValidatedClause> list = new ArrayList<>(result.getSolutionCount() - 1);
 			for(int j = 0; j < result.getSolutionCount(); j++)
 				if(j != i)
 					list.add(clauses.get(j));

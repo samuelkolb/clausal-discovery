@@ -14,6 +14,7 @@ import version3.plugin.MaximalDepthPlugin;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -22,10 +23,6 @@ import java.util.stream.Collectors;
  * @author Samuel Kolb
  */
 public class ClausalDiscovery {
-
-	public IdpExecutor getExecutor() {
-		return IdpExecutor.get();
-	}
 
 	// IVAR excessTime - The time taken that entailment checks in the last run needed to round off the search
 
@@ -56,7 +53,7 @@ public class ClausalDiscovery {
 	 * @return	A list of status clauses that represent hard constraints
 	 */
 	public List<ValidatedClause> findHardConstraints() {
-		return run(getConfiguration());
+		return run(getConfiguration(), ValidatedClause::coversAll);
 	}
 
 	/**
@@ -82,7 +79,7 @@ public class ClausalDiscovery {
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
 		List<Future<List<ValidatedClause>>> result = new ArrayList<>();
 		for(Configuration config : newConfig.split())
-			result.add(service.submit(() -> run(config)));
+			result.add(service.submit(() -> run(config, ValidatedClause::coversAll)));
 		List<ValidatedClause> softClauses = new ArrayList<>();
 		try {
 			for(Future<List<ValidatedClause>> future : result)
@@ -95,11 +92,11 @@ public class ClausalDiscovery {
 		return softClauses;
 	}
 
-	private List<ValidatedClause> run(Configuration configuration) {
-		int variableCount = configuration.getVariableCount();
+	private List<ValidatedClause> run(Configuration configuration, Predicate<ValidatedClause> validityTest) {
+		int variables = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
 		Vector<Theory> background = configuration.getBackgroundTheories();
-		VariableRefinement refinement = new VariableRefinement(logicBase, variableCount, getExecutor(), background);
+		VariableRefinement refinement = new VariableRefinement(logicBase, variables, background, validityTest);
 		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(logicBase));
 		SearchAlgorithm<ValidatedClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
 		algorithm.addPlugin(new MaximalDepthPlugin<>(configuration.getClauseLength()));
