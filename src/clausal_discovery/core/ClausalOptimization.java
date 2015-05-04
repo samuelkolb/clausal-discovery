@@ -113,6 +113,8 @@ public class ClausalOptimization {
 	 * @return	An array of scores for each clause
 	 */
 	public Double[] getScores(Preferences preferences, ValidityTable validity) {
+		if(validity.getClauseCount() == 0)
+			return new Double[]{};
 		File inputFile = FILE_MANAGER.createRandomFile("txt");
 		TemporaryFile temporaryFile = new TemporaryFile(inputFile, preferences.printOrderings(validity));
 		File outputFile = FILE_MANAGER.createRandomFile("txt");

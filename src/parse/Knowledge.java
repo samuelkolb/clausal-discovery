@@ -13,6 +13,7 @@ import logic.expression.formula.Formula;
 import logic.expression.formula.Predicate;
 import logic.expression.term.Variable;
 import logic.theory.Vocabulary;
+import pair.TypePair;
 import util.Numbers;
 import vector.Vector;
 
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * The knowledge class implements logic base, containing all the information from a logic file
@@ -90,9 +92,21 @@ public class Knowledge implements LogicBase {
 
 	@Override
 	public List<LogicBase> split() {
-		List<LogicBase> logicBases = new ArrayList<>();
-		for(Example example : getExamples())
-			logicBases.add(new Knowledge(getVocabulary(), new Vector<Example>(example), getSearchPredicates()));
-		return logicBases;
+		return getExamples().stream()
+				.map(example -> copy(new Vector<>(example)))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public TypePair<LogicBase> split(double fraction) {
+		if(fraction < 0 || fraction > 1)
+			throw new IllegalArgumentException(String.format("Fraction must be between 0 and 1, was %f", fraction));
+		int size = getExamples().size();
+		int index = (int) (fraction * size);
+		return TypePair.of(copy(getExamples().subList(0, index + 1)), copy(getExamples().subList(index + 1, size)));
+	}
+
+	private Knowledge copy(Vector<Example> examples) {
+		return new Knowledge(getVocabulary(), examples, getSearchPredicates());
 	}
 }

@@ -15,6 +15,7 @@ import log.TimeTransformer;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.Vocabulary;
+import pair.TypePair;
 import parse.ConstraintParser;
 import parse.ParseException;
 import vector.Vector;
@@ -43,14 +44,31 @@ public class HousingOptimisationTester {
 	public static void main(String[] args) {
 		try {
 			Configuration configuration = Configuration.fromLocalFile("housing_opt_test_small", 4, 3);
-			OptimizationTester tester = new OptimizationTester(configuration);
-			URL url = HousingOptimisationTester.class.getResource("/examples/housing_opt_test_small_1.constraints");
-			String content = FileUtil.readFile(FileUtil.getLocalFile(url));
-			Constraints constraints = new ConstraintParser(configuration.getLogicBase()).parse(content);
-			ScoringFunction testFunction = constraints.getClauseFunction();
-			Log.LOG.printLine("Score: " + tester.test(testFunction, 0.1, 0.2));
+			scenario2(configuration);
 		} catch(ParseException e) {
 			Log.LOG.on().printLine("Error occurred while parsing " + "housing_opt_test_small").printLine(e.getMessage());
 		}
+	}
+
+	private static void scenario1(Configuration configuration) {
+		OptimizationTester tester = new OptimizationTester(configuration);
+		ScoringFunction testFunction = getScoringFunction(configuration);
+		Log.LOG.printLine("Score: " + tester.test(testFunction, 0.2, 0));
+	}
+
+	private static void scenario2(Configuration configuration) {
+		TypePair<Configuration> configurations = configuration.split(0.3);
+		Configuration train = configurations.one();
+		Configuration test = configurations.two();
+		OptimizationTester tester = new OptimizationTester(train, test);
+		ScoringFunction testFunction = getScoringFunction(configuration);
+		Log.LOG.printLine("Score: " + tester.test(testFunction, 1, 0));
+	}
+
+	private static ScoringFunction getScoringFunction(Configuration test) {
+		URL url = HousingOptimisationTester.class.getResource("/examples/housing_opt_test_small_1.constraints");
+		String content = FileUtil.readFile(FileUtil.getLocalFile(url));
+		Constraints constraints = new ConstraintParser(test.getLogicBase()).parse(content);
+		return constraints.getClauseFunction();
 	}
 }

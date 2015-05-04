@@ -48,7 +48,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 	 */
 	public ParallelValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
 		super(base, executor, backgroundTheories);
-		this.executorService = Executors.newFixedThreadPool(8);
+		this.executorService = Executors.newFixedThreadPool(16);
 	}
 
 	//endregion

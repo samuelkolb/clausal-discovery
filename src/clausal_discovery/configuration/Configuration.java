@@ -6,6 +6,7 @@ import clausal_discovery.validity.ValidatedClause;
 import idp.FileManager;
 import logic.theory.FileTheory;
 import logic.theory.Theory;
+import pair.TypePair;
 import parse.LogicParser;
 import parse.ParseException;
 import vector.Vector;
@@ -88,9 +89,17 @@ public class Configuration {
 	 * @return	A list of configurations
 	 */
 	public List<Configuration> split() {
-		return getLogicBase().split().stream()
-				.map(b -> new Configuration(b, getBackgroundTheories(), getVariableCount(), getClauseLength()))
-				.collect(Collectors.toList());
+		return getLogicBase().split().stream() .map(this::copy).collect(Collectors.toList());
+	}
+
+	/**
+	 * Splits the configuration into two, keeping the specified fraction of examples in the first configuration
+	 * @param fraction	The fraction of examples to keep in the first configuration (between 0 and 1)
+	 * @return	A pair of configurations
+	 */
+	public TypePair<Configuration> split(double fraction) {
+		TypePair<LogicBase> logicBases = getLogicBase().split(fraction);
+		return TypePair.of(copy(logicBases.getFirst()), copy(logicBases.getSecond()));
 	}
 
 	/**
@@ -118,5 +127,14 @@ public class Configuration {
 				? new Vector<>()
 				: new Vector<>(new FileTheory(FileUtil.getLocalFile(url)));
 		return new Configuration(logicBase, background, variableCount, clauseLength);
+	}
+
+	/**
+	 * Copies this configuration with a new logic base
+	 * @param logicBase	The new logic base
+	 * @return	A configuration that is an exact copy of this configuration except for the logic base
+	 */
+	public Configuration copy(LogicBase logicBase) {
+		return new Configuration(logicBase, getBackgroundTheories(), getVariableCount(), getClauseLength());
 	}
 }

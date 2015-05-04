@@ -64,7 +64,7 @@ public class OptimizationTester {
 	public double test(ScoringFunction testFunction, double size, double noise) {
 		Preferences preferences = generatePreferences(training.getLogicBase().getExamples(), testFunction);
 		preferences = preferences.resize(size).induceNoise(noise);
-		StatusClauseFunction function = new ClausalOptimization(testing).run(preferences);
+		StatusClauseFunction function = new ClausalOptimization(training).run(preferences);
 		ClauseFunction testedFunction = function.copy(testing.getLogicBase(), testing.getBackgroundTheories());
 		return new ScoreComparator(testing.getLogicBase().getExamples()).score(testFunction, testedFunction);
 	}

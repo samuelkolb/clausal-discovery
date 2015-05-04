@@ -182,8 +182,6 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	public boolean processSolution(Result<ValidatedClause> result, Node<ValidatedClause> node) {
 		if(!this.validityAcceptance.test(node.getValue()))
 			return true;
-		if(!node.getValue().coversAll())
-			return true;
 		new EntailmentTestRunnable(result, node).run();
 		//resultQueue.execute(new EntailmentTestRunnable(result, node));
 		return false;
@@ -220,7 +218,8 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	protected KnowledgeBase getProgram(List<ValidatedClause> clauses, ValidatedClause clause) {
 		List<Formula> formulas = clauses.stream()
-				.filter(c -> c.getValidity().equals(clause.getValidity()))
+				//.filter(c -> c.getValidity().equals(clause.getValidity())) // TODO Choose approach
+				.filter(ValidatedClause::coversAll)
 				.map(ValidatedClause::getClause).map(this::getClause)
 				.collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());

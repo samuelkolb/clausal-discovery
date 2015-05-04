@@ -74,9 +74,13 @@ public class ClausalDiscovery {
 	 * @return	A list of soft constraints
 	 */
 	public List<ValidatedClause> findSoftConstraints(Collection<ValidatedClause> clauses) {
-		ExecutorService service = Executors.newFixedThreadPool(4);
-		List<Formula> constraints = clauses.stream().map(ValidatedClause::getClause).map(new StatusClauseConverter()).collect(Collectors.toList());
+		List<Formula> constraints = clauses.stream()
+				.map(ValidatedClause::getClause)
+				.map(new StatusClauseConverter())
+				.collect(Collectors.toList());
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
+		/*
+		ExecutorService service = Executors.newFixedThreadPool(4);
 		List<Future<List<ValidatedClause>>> result = new ArrayList<>();
 		for(Configuration config : newConfig.split())
 			result.add(service.submit(() -> run(config, ValidatedClause::coversAll)));
@@ -90,6 +94,9 @@ public class ClausalDiscovery {
 			service.shutdownNow();
 		}
 		return softClauses;
+		/*/
+		return run(newConfig, c -> c.getValidCount() > 0);
+		/**/
 	}
 
 	private List<ValidatedClause> run(Configuration configuration, Predicate<ValidatedClause> validityTest) {

@@ -65,7 +65,7 @@ public class Instance {
 
 	@Override
 	public String toString() {
-		return getPredicate().getName() + variableIndices.stream().map(i -> "v" + i).collect(Collectors.toList());
+		return getPredicate().getName() + variableIndices;
 	}
 
 	@Override

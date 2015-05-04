@@ -131,6 +131,7 @@ public class Preferences {
 			throw new IllegalArgumentException("Illegal factor: " + factor);
 		List<Group> groups = new ArrayList<>(getGroups());
 		Collections.shuffle(groups);
+		Log.LOG.printLine("Noise: " + (int) (groups.size() * factor) + " of " + groups.size());
 		for(int i = 0; i < (int) (groups.size() * factor); i++)
 			groups.set(i, new Group(groups.get(i).getOrdering().reverse()));
 		return new Preferences(new Vector<>(Group.class, groups));

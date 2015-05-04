@@ -2,6 +2,7 @@ package clausal_discovery.core;
 
 import logic.expression.formula.Formula;
 import logic.expression.formula.Predicate;
+import pair.TypePair;
 import vector.Vector;
 import logic.example.Example;
 import logic.theory.Vocabulary;
@@ -44,4 +45,11 @@ public interface LogicBase {
 	 * @return	A list of logic bases, each of which contains one example
 	 */
 	List<LogicBase> split();
+
+	/**
+	 * Splits the logic base into two
+	 * @param fraction	The fraction of examples to retain in the first new logic base (bewteen 0 and 1)
+	 * @return	A pair of logic-bases
+	 */
+	TypePair<LogicBase> split(double fraction);
 }

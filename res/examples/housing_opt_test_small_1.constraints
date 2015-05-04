@@ -1,4 +1,4 @@
  0.5 : live_in(0) => low_crime(0)
-0.25 : work_in(0) & school_in(1) => false
+0.25 : work_in(0) => school_in(0)
  1.0 : school_in(0) => low_crime(0)
  0.5 : live_in(0) => cheap(0)
