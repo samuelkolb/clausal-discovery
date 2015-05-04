@@ -48,7 +48,7 @@ public class HousingOptimisationTester {
 			String content = FileUtil.readFile(FileUtil.getLocalFile(url));
 			Constraints constraints = new ConstraintParser(configuration.getLogicBase()).parse(content);
 			ScoringFunction testFunction = constraints.getClauseFunction();
-			Log.LOG.printLine("Score: " + tester.test(testFunction, 1, 0));
+			Log.LOG.printLine("Score: " + tester.test(testFunction, 0.1, 0.2));
 		} catch(ParseException e) {
 			Log.LOG.on().printLine("Error occurred while parsing " + "housing_opt_test_small").printLine(e.getMessage());
 		}

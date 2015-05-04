@@ -44,4 +44,9 @@ public class ClauseFunction implements ScoringFunction {
 			result += validity.get(i) ? weights.get(i) : 0;
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return getWeights().toString();
+	}
 }

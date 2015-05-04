@@ -30,7 +30,7 @@ public class Preferences {
 		}
 	}
 
-	public static final double C_FACTOR = 0.1;
+	public static final double C_FACTOR = 0.001;
 
 	//region Variables
 

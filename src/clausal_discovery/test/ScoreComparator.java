@@ -1,6 +1,7 @@
 package clausal_discovery.test;
 
 import clausal_discovery.core.score.ScoringFunction;
+import log.Log;
 import logic.example.Example;
 import util.Pair;
 import vector.Vector;
@@ -52,6 +53,8 @@ public class ScoreComparator {
 	 * 			A score of 0 indicates perfectly similar orderings, a score of 1 means no pair was ordered the same
 	 */
 	public double score(ScoringFunction expected, ScoringFunction actual) {
+		Log.LOG.printLine(expected);
+		Log.LOG.printLine(actual);
 		double count = 0;
 		for(Pair<Example, Example> pair : getPairs())
 			if(expected.compare(pair.getFirst(), pair.getSecond()) == actual.compare(pair.getFirst(), pair.getSecond()))
