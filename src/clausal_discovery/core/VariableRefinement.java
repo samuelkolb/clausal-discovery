@@ -218,8 +218,8 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	protected KnowledgeBase getProgram(List<ValidatedClause> clauses, ValidatedClause clause) {
 		List<Formula> formulas = clauses.stream()
-				//.filter(c -> c.getValidity().equals(clause.getValidity())) // TODO Choose approach
-				.filter(ValidatedClause::coversAll)
+				.filter(c -> c.coversAll() || c.getValidity().equals(clause.getValidity())) // TODO Choose approach
+				//.filter(ValidatedClause::coversAll)
 				.map(ValidatedClause::getClause).map(this::getClause)
 				.collect(Collectors.toList());
 		formulas.addAll(getLogicBase().getSymmetryFormulas());

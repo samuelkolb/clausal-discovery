@@ -11,6 +11,7 @@ import clausal_discovery.validity.ValidityTable;
 import idp.IdpExpressionPrinter;
 import log.LinkTransformer;
 import log.Log;
+import log.RelativeTimeTransformer;
 import log.TimeTransformer;
 import logic.example.Example;
 import logic.expression.formula.Formula;
@@ -34,7 +35,7 @@ public class HousingOptimisationTester {
 
 	static {
 		Log.LOG.addMessageFilter(message -> (message.MESSAGE == null || !message.MESSAGE.startsWith("INFO")));
-		Log.LOG.addTransformer(new TimeTransformer());
+		Log.LOG.addTransformer(new RelativeTimeTransformer());
 	}
 
 	/**
@@ -44,7 +45,7 @@ public class HousingOptimisationTester {
 	public static void main(String[] args) {
 		try {
 			Configuration configuration = Configuration.fromLocalFile("housing_opt_test_small", 4, 3);
-			scenario2(configuration);
+			scenario1(configuration);
 		} catch(ParseException e) {
 			Log.LOG.on().printLine("Error occurred while parsing " + "housing_opt_test_small").printLine(e.getMessage());
 		}
@@ -53,11 +54,11 @@ public class HousingOptimisationTester {
 	private static void scenario1(Configuration configuration) {
 		OptimizationTester tester = new OptimizationTester(configuration);
 		ScoringFunction testFunction = getScoringFunction(configuration);
-		Log.LOG.printLine("Score: " + tester.test(testFunction, 0.2, 0));
+		Log.LOG.newLine().printLine("Score: " + tester.test(testFunction, 1, 0));
 	}
 
 	private static void scenario2(Configuration configuration) {
-		TypePair<Configuration> configurations = configuration.split(0.3);
+		TypePair<Configuration> configurations = configuration.split(0.5);
 		Configuration train = configurations.one();
 		Configuration test = configurations.two();
 		OptimizationTester tester = new OptimizationTester(train, test);

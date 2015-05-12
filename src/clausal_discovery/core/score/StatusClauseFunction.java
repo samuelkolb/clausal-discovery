@@ -1,5 +1,6 @@
 package clausal_discovery.core.score;
 
+import basic.ArrayUtil;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import clausal_discovery.validity.ValidityTable;
@@ -41,8 +42,12 @@ public class StatusClauseFunction extends ClauseFunction {
 	 * @param backgroundTheories The background knowledge to use
 	 * @return A copy with a new validity table
 	 */
-	public clausal_discovery.core.score.StatusClauseFunction copy(LogicBase logicBase, Vector<Theory> backgroundTheories) {
+	public StatusClauseFunction copy(LogicBase logicBase, Vector<Theory> backgroundTheories) {
 		ValidityTable validityTable = ValidityTable.create(logicBase, backgroundTheories, getClauses());
-		return new clausal_discovery.core.score.StatusClauseFunction(getClauses(), getWeights(), validityTable);
+		return new StatusClauseFunction(getClauses(), getWeights(), validityTable);
+	}
+
+	public StatusClauseFunction leaveOut(int index) {
+		return new StatusClauseFunction(getClauses().leaveOut(index), getWeights().leaveOut(index), getValidity().removeClause(index));
 	}
 }

@@ -3,12 +3,13 @@ package clausal_discovery.validity;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
-import clausal_discovery.core.StatusClauseConverter;
 import idp.IdpExecutor;
-import log.Log;
 import logic.example.Example;
 import logic.expression.formula.Formula;
-import logic.theory.*;
+import logic.theory.InlineTheory;
+import logic.theory.KnowledgeBase;
+import logic.theory.Structure;
+import logic.theory.Theory;
 import vector.Vector;
 import vector.WriteOnceVector;
 
@@ -41,6 +42,18 @@ public class ValidityTable {
 	private ValidityTable(int clauseCount, Map<Example, Vector<Boolean>> validity) {
 		this.clauseCount = clauseCount;
 		this.validity = validity;
+	}
+
+	/**
+	 * Returns a new validity table without the specified clause
+	 * @param index	The index of the clause to remove
+	 * @return	The new validity table
+	 */
+	public ValidityTable removeClause(int index) {
+		Map<Example, Vector<Boolean>> map = new HashMap<>();
+		for(Example example : validity.keySet())
+			map.put(example, validity.get(example).leaveOut(index));
+		return new ValidityTable(getClauseCount() - 1, map);
 	}
 
 	/**

@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by samuelkolb on 27/04/15.
+ * The preferences classes contains preferences and can produce modified preferences as well as output for SVM rank.
  *
  * @author Samuel Kolb
  */
@@ -19,18 +19,23 @@ public class Preferences {
 
 		// IVAR ordering - The descending ordering of the members of this group
 
-		private final Vector<Example> ordering;
+		private final List<List<Example>> ordering;
 
-		public Vector<Example> getOrdering() {
+		public List<List<Example>> getOrdering() {
 			return ordering;
 		}
 
-		private Group(Vector<Example> ordering) {
-			this.ordering = ordering;
+		private Group(List<List<Example>> ordering) {
+			this.ordering = new ArrayList<>(ordering);
+		}
+
+		public Group disturb() {
+			List<List<Example>> newOrdering = new ArrayList<>(getOrdering());
+			//Collections.shuffle(newOrdering); // TODO Ignores equalities
+			Collections.reverse(newOrdering);
+			return new Group(newOrdering);
 		}
 	}
-
-	public static final double C_FACTOR = 0.001;
 
 	//region Variables
 
@@ -56,7 +61,7 @@ public class Preferences {
 		this.groups = groups;
 		Set<Example> elements = new HashSet<>();
 		for(Group group : groups)
-			elements.addAll(group.getOrdering().stream().collect(Collectors.toList()));
+			group.getOrdering().forEach(elements::addAll);
 		this.elements = new Vector<>(Example.class, elements);
 	}
 
@@ -73,7 +78,7 @@ public class Preferences {
 	 * @param orders	A list of vector. Each vector contains a number of integers that represent a single preference.
 	 * @return	A preferences object
 	 */
-	public static Preferences newFromOrders(List<Vector<Example>> orders) {
+	public static Preferences newFromOrders(List<List<List<Example>>> orders) {
 		return new Preferences(new Vector<>(Group.class, orders.stream().map(Group::new).collect(Collectors.toList())));
 	}
 
@@ -83,10 +88,11 @@ public class Preferences {
 
 	/**
 	 * Returns the c value to be used in ranking
+	 * @param cFactor	The normalised c-factor
 	 * @return	A double
 	 */
-	public double getCValue() {
-		return getGroups().size() * C_FACTOR;
+	public double getCValue(double cFactor) {
+		return getGroups().size() * cFactor;
 	}
 
 	/**
@@ -97,12 +103,14 @@ public class Preferences {
 	public String printOrderings(ValidityTable validity) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < getGroups().size(); i++) {
-			Vector<Example> ordering = getGroups().get(i).getOrdering();
+			List<List<Example>> ordering = getGroups().get(i).getOrdering();
 			for(int j = 0; j < ordering.size(); j++) {
-				builder.append(ordering.length - j).append(" qid:").append(i + 1);
-				for(int c = 0; c < validity.getValidity(ordering.get(j)).size(); c++)
-					builder.append(" ").append(c + 1).append(":").append(validity.getValidity(ordering.get(j)).get(c) ? 1 : 0);
-				builder.append(" #\n");
+				for(Example example : ordering.get(j)) {
+					builder.append(ordering.size() - j).append(" qid:").append(i + 1);
+					for(int c = 0; c < validity.getValidity(example).size(); c++)
+						builder.append(String.format(" %d:%d", c + 1, validity.getValidity(example).get(c) ? 1 : 0));
+					builder.append(" #\n");
+				}
 			}
 		}
 		return builder.toString();
@@ -133,7 +141,7 @@ public class Preferences {
 		Collections.shuffle(groups);
 		Log.LOG.printLine("Noise: " + (int) (groups.size() * factor) + " of " + groups.size());
 		for(int i = 0; i < (int) (groups.size() * factor); i++)
-			groups.set(i, new Group(groups.get(i).getOrdering().reverse()));
+			groups.set(i, groups.get(i).disturb());
 		return new Preferences(new Vector<>(Group.class, groups));
 	}
 

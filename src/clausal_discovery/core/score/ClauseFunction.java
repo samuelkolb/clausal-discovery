@@ -23,6 +23,10 @@ public class ClauseFunction implements ScoringFunction {
 
 	private final ValidityTable validityTable;
 
+	public ValidityTable getValidity() {
+		return validityTable;
+	}
+
 	/**
 	 * Creates a new weighted scoring function
 	 * @param weights       The weights
