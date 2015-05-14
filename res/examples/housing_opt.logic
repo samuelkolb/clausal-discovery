@@ -5,7 +5,7 @@ pred low_crime(Area)
 pred school(Person, Area)
 pred work(Person, Area)
 
-example {
+example 1 {
 	const Area A1 A2
 	const Person P
 
@@ -15,7 +15,7 @@ example {
 	work(P, A2)
 }
 
-example {
+example 2 {
 	const Area A1 A2
 	const Person P
 
@@ -26,7 +26,7 @@ example {
 	low_crime(A2)
 }
 
-example {
+example 3 {
 	const Area A1 A2
 	const Person P
 

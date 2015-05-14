@@ -6,7 +6,7 @@ pred female(Human)
 
 search human male female
 
-example {
+example standard {
 	const Human An
 	const Human Sam
 
@@ -16,7 +16,7 @@ example {
 	female(An)
 }
 
-example {
+example both {
 	const Human Both
 
     male(Both)

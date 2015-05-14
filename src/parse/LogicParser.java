@@ -26,7 +26,7 @@ public class LogicParser implements LocalParser<LogicBase> {
 		parsers.add(new PreferenceParser.PreferenceIgnoreParser());
 		parsers.add(new LineRemover());
 		LogicParserState parse = new BaseScopeParser<>(parsers).parse(new ParseCursor(content), new LogicParserState());
-		Log.LOG.formatLine("Parsing logic file took %.2f seconds", stopwatch.stop() / 1000);
+		Log.LOG.formatLine("INFO Parsing logic file took %.2f seconds", stopwatch.stop() / 1000);
 		return parse.getLogicBase();
 	}
 }

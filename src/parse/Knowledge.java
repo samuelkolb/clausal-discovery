@@ -102,8 +102,8 @@ public class Knowledge implements LogicBase {
 		if(fraction < 0 || fraction > 1)
 			throw new IllegalArgumentException(String.format("Fraction must be between 0 and 1, was %f", fraction));
 		int size = getExamples().size();
-		int index = (int) (fraction * size);
-		return TypePair.of(copy(getExamples().subList(0, index + 1)), copy(getExamples().subList(index + 1, size)));
+		int index = Math.max(1, Math.min((int) Math.ceil(fraction * size), size - 1));
+		return TypePair.of(copy(getExamples().subList(0, index)), copy(getExamples().subList(index, size)));
 	}
 
 	private Knowledge copy(Vector<Example> examples) {

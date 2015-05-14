@@ -4,9 +4,7 @@ import clausal_discovery.core.Preferences;
 import logic.example.Example;
 import vector.Vector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,14 +28,16 @@ public class PreferenceParser extends MatchParser<List<List<List<Example>>>> imp
 		}
 	}
 
-	private final Vector<Example> examples;
+	private final Map<String, Example> examples;
 
 	/**
 	 * Creates a new preference parser
 	 * @param examples	The examples to resolve indices
 	 */
 	public PreferenceParser(Vector<Example> examples) {
-		this.examples = examples;
+		this.examples = new HashMap<>();
+		for(Example example : examples)
+			this.examples.put(example.getName(), example);
 	}
 
 	@Override
@@ -49,14 +49,17 @@ public class PreferenceParser extends MatchParser<List<List<List<Example>>>> imp
 
 	@Override
 	public boolean matches(String string, List<List<List<Example>>> parseState) throws ParsingError {
-		if(!string.matches("pref.*\\n"))
+		if(!string.matches("pref\\s+.*\\n"))
 			return false;
 		String[] parts = string.substring(4, string.length()).split(">");
 		List<List<Example>> preference = new ArrayList<>();
 		for(String part : parts)
-			preference.add(new ArrayList<>(Arrays.asList(part.trim().split("="))).stream()
-					.map(s -> Integer.parseInt(s.trim()) - 1)
-					.map(this.examples::get)
+			preference.add(Arrays.asList(part.trim().split("=")).stream()
+					.map(s -> {
+						if(!this.examples.containsKey(s))
+							throw new NoSuchElementException("No example with the name: " + s);
+						return this.examples.get(s.trim());
+					})
 					.collect(Collectors.toList()));
 		parseState.add(preference);
 		return true;

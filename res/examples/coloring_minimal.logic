@@ -4,7 +4,7 @@ type Color
 pred color(Country,Color)
 symm neighbor(Country,Country)
 
-example {
+example 1 {
 	const Country Belgium Germany Poland
 	const Color Red Green
 
@@ -17,7 +17,7 @@ example {
 	neighbor(Poland,Germany)
 }
 
-example {
+example 2 {
 	const Country Belgium Germany Lux
 	const Color Red Green Blue
 

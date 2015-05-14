@@ -16,6 +16,8 @@ public class ExampleParser extends ScopeParser<LogicParserState> {
 			new ConstDefParser(),
 			new LineRemover()
 	);
+
+	private String name = null;
 	//endregion
 
 	//region Construction
@@ -31,12 +33,13 @@ public class ExampleParser extends ScopeParser<LogicParserState> {
 
 	@Override
 	public boolean activatesWith(String string, LogicParserState parseState) throws ParsingError {
-		if(!string.matches("example\\s+([+-]\\s+)?\\{\\s*\\n"))
+		if(!string.matches("example\\s+\\w+\\s+([+-]\\s+)?\\{\\s*\\n"))
 			return false;
 		String[] parts = string.split("\\s+");
-		if(parts[1].equals("+"))
+		this.name = parts[1];
+		if(parts[2].equals("+"))
 			parseState.setPositiveExample(true);
-		else if(parts[1].equals("-"))
+		else if(parts[2].equals("-"))
 			parseState.setPositiveExample(false);
 		return true;
 	}
@@ -45,7 +48,7 @@ public class ExampleParser extends ScopeParser<LogicParserState> {
 	public boolean endsWith(String string, LogicParserState parseState) throws ParsingError {
 		if(!string.endsWith("}"))
 			return false;
-		parseState.addExample();
+		parseState.addExample(this.name);
 		return true;
 	}
 

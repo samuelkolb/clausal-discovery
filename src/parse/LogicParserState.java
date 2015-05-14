@@ -37,7 +37,6 @@ public class LogicParserState {
 
 	private final List<PredicateDefinition> searchPredicates = new ArrayList<>();
 
-	private final List<Vector<Integer>> preferences = new ArrayList<>();
 	//endregion
 
 	//region Construction
@@ -141,11 +140,12 @@ public class LogicParserState {
 
 	/**
 	 * Add an example and reset the current example properties (instances, constants, ...)
+	 * @param name	The name of the example
 	 */
-	public void addExample() {
-		Log.LOG.printLine("INFO added example");
+	public void addExample(String name) {
+		Log.LOG.formatLine("INFO added example %s", name);
 		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
-		examples.add(new Example(getSetup(), instances1, positiveExample));
+		examples.add(new Example(name, getSetup(), instances1, positiveExample));
 		instances.clear();
 		constants.clear();
 		positiveExample = true;
@@ -165,14 +165,6 @@ public class LogicParserState {
 		searchPredicates.add(predicates.get(predicateName));
 	}
 
-	/**
-	 * Add a preference
-	 * @param preference	The list of examples in their order of preference (examples[0] > ... > examples[n])
-	 */
-	public void addPreference(Vector<Integer> preference) {
-		this.preferences.add(preference);
-	}
-
 	public Setup getSetup() {
 		Collection<PredicateDefinition> values = this.predicates.values();
 		Vector<PredicateDefinition> definitions = new Vector<>(PredicateDefinition.class, values);
@@ -181,7 +173,7 @@ public class LogicParserState {
 	}
 
 	public LogicBase getLogicBase() {
-		Vector<Example> examples = new Vector<>(this.examples.toArray(new Example[this.examples.size()]));
+		Vector<Example> examples = new Vector<>(Example.class, this.examples);
 
 		Vector<PredicateDefinition> search;
 		if(searchPredicates.isEmpty())
@@ -189,10 +181,6 @@ public class LogicParserState {
 		else
 			search = new Vector<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
 		return new Knowledge(getSetup().getVocabulary(), examples, search);
-	}
-
-	public List<Vector<Integer>> getPreferences() {
-		return new ArrayList<>(this.preferences);
 	}
 
 	/**

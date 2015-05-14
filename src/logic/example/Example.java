@@ -11,6 +11,7 @@ import logic.theory.Structure;
 import logic.theory.StructureBuilder;
 import vector.Vector;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -62,6 +63,7 @@ public class Example {
 	 * @param isPositive	Whether or not this is a positive or negative example
 	 */
 	public Example(String name, Setup setup, Vector<PredicateInstance> instances, boolean isPositive) {
+		Objects.requireNonNull(name);
 		this.name = name;
 		this.setup = setup;
 		this.instances = instances;

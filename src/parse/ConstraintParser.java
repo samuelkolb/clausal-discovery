@@ -100,7 +100,7 @@ public class ConstraintParser implements LocalParser<Constraints> {
 		parsers.add(new SoftConstraintParser());
 		parsers.add(new HardConstraintParser());
 		ParserState parse = new BaseScopeParser<>(parsers).parse(new ParseCursor(content), new ParserState());
-		Log.LOG.formatLine("Parsing constraints took %.2f seconds", stopwatch.stop() / 1000);
+		Log.LOG.formatLine("INFO Parsing constraints took %.2f seconds", stopwatch.stop() / 1000);
 		return parse.getConstraints();
 	}
 

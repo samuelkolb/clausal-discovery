@@ -11,7 +11,7 @@ calc gap(pos, pos, number)
 
 search position gap
 
-example {
+example 4_1 {
 	const number 0
 	const pos 1 2 3 4
 
@@ -21,7 +21,7 @@ example {
 	position(4, 3)
 }
 
-example {
+example 4_2 {
 	const number 0
 	const pos 1 2 3 4
 
@@ -31,7 +31,7 @@ example {
 	position(4, 2)
 }
 
-example {
+example 5_1 {
 	const number 0
 	const pos 1 2 3 4 5
 
@@ -42,7 +42,7 @@ example {
 	position(5, 5)
 }
 
-example {
+example 5_2 {
 	const number 0
 	const pos 1 2 3 4 5
 
