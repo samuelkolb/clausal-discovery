@@ -4,6 +4,7 @@ import basic.FileUtil;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.validity.ValidatedClause;
 import idp.FileManager;
+import log.Log;
 import logic.theory.FileTheory;
 import logic.theory.Theory;
 import pair.TypePair;
@@ -99,6 +100,8 @@ public class Configuration {
 	 */
 	public TypePair<Configuration> split(double fraction) {
 		TypePair<LogicBase> logicBases = getLogicBase().split(fraction);
+		Log.LOG.saveState().on().formatLine("%.3f split of %d examples: %d-%d", fraction, getLogicBase().getExamples().size(),
+				logicBases.getFirst().getExamples().size(), logicBases.getSecond().getExamples().size()).revert();
 		return TypePair.of(copy(logicBases.getFirst()), copy(logicBases.getSecond()));
 	}
 
@@ -121,7 +124,12 @@ public class Configuration {
 	 * @throws ParseException	Iff a parsing exception occurs while parsing the logic file
 	 */
 	public static Configuration fromLocalFile(String name, int variableCount, int clauseLength) throws ParseException {
-		LogicBase logicBase = new LogicParser().parseLocalFile(name + ".logic");
+		LogicBase logicBase;
+		try {
+			logicBase = new LogicParser().parseLocalFile(name + ".logic");
+		} catch(ParseException e) {
+			throw new IllegalArgumentException(String.format("Error parsing file %s.logic: %s", name, e.getMessage()));
+		}
 		URL url = Configuration.class.getResource("/examples/" + name + ".background");
 		Vector<Theory> background = url == null
 				? new Vector<>()

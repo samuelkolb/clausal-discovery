@@ -1,15 +1,12 @@
 package logic.example;
 
 import association.Association;
-import association.HashAssociation;
 import association.ListAssociation;
 import clausal_discovery.core.PredicateDefinition;
-import log.Log;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
-import logic.expression.visitor.ExpressionLogicPrinter;
 import logic.theory.Structure;
 import logic.theory.StructureBuilder;
 import vector.Vector;
@@ -24,13 +21,28 @@ import java.util.Set;
 public class Example {
 
 	//region Variables
+
+	// IVAR name - The name is used to identify the example
+
+	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	// IVAR setup - The setup used in this example
+
 	private final Setup setup;
 
 	public Setup getSetup() {
 		return setup;
 	}
 
+	// IVAR instances - The predicate instances declared in this example
+
 	private final Vector<PredicateInstance> instances;
+
+	// IVAR isPositive - Whether this is a positive example or not (if not it is a negative example)
 
 	private final boolean isPositive;
 
@@ -44,11 +56,13 @@ public class Example {
 
 	/**
 	 * Creates a new example
+	 * @param name			The name of the example
 	 * @param setup			The example setup
 	 * @param instances		The instances present in the example
 	 * @param isPositive	Whether or not this is a positive or negative example
 	 */
-	public Example(Setup setup, Vector<PredicateInstance> instances, boolean isPositive) {
+	public Example(String name, Setup setup, Vector<PredicateInstance> instances, boolean isPositive) {
+		this.name = name;
 		this.setup = setup;
 		this.instances = instances;
 		this.isPositive = isPositive;
@@ -116,10 +130,7 @@ public class Example {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("Example:");
-		for(PredicateInstance instance : instances)
-			builder.append(" ").append(ExpressionLogicPrinter.print(instance));
-		return builder.toString();
+		return "ex. " + getName();
 	}
 
 	//endregion

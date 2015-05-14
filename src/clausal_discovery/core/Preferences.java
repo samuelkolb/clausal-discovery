@@ -126,7 +126,9 @@ public class Preferences {
 			throw new IllegalArgumentException("Illegal factor: " + factor);
 		List<Group> groups = new ArrayList<>(getGroups());
 		Collections.shuffle(groups);
-		return new Preferences(new Vector<>(Group.class, groups.subList(0, (int) (groups.size() * factor))));
+		int newSize = (int) Math.ceil(groups.size() * factor);
+		Log.LOG.formatLine("Resize from %d preferences to %d preferences", getGroups().size(), newSize);
+		return new Preferences(new Vector<>(Group.class, groups.subList(0, newSize)));
 	}
 
 	/**
@@ -137,6 +139,7 @@ public class Preferences {
 	public Preferences induceNoise(double factor) {
 		if(factor < 0 || factor > 1)
 			throw new IllegalArgumentException("Illegal factor: " + factor);
+		Log.LOG.printLine("Shuffle");
 		List<Group> groups = new ArrayList<>(getGroups());
 		Collections.shuffle(groups);
 		Log.LOG.printLine("Noise: " + (int) (groups.size() * factor) + " of " + groups.size());

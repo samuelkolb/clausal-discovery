@@ -33,6 +33,8 @@ import java.util.List;
  */
 public class HousingOptimisationTester {
 
+	public static final double STEP = 0.1;
+
 	static {
 		Log.LOG.addMessageFilter(message -> (message.MESSAGE == null || !message.MESSAGE.startsWith("INFO")));
 		Log.LOG.addTransformer(new RelativeTimeTransformer());
@@ -43,33 +45,43 @@ public class HousingOptimisationTester {
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		try {
-			Configuration configuration = Configuration.fromLocalFile("housing_opt_test_small", 4, 3);
-			scenario1(configuration);
-		} catch(ParseException e) {
-			Log.LOG.on().printLine("Error occurred while parsing " + "housing_opt_test_small").printLine(e.getMessage());
+		String name = "housing_opt_test_small";
+		OptimizationTestClient client = new OptimizationTestClient(name, name + "_1", 4, 3);
+		scenario1(client);
+	}
+
+	private static void scenario1(OptimizationTestClient client) {
+		Log.LOG.printLine("size  | noise | score");
+		Log.LOG.printLine("- - - | - - - | - - -");
+		Log.LOG.saveState().off();
+		OptimizationTester tester = client.getTester();
+		for(int size = 1; size <= 10; size++)
+			for(int noise = 0; noise <= 10; noise++) {
+				double fractionSize = size * STEP;
+				double fractionNoise = noise * STEP;
+				double score = client.score(tester, fractionSize, fractionNoise);
+				Log.LOG.on().formatLine("%.3f | %.3f | %.3f", fractionSize, fractionNoise, score).off();
+			}
+		Log.LOG.revert();
+	}
+
+	private static void scenario2(OptimizationTestClient client) {
+		Log.LOG.printLine("split | size  | noise | score");
+		Log.LOG.printLine("- - - | - - - | - - - | - - -");
+		Log.LOG.saveState().off();
+		for(int split = 2; split <= 8; split++) {
+			double fractionSplit = split * STEP;
+			OptimizationTester tester = client.getTester(fractionSplit);
+			for(int size = 1; size <= 10; size++) {
+				for(int noise = 0; noise <= 0; noise++) {
+					double fractionSize = size * STEP;
+					double fractionNoise = noise * STEP;
+					double score = client.score(tester, fractionSize, fractionNoise);
+					Log.LOG.on().formatLine("%.3f | %.3f | %.3f | %.3f",
+							fractionSplit, fractionSize, fractionNoise, score).off();
+				}
+			}
 		}
-	}
-
-	private static void scenario1(Configuration configuration) {
-		OptimizationTester tester = new OptimizationTester(configuration);
-		ScoringFunction testFunction = getScoringFunction(configuration);
-		Log.LOG.newLine().printLine("Score: " + tester.test(testFunction, 1, 0));
-	}
-
-	private static void scenario2(Configuration configuration) {
-		TypePair<Configuration> configurations = configuration.split(0.5);
-		Configuration train = configurations.one();
-		Configuration test = configurations.two();
-		OptimizationTester tester = new OptimizationTester(train, test);
-		ScoringFunction testFunction = getScoringFunction(configuration);
-		Log.LOG.printLine("Score: " + tester.test(testFunction, 1, 0));
-	}
-
-	private static ScoringFunction getScoringFunction(Configuration test) {
-		URL url = HousingOptimisationTester.class.getResource("/examples/housing_opt_test_small_1.constraints");
-		String content = FileUtil.readFile(FileUtil.getLocalFile(url));
-		Constraints constraints = new ConstraintParser(test.getLogicBase()).parse(content);
-		return constraints.getClauseFunction();
+		Log.LOG.revert();
 	}
 }

@@ -96,7 +96,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	// IVAR resultSet - The result set used for efficient subset tests
 
-	private final Set<StatusClause> resultSet = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private final Set<ValidatedClause> resultSet = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	// IVAR resultQueue - The result queue queues entailment calculations
 
@@ -153,7 +153,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		result.addDelegate(new Result.Delegate<ValidatedClause>() {
 			@Override
 			public void processResultNodeAdded(Result<ValidatedClause> result, Node<ValidatedClause> node) {
-				resultSet.add(node.getValue().getClause());
+				resultSet.add(node.getValue());
 			}
 
 			@Override
@@ -165,7 +165,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public boolean nodeSelected(Node<ValidatedClause> node) {
-		return !subsetOccurs(node.getValue().getClause());
+		return !subsetOccurs(node.getValue());
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 			return true;
 		new EntailmentTestRunnable(result, node).run();
 		//resultQueue.execute(new EntailmentTestRunnable(result, node));
-		return false;
+		return !node.getValue().coversAll();
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	protected KnowledgeBase getProgram(List<ValidatedClause> clauses, ValidatedClause clause) {
 		List<Formula> formulas = clauses.stream()
-				.filter(c -> c.coversAll() || c.getValidity().equals(clause.getValidity())) // TODO Choose approach
+				.filter(c -> canPrune(c, clause)) // TODO Choose approach
 				//.filter(ValidatedClause::coversAll)
 				.map(ValidatedClause::getClause).map(this::getClause)
 				.collect(Collectors.toList());
@@ -242,9 +242,15 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		return children.stream().map(validityCalculator::getValidatedClause).collect(Collectors.toList());
 	}
 
-	private boolean subsetOccurs(StatusClause statusClause) {
-		for(StatusClause resultClause : resultSet)
-			if(resultClause.isSubsetOf(statusClause)) {
+	private boolean canPrune(ValidatedClause clause, ValidatedClause newClause) {
+		return clause.coversAll()
+				|| (clause.getValidCount() == newClause.getValidCount()
+					&& clause.getValidity().equals(newClause.getValidity()));
+	}
+
+	private boolean subsetOccurs(ValidatedClause statusClause) {
+		for(ValidatedClause resultClause : resultSet)
+			if(canPrune(resultClause, statusClause) && resultClause.getClause().isSubsetOf(statusClause.getClause())) {
 				Log.LOG.printLine("INFO (" + resultClause + ") subset of (" + statusClause + ")");
 				return true;
 			} else {

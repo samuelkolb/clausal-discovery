@@ -30,29 +30,32 @@ public class OptimizationTester {
 
 	private final Configuration training;
 
+	public Configuration getTraining() {
+		return training;
+	}
+
 	private final Configuration testing;
+
+	public Configuration getTesting() {
+		return testing;
+	}
+
+	private final ClausalOptimization optimization;
 
 	//endregion
 
 	//region Construction
 
 	/**
-	 * Creates an optimization tester
-	 * @param examples	The training and test configurations
-	 */
-	public OptimizationTester(Configuration examples) {
-		this.training = examples;
-		this.testing = examples;
-	}
-
-	/**
-	 * Creates an optimization tester
+	 * Creates an optimization tester. In this step clausal optimization is run on the training set.
 	 * @param training	The training configuration
 	 * @param test		The test configuration
 	 */
 	public OptimizationTester(Configuration training, Configuration test) {
 		this.training = training;
 		this.testing = test;
+		this.optimization = new ClausalOptimization(training);
+		this.optimization.run();
 	}
 
 	//endregion
@@ -69,9 +72,7 @@ public class OptimizationTester {
 	public double test(ScoringFunction testFunction, double size, double noise) {
 		final Preferences preferences = generatePreferences(training.getLogicBase().getExamples(), testFunction)
 				.resize(size).induceNoise(noise);
-		double[] cFactors = {1};//Numbers.range(0.1, 1, 0.1);
-		ClausalOptimization optimization = new ClausalOptimization(training);
-		optimization.run();
+		double[] cFactors = {0.2};//Numbers.range(0.1, 1, 0.1);
 
 		ScoreComparator trainComparator = new ScoreComparator(training.getLogicBase().getExamples());
 		ScoreComparator testComparator = new ScoreComparator(testing.getLogicBase().getExamples());
@@ -119,6 +120,7 @@ public class OptimizationTester {
 				/*else
 					orders.add(singletonList(Arrays.asList(examples.get(i), examples.get(j))));*/
 			}
+		Log.LOG.formatLine("Create %d preferences over %d examples", orders.size(), examples.size());
 		return Preferences.newFromOrders(orders);
 	}
 

@@ -95,7 +95,7 @@ public class ValidatedClause {
 
 	@Override
 	public String toString() {
-		return getClause().toString();
+		return "[" + (coversAll() ? "hard" : "soft") + "] " + getClause().toString();
 	}
 
 	//endregion
