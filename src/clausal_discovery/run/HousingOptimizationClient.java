@@ -6,6 +6,7 @@ import clausal_discovery.core.Preferences;
 import clausal_discovery.core.score.ClauseFunction;
 import log.LinkTransformer;
 import log.Log;
+import log.PrefixFilter;
 import parse.ParseException;
 import parse.PreferenceParser;
 
@@ -21,7 +22,7 @@ public class HousingOptimizationClient {
 	public static final double C_FACTOR = 0.1;
 
 	static {
-		Log.LOG.addMessageFilter(message -> (message.MESSAGE == null || !message.MESSAGE.startsWith("INFO")));
+		Log.LOG.addMessageFilter(PrefixFilter.ignore("INFO"));
 		Log.LOG.addTransformer(new LinkTransformer());
 	}
 
