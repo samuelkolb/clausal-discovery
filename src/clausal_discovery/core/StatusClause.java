@@ -7,6 +7,7 @@ import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import log.Log;
 import logic.expression.formula.Formula;
+import util.Numbers;
 import vector.Vector;
 import vector.WriteOnceVector;
 
@@ -99,9 +100,6 @@ public class StatusClause {
 		Optional<StatusClause> clause = addIfValid(instance);
 		if(clause.isPresent() && isRepresentativeWith(clause.get(), instance))
 			return clause;
-		if(getInstances().size() == 1 && (instance.getInstance().getPredicate().getName().equals("color")
-				|| instance.getInstance().getPredicate().getName().equals("neighbor")) && clause.isPresent())
-			Log.LOG.formatLine("Rejected %d - %s : %d - %s [not representative]", getInstances().getFirst().getIndex(), getInstances().getFirst(), instance.getIndex(), instance);
 		return Optional.empty();
 	}
 
@@ -256,10 +254,20 @@ public class StatusClause {
 	}
 
 	protected boolean isRepresentativeWith(StatusClause clause, PositionedInstance instance) {
+		List<Numbers.Permutation> permutations = Numbers.getPermutations(clause.getLength());
+		for(Numbers.Permutation permutation : permutations) {
+			List<PositionedInstance> instances = new ArrayList<>();
+			for(int i : permutation.getArray())
+				instances.add(clause.getInstances().get(i));
+			if(!isRepresentativeWith(clause, instances))
+				return false;
+		}
+		return true;
+		/*/
 		for(int i = 0; i < getInstances().size(); i++)
 			if(!isRepresentativeWith(clause, i, instance))
 				return false;
-		return true;
+		return true;*/
 	}
 
 	private boolean isRepresentativeWith(StatusClause clause, int index, PositionedInstance instance) {
@@ -272,6 +280,10 @@ public class StatusClause {
 			else
 				instances.add(getInstances().get(i - 1));
 
+		return isRepresentativeWith(clause, instances);
+	}
+
+	private boolean isRepresentativeWith(StatusClause clause, List<PositionedInstance> instances) {
 		Optional<StatusClause> builtClause = getClause(instances);
 		boolean representative = !builtClause.isPresent() || isRepresentative(clause, builtClause.get());
 		//Log.LOG.printLine((representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
