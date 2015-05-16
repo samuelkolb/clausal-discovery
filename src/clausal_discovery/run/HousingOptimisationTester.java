@@ -55,8 +55,8 @@ public class HousingOptimisationTester {
 		Log.LOG.printLine("- - - | - - - | - - -");
 		Log.LOG.saveState().off();
 		OptimizationTester tester = client.getTester();
-		for(int size = 1; size <= 10; size++)
-			for(int noise = 0; noise <= 10; noise++) {
+		for(int size = 1; size <= 1; size++)
+			for(int noise = 0; noise <= 0; noise++) {
 				double fractionSize = size * STEP;
 				double fractionNoise = noise * STEP;
 				double score = client.score(tester, fractionSize, fractionNoise);

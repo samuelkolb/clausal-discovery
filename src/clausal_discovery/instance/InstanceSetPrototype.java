@@ -77,7 +77,8 @@ public class InstanceSetPrototype {
 			List<Numbers.Permutation> permutations = Numbers.take(rank, definition.getArity());
 			for(Numbers.Permutation permutation : permutations)
 				if(new Environment().isValidInstance(definition, new Vector<>(permutation.getIntegerArray())))
-					prototypes.add(new InstancePrototype(definition, permutation));
+					if(!definition.isSymmetric() || permutation.isSorted())
+						prototypes.add(new InstancePrototype(definition, permutation));
 		}
 		return new InstanceSetPrototype(new Vector<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
 	}

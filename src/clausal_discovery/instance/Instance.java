@@ -53,7 +53,7 @@ public class Instance {
 	public Instance(PredicateDefinition definition, Vector<Integer> variableIndices) {
 		assert definition.getPredicate().getArity() == variableIndices.size();
 		this.definition = definition;
-		this.variableIndices = variableIndices;
+		this.variableIndices = definition.isSymmetric() ? variableIndices.sortedCopy() : variableIndices;
 		this.max = variableIndices.get(0);
 		for(int i = 1; i < variableIndices.size(); i++)
 			this.max = Math.max(this.max, variableIndices.get(i));

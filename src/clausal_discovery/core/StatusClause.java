@@ -99,6 +99,9 @@ public class StatusClause {
 		Optional<StatusClause> clause = addIfValid(instance);
 		if(clause.isPresent() && isRepresentativeWith(clause.get(), instance))
 			return clause;
+		if(getInstances().size() == 1 && (instance.getInstance().getPredicate().getName().equals("color")
+				|| instance.getInstance().getPredicate().getName().equals("neighbor")) && clause.isPresent())
+			Log.LOG.formatLine("Rejected %d - %s : %d - %s [not representative]", getInstances().getFirst().getIndex(), getInstances().getFirst(), instance.getIndex(), instance);
 		return Optional.empty();
 	}
 
@@ -271,7 +274,7 @@ public class StatusClause {
 
 		Optional<StatusClause> builtClause = getClause(instances);
 		boolean representative = !builtClause.isPresent() || isRepresentative(clause, builtClause.get());
-		Log.LOG.printLine("INFO SUBSET " + (representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
+		//Log.LOG.printLine((representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
 		// TODO
 		return representative;
 	}
@@ -291,9 +294,15 @@ public class StatusClause {
 	}
 
 	private boolean isRepresentative(StatusClause clause, StatusClause newClause) {
-		for(int i = 0; i < clause.getInstances().length; i++)
-			if(new InstanceComparator().compare(newClause.getInstances().get(i), clause.getInstances().get(i)) < 0)
+		InstanceComparator comparator = new InstanceComparator();
+		for(int i = 0; i < clause.getInstances().length; i++) {
+			int compare = comparator.compare(newClause.getInstances().get(i), clause.getInstances().get(i));
+			if(compare < 0)
 				return false;
+			//*
+			else if(compare > 0)
+				return true;//*/
+		}
 		return true;
 	}
 
@@ -328,9 +337,7 @@ public class StatusClause {
 	}
 
 	private Vector<Integer> getVariables(Map<Integer, Integer> mapping, Instance instance) {
-		Vector<Integer> variableList = new WriteOnceVector<>(new Integer[instance.getPredicate().getArity()]);
-		variableList.addAll(instance.getVariableIndices().stream().map(mapping::get).collect(Collectors.toList()));
-		return variableList;
+		return instance.getVariableIndices().map(Integer.class, mapping::get);
 	}
 	// endregion
 }
