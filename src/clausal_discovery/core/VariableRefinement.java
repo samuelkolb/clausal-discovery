@@ -98,10 +98,6 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	private final Set<ValidatedClause> resultSet = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-	// IVAR resultQueue - The result queue queues entailment calculations
-
-	private final ExecutorService resultQueue;
-
 	// IVAR excessTimer - A stopwatch that measures the excess time to finish entailment checks
 
 	private final Stopwatch excessTimer = new Stopwatch();
@@ -133,7 +129,6 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		this.logicBase = logicBase;
 		this.executor = IdpExecutor.get();
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor, background);
-		this.resultQueue = Executors.newSingleThreadExecutor();
 		this.validityAcceptance = validityTest;
 	}
 
@@ -150,17 +145,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public void initialise(List<Node<ValidatedClause>> initialNodes, Result<ValidatedClause> result) {
-		result.addDelegate(new Result.Delegate<ValidatedClause>() {
-			@Override
-			public void processResultNodeAdded(Result<ValidatedClause> result, Node<ValidatedClause> node) {
-				resultSet.add(node.getValue());
-			}
 
-			@Override
-			public void processResultNodeRemoved(Result<ValidatedClause> result, Node<ValidatedClause> node) {
-
-			}
-		});
 	}
 
 	@Override
@@ -183,23 +168,16 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		if(!this.validityAcceptance.test(node.getValue()))
 			return true;
 		new EntailmentTestRunnable(result, node).run();
-		//resultQueue.execute(new EntailmentTestRunnable(result, node));
+		resultSet.add(node.getValue());
 		return !node.getValue().coversAll();
 	}
 
 	@Override
 	public void searchComplete(Result<ValidatedClause> result) {
 		validityCalculator.shutdown();
-		resultQueue.shutdown();
 		getExcessTimer().start();
-		try {
-			resultQueue.awaitTermination(10, TimeUnit.DAYS);
-			prune(result);
-		} catch(InterruptedException e) {
-			throw new IllegalStateException(e);
-		} finally {
-			getExcessTimer().pause();
-		}
+		prune(result);
+		getExcessTimer().pause();
 	}
 
 	/**

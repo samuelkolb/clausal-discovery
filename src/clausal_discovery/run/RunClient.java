@@ -61,7 +61,7 @@ public class RunClient {
 		Log.LOG.printLine("Expanded " + configuration.getCountingPlugin().getExpandedCount() + " nodes");
 
 		Log.LOG.newLine().printLine(executor.entailmentCount + " entailment checks took " + time + "s.");
-		Log.LOG.printLine("Entailment checks excess time " + round(clausalDiscovery.getExcessTime()) + "s.");
+		Log.LOG.printLine("Pruning time " + round(clausalDiscovery.getExcessTime()) + "s.");
 	}
 
 	//endregion

@@ -57,14 +57,13 @@ public class ClausalDiscovery {
 	}
 
 	/**
-	 * Use the given configuration to find constraints per example
+	 * Use the given configuration to find constraints that hold on a certain percentage of the examples
+	 * @param support	The percentage (between 0 and 1) of examples, that a constraint needs to hold on
 	 * @return	A list of status clauses that hold on at least one example
 	 */
-	public List<ValidatedClause> findAllConstraints() {
-		List<ValidatedClause> clauses = new ArrayList<>();
-		clauses.addAll(findHardConstraints());
-		clauses.addAll(findSoftConstraints(clauses));
-		return clauses;
+	public List<ValidatedClause> findSoftConstraints(double support) {
+		double size = Math.ceil(getConfiguration().getLogicBase().getExamples().size() * support);
+		return run(getConfiguration(), c -> c.getValidCount() >= size);
 	}
 
 	/**
