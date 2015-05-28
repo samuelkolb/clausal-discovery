@@ -47,7 +47,7 @@ public class HousingOptimisationTester {
 	public static void main(String[] args) {
 		String name = "housing_opt_test_small";
 		OptimizationTestClient client = new OptimizationTestClient(name, name + "_1", 4, 3);
-		scenario1(client);
+		scenario2(client);
 	}
 
 	private static void scenario1(OptimizationTestClient client) {
@@ -69,10 +69,10 @@ public class HousingOptimisationTester {
 		Log.LOG.printLine("split | size  | noise | score");
 		Log.LOG.printLine("- - - | - - - | - - - | - - -");
 		Log.LOG.saveState().off();
-		for(int split = 2; split <= 8; split++) {
+		for(int split = 3; split <= 3; split++) {
 			double fractionSplit = split * STEP;
 			OptimizationTester tester = client.getTester(fractionSplit);
-			for(int size = 1; size <= 10; size++) {
+			for(int size = 3; size <= 3; size++) {
 				for(int noise = 0; noise <= 0; noise++) {
 					double fractionSize = size * STEP;
 					double fractionNoise = noise * STEP;

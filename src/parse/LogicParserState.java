@@ -2,6 +2,7 @@ package parse;
 
 import clausal_discovery.core.PredicateDefinition;
 import log.Log;
+import util.Numbers;
 import util.Pair;
 import vector.Vector;
 import clausal_discovery.core.LogicBase;
@@ -131,10 +132,17 @@ public class LogicParserState {
 	 * @param constantNames	The names of the constant arguments of the predicate
 	 */
 	public void addInstance(String predicateName, String[] constantNames) {
-		Log.LOG.printLine("INFO added instance " + predicateName + Arrays.toString(constantNames));
 		Term[] terms = new Term[constantNames.length];
 		for(int i = 0; i < constantNames.length; i++)
 			terms[i] = constants.get(constantNames[i]);
+		if(predicates.get(predicateName).isSymmetric())
+			Numbers.getPermutations(terms.length).forEach(p -> addInstance(predicateName, p.applyArray(terms)));
+		else
+			addInstance(predicateName, terms);
+	}
+
+	private void addInstance(String predicateName, Term[] terms) {
+		Log.LOG.formatLine("INFO Added %s(%s)", predicateName, Arrays.toString(terms));
 		instances.add(new PredicateInstance(predicates.get(predicateName).getPredicate(), terms));
 	}
 

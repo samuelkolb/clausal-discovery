@@ -13,8 +13,6 @@ example 1 {
 	color(Poland,Red)
 	neighbor(Belgium,Germany)
 	neighbor(Germany,Poland)
-	neighbor(Germany,Belgium)
-	neighbor(Poland,Germany)
 }
 
 example 2 {
@@ -25,9 +23,6 @@ example 2 {
 	color(Lux,Green)
 	color(Germany,Blue)
 	neighbor(Belgium,Germany)
-	neighbor(Germany,Belgium)
 	neighbor(Lux,Germany)
-	neighbor(Germany,Lux)
 	neighbor(Belgium,Lux)
-	neighbor(Lux,Belgium)
 }

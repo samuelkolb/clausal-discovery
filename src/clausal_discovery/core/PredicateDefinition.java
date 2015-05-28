@@ -4,8 +4,6 @@ import logic.bias.Type;
 import logic.expression.formula.Predicate;
 import vector.Vector;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Created by samuelkolb on 14/04/15.
  *
@@ -60,9 +58,13 @@ public class PredicateDefinition {
 	public PredicateDefinition(Predicate predicate, boolean symmetric, boolean calculated) {
 		this.predicate = predicate;
 		this.symmetric = symmetric;
+		checkIfValid(predicate, symmetric);
 		this.calculated = calculated;
 	}
 
+	//endregion
+
+	//region Public methods
 	public int getArity() {
 		return getPredicate().getArity();
 	}
@@ -70,10 +72,16 @@ public class PredicateDefinition {
 	public Vector<Type> getTypes() {
 		return getPredicate().getTypes();
 	}
-
 	//endregion
 
-	//region Public methods
+	private void checkIfValid(Predicate predicate, boolean symmetric) {
+		if(symmetric && predicate.getArity() > 0) {
+			Type type = predicate.getTypes().get(0);
+			for(int i = 1; i < predicate.getArity(); i++)
+				if(!type.equals(predicate.getTypes().get(i)))
+					throw new IllegalArgumentException("In symmetric predicates all arguments must have the same type");
+		}
+	}
 
-	//endregion
+
 }

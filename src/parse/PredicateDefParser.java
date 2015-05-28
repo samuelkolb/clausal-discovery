@@ -36,15 +36,18 @@ public class PredicateDefParser extends MatchParser<LogicParserState> {
 		try {
 			predicate = state.parsePredicate(string);
 		} catch(IllegalArgumentException e) {
-			Log.LOG.printLine(string);
-			throw new ParsingError("Badly formatted predicate declaration");
+			throw new ParsingError("Badly formatted predicate declaration: " + string);
 		}
 		if(state.containsPredicate(predicate.getFirst()))
 			throw new ParsingError("Predicate '" + predicate.getFirst() + "' already exists");
 		for(String arg : predicate.getSecond())
 			if(!state.containsType(arg))
 				throw new ParsingError("Use of unknown type '" + arg + "'");
-		state.addPredicate(predicate.getFirst(), type.equals("symm"), type.equals("calc"), predicate.getSecond());
+		try {
+			state.addPredicate(predicate.getFirst(), type.equals("symm"), type.equals("calc"), predicate.getSecond());
+		} catch(IllegalArgumentException e) {
+			throw new ParsingError("Could not add predicate definition because: " + e.getMessage());
+		}
 	}
 	//endregion
 }

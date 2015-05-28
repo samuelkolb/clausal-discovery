@@ -105,10 +105,10 @@ public class ClausalDiscovery {
 		VariableRefinement refinement = new VariableRefinement(logicBase, variables, background, validityTest);
 		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(logicBase));
 		SearchAlgorithm<ValidatedClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
+		configuration.addPlugins(algorithm);
 		algorithm.addPlugin(new MaximalDepthPlugin<>(configuration.getClauseLength()));
 		algorithm.addPlugin(new DuplicateEliminationPlugin<>(false));
 		algorithm.addPlugin(refinement);
-		configuration.addPlugins(algorithm);
 
 		List<ValidatedClause> clauses = algorithm.search(initialNodes).getSolutions();
 		this.excessTime = refinement.getExcessTimer().stop();

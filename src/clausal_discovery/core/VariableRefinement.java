@@ -123,7 +123,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	 */
 	public VariableRefinement(LogicBase logicBase, int variables, Vector<Theory> background,
 							  Predicate<ValidatedClause> validityTest) {
-		this.backgroundTheories = background;
+		this.backgroundTheories = background.grow(new InlineTheory(logicBase.getSymmetryFormulas()));
 		this.instanceList = new InstanceList(logicBase.getSearchPredicates(), variables);
 		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
@@ -200,8 +200,9 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 				//.filter(ValidatedClause::coversAll)
 				.map(ValidatedClause::getClause).map(this::getClause)
 				.collect(Collectors.toList());
-		formulas.addAll(getLogicBase().getSymmetryFormulas());
+		//formulas.addAll(getLogicBase().getSymmetryFormulas());
 		Vector<Theory> theories = new Vector<>(new InlineTheory(formulas));
+		//Vector<Theory> background = getBackgroundTheories().grow(new InlineTheory(getLogicBase().getSymmetryFormulas()));
 		return new KnowledgeBase(logicBase.getVocabulary(), theories, getBackgroundTheories(), new Vector<>());
 	}
 
@@ -221,8 +222,8 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	}
 
 	private boolean canPrune(ValidatedClause clause, ValidatedClause newClause) {
-		return clause.coversAll()
-				|| (clause.getValidCount() == newClause.getValidCount()
+		return /**/clause.coversAll()
+				|| /**/(clause.getValidCount() == newClause.getValidCount()
 					&& clause.getValidity().equals(newClause.getValidity()));
 	}
 

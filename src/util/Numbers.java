@@ -1,5 +1,6 @@
 package util;
 
+import basic.ArrayUtil;
 import log.Log;
 
 import java.util.*;
@@ -33,6 +34,20 @@ public class Numbers {
 			for(int i = 0; i < substitution.length; i++)
 				substitution[i] = substitutes[this.array[i]];
 			return new Permutation(substitution);
+		}
+
+		public <T> List<T> applyList(T[] array) {
+			List<T> result = new ArrayList<>();
+			for(int i : getArray())
+				result.add(array[i]);
+			return result;
+		}
+
+		public <T> T[] applyArray(T[] array) {
+			T[] result = ArrayUtil.copy(array);
+			for(int i = 0; i < getArray().length; i++)
+				result[i] = (array[getArray()[i]]);
+			return result;
 		}
 
 		public int getDistinctCount() {
