@@ -128,7 +128,8 @@ public class Configuration {
 		try {
 			logicBase = new LogicParser().parseLocalFile(name + ".logic");
 		} catch(ParseException e) {
-			throw new IllegalArgumentException(String.format("Error parsing file %s.logic: %s", name, e.getMessage()));
+			Log.LOG.formatLine("Error parsing file %s.logic\n%s", name, e.getMessage());
+			throw new IllegalArgumentException(e);
 		}
 		URL url = Configuration.class.getResource("/examples/" + name + ".background");
 		Vector<Theory> background = url == null

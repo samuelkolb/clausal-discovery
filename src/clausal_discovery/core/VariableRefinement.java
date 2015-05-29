@@ -228,6 +228,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	}
 
 	private boolean subsetOccurs(ValidatedClause statusClause) {
+
 		for(ValidatedClause resultClause : resultSet)
 			if(canPrune(resultClause, statusClause) && resultClause.getClause().isSubsetOf(statusClause.getClause())) {
 				Log.LOG.printLine("INFO (" + resultClause + ") subset of (" + statusClause + ")");

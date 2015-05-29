@@ -43,6 +43,13 @@ public class Numbers {
 			return result;
 		}
 
+		public <T> List<T> applyList(List<T> list) {
+			List<T> result = new ArrayList<>();
+			for(int i : getArray())
+				result.add(list.get(i));
+			return result;
+		}
+
 		public <T> T[] applyArray(T[] array) {
 			T[] result = ArrayUtil.copy(array);
 			for(int i = 0; i < getArray().length; i++)

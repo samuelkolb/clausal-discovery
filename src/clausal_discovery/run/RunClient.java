@@ -37,12 +37,14 @@ public class RunClient {
 	/**
 	 * Run clausal discovery with the given configuration
 	 * @param configuration	The run configuration
+	 * @return	The result clauses
 	 */
-	public void run(Configuration configuration) {
+	public List<ValidatedClause> run(Configuration configuration) {
 		ClausalDiscovery clausalDiscovery = new ClausalDiscovery(configuration);
 		Stopwatch stopwatch = new Stopwatch(true);
+		List<ValidatedClause> clauses = null;
 		try {
-			List<ValidatedClause> clauses = clausalDiscovery.findHardConstraints();
+			clauses = clausalDiscovery.findHardConstraints();
 			Log.LOG.printLine("\nSearch finished in " + round(stopwatch.stop()) + "s:");
 			for(int i = 0; i < clauses.size(); i++)
 				Log.LOG.printLine("\t" + (i + 1) + ": " + clauses.get(i));
@@ -62,6 +64,8 @@ public class RunClient {
 
 		Log.LOG.newLine().printLine(executor.entailmentCount + " entailment checks took " + time + "s.");
 		Log.LOG.printLine("Pruning time " + round(clausalDiscovery.getExcessTime()) + "s.");
+
+		return clauses;
 	}
 
 	//endregion

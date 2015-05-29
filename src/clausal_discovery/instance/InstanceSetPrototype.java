@@ -2,6 +2,7 @@ package clausal_discovery.instance;
 
 import clausal_discovery.core.Environment;
 import clausal_discovery.core.PredicateDefinition;
+import log.Log;
 import util.Numbers;
 import vector.Vector;
 import vector.WriteOnceVector;
@@ -11,6 +12,7 @@ import logic.expression.formula.Predicate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An instance set prototype contains prototypes of the same rank
@@ -37,7 +39,7 @@ public class InstanceSetPrototype {
 	//region Construction
 
 	protected InstanceSetPrototype(Vector<InstancePrototype> prototypes) {
-		this.rank = prototypes.get(0).getRank();
+		this.rank = prototypes.isEmpty() ? 0 : prototypes.get(0).getRank();
 		for(int i = 1; i < prototypes.size(); i++) assert prototypes.get(i).getRank() == getRank();
 		this.prototypes = prototypes;
 	}
@@ -46,11 +48,7 @@ public class InstanceSetPrototype {
 
 	//region Public methods
 	public Vector<Instance> getInstances(int[] indices) {
-		assert indices.length == getRank();
-		Vector<Instance> instances = new WriteOnceVector<>(new Instance[getPrototypes().size()]);
-		for(InstancePrototype prototype : getPrototypes())
-			instances.add(prototype.instantiate(indices));
-		return instances;
+		return getPrototypes().map(Instance.class, p -> p.instantiate(indices));
 	}
 
 	public static Vector<InstanceSetPrototype> createInstanceSets(Vector<PredicateDefinition> definitions) {
@@ -58,7 +56,7 @@ public class InstanceSetPrototype {
 		for(int i = 1; i < definitions.size(); i++)
 			maxArity = Math.max(maxArity, definitions.get(i).getArity());
 
-		Vector<InstanceSetPrototype> instanceSetPrototypes = new WriteOnceVector<>(new InstanceSetPrototype[maxArity]);
+		List<InstanceSetPrototype> instanceSetPrototypes = new ArrayList<>();
 		List<PredicateDefinition> definitionsSet = new ArrayList<>(definitions);
 		for(int i = 0; i < maxArity; i++) {
 			List<PredicateDefinition> newSet = new ArrayList<>();
@@ -66,9 +64,10 @@ public class InstanceSetPrototype {
 				if(definition.getArity() > i)
 					newSet.add(definition);
 			definitionsSet = newSet;
-			instanceSetPrototypes.add(createInstanceSet(definitionsSet, i + 1));
+			InstanceSetPrototype instanceSet = createInstanceSet(definitionsSet, i + 1);
+			instanceSetPrototypes.add(instanceSet);
 		}
-		return instanceSetPrototypes;
+		return new Vector<>(InstanceSetPrototype.class, instanceSetPrototypes);
 	}
 
 	public static InstanceSetPrototype createInstanceSet(Collection<PredicateDefinition> definitions, int rank) {

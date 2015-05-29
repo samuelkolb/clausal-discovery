@@ -122,12 +122,24 @@ public class StatusClause {
 	 * @return	True iff this clause equals a subset of the given status clause of the same length as this clause
 	 */
 	public boolean isSubsetOf(StatusClause statusClause) {
-		for(int i = 0; i <= statusClause.getLength() - getLength(); i++) {
+		for(StatusClause clause : statusClause.getSubsets(getLength()))
+			if(equalsSymmetric(clause))
+				return true;
+		return false;
+		/*for(int i = 0; i <= statusClause.getLength() - getLength(); i++) {
 			Optional<StatusClause> optionalClause = statusClause.getSubsetClause(i, getLength());
+			if((""+this).equals("row(0, 1) & row(0, 2) => false") && (""+statusClause).equals("row(0, 1) & value(0, 1) & row(0, 2) => false"))
+				Log.LOG.printLine(i+" "+optionalClause.get());
 			if(optionalClause.isPresent() && equalsSymmetric(optionalClause.get()))
 				return true;
 		}
-		return false;
+		return false;*/
+	}
+
+	private List<StatusClause> getSubsets(int size) {
+		List<StatusClause> result = new ArrayList<>();
+		Numbers.getChoices(getLength(), size).forEach(p -> getSubsetClause(p).ifPresent(result::add));
+		return result;
 	}
 
 	@Override
@@ -246,7 +258,7 @@ public class StatusClause {
 		int max = getRank() - 1;
 		Vector<Integer> indices = instance.getInstance().getVariableIndices();
 		for(int i = 0; i < indices.size(); i++)
-			if(instance.isInBody() && indices.get(i) == max + 1)
+			if((instance.isInBody()/*/ || (getLength() == 0)/**/) && indices.get(i) == max + 1)
 				max = indices.get(i);
 			else if(indices.get(i) > max)
 				return false;
@@ -296,6 +308,10 @@ public class StatusClause {
 		for(int i = start; i < start + length; i++)
 			instances.add(getInstances().get(i));
 		return getClause(instances);
+	}
+
+	private Optional<StatusClause> getSubsetClause(Numbers.Permutation permutation) {
+		return getClause(permutation.applyList(getInstances()));
 	}
 
 	private Optional<StatusClause> getClause(List<PositionedInstance> instances) {
