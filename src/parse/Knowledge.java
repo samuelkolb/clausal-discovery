@@ -17,10 +17,7 @@ import pair.TypePair;
 import util.Numbers;
 import vector.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -103,7 +100,10 @@ public class Knowledge implements LogicBase {
 			throw new IllegalArgumentException(String.format("Fraction must be between 0 and 1, was %f", fraction));
 		int size = getExamples().size();
 		int index = Math.max(1, Math.min((int) Math.ceil(fraction * size), size - 1));
-		return TypePair.of(copy(getExamples().subList(0, index)), copy(getExamples().subList(index, size)));
+		List<Example> examples = new ArrayList<>(getExamples());
+		Collections.shuffle(examples);
+		Vector<Example> vector = new Vector<>(Example.class, examples);
+		return TypePair.of(copy(vector.subList(0, index)), copy(vector.subList(index, size)));
 	}
 
 	private Knowledge copy(Vector<Example> examples) {
