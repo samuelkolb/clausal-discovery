@@ -19,9 +19,9 @@ example  1 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A1)
 	school_in(A2)
@@ -38,9 +38,9 @@ example 2 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A1)
 	school_in(A2)
@@ -57,9 +57,9 @@ example 3 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A1)
 	school_in(A3)
@@ -76,9 +76,9 @@ example 4 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A1)
 	school_in(A3)
@@ -95,9 +95,9 @@ example 5 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A1)
 	school_in(A4)
@@ -114,9 +114,9 @@ example 6 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A1)
 	school_in(A4)
@@ -133,9 +133,9 @@ example 7 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A2)
 	school_in(A2)
@@ -152,9 +152,9 @@ example 8 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A2)
 	school_in(A2)
@@ -171,9 +171,9 @@ example 9 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A2)
 	school_in(A3)
@@ -190,9 +190,9 @@ example 10 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A2)
 	school_in(A3)
@@ -209,9 +209,9 @@ example 11 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A2)
 	school_in(A4)
@@ -228,9 +228,9 @@ example 12 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A2)
 	school_in(A4)
@@ -247,9 +247,9 @@ example 13 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A3)
 	school_in(A2)
@@ -266,9 +266,9 @@ example 14 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A3)
 	school_in(A2)
@@ -285,9 +285,9 @@ example 15 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A3)
 	school_in(A3)
@@ -304,9 +304,9 @@ example 16 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A3)
 	school_in(A3)
@@ -323,9 +323,9 @@ example 17 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A3)
 	school_in(A4)
@@ -342,9 +342,9 @@ example 18 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A3)
 	school_in(A4)
@@ -361,9 +361,9 @@ example 19 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A4)
 	school_in(A2)
@@ -380,9 +380,9 @@ example 20 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A4)
 	school_in(A2)
@@ -399,9 +399,9 @@ example 21 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A4)
 	school_in(A3)
@@ -418,9 +418,9 @@ example 22 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A4)
 	school_in(A3)
@@ -437,9 +437,9 @@ example 23 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A4)
 	school_in(A4)
@@ -456,9 +456,9 @@ example 24 {
 
 	job_offer(A1)
 	job_offer(A2)
-	school(A1)
 	school(A2)
 	school(A3)
+	school(A4)
 
 	live_in(A4)
 	school_in(A4)

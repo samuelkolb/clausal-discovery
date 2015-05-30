@@ -28,7 +28,7 @@ public class InteractiveClient {
 			Log.LOG.printLine("Choose example:");
 			for(int i = 0; i < examples.length; i++)
 				Log.LOG.printLine("[" + i + "] " + examples[i]);
-			name = examples[scanner.nextInt()];
+			name = examples[Integer.parseInt(scanner.nextLine())];
 			name = name.substring(0, name.length() - 6);
 		}
 		Log.LOG.printLine("\nHow many variables can be used?");
