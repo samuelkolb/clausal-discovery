@@ -2,7 +2,7 @@ type Country
 type Color
 
 pred color(Country,Color)
-pred neighbor(Country,Country)
+symm neighbor(Country,Country)
 
 example  1 {
 	const Country Belgium Germany Poland
@@ -13,8 +13,6 @@ example  1 {
 	color(Poland,Red)
 	neighbor(Belgium,Germany)
 	neighbor(Germany,Poland)
-	neighbor(Germany,Belgium)
-	neighbor(Poland,Germany)
 }
 
 example 2 {
@@ -25,11 +23,8 @@ example 2 {
 	color(Lux,Green)
 	color(Germany,Blue)
 	neighbor(Belgium,Germany)
-	neighbor(Germany,Belgium)
 	neighbor(Lux,Germany)
-	neighbor(Germany,Lux)
 	neighbor(Belgium,Lux)
-	neighbor(Lux,Belgium)
 }
 
 example 3 {
@@ -55,25 +50,15 @@ example 4 {
 	color(C6,Green)
 
 	neighbor(C1,C2)
-	neighbor(C2,C1)
 	neighbor(C1,C3)
-	neighbor(C3,C1)
 	neighbor(C1,C4)
-	neighbor(C4,C1)
 	neighbor(C1,C4)
-	neighbor(C4,C1)
 	neighbor(C1,C5)
-    neighbor(C5,C1)
 	neighbor(C1,C6)
-    neighbor(C6,C1)
 
 	neighbor(C2,C3)
-	neighbor(C3,C2)
 	neighbor(C2,C4)
-	neighbor(C4,C2)
 
 	neighbor(C3,C5)
-	neighbor(C5,C3)
 	neighbor(C3,C6)
-	neighbor(C6,C3)
 }

@@ -14,6 +14,6 @@ public class ColoringMinimalClient {
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		new RunClient().run(Configuration.fromLocalFile("coloring_minimal", 4, 4));
+		new RunClient().run(Configuration.fromLocalFile("coloring_minimal", 3, 3));
 	}
 }

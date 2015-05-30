@@ -14,6 +14,6 @@ public class ColoringOptimalClient {
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		new RunClient().run(Configuration.fromLocalFile("coloring_optimal", 4, 4));
+		new RunClient().run(Configuration.fromLocalFile("coloring_optimal", 3, 3));
 	}
 }
