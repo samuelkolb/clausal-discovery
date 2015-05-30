@@ -24,7 +24,7 @@ import java.util.*;
 public class LogicParserState {
 
 	//region Variables
-	private final Map<String, Type> types = new HashMap<>();
+	private final Map<String, Type> types = new LinkedHashMap<>();
 
 	private final Map<String, PredicateDefinition> predicates = new LinkedHashMap<>();
 
@@ -48,6 +48,7 @@ public class LogicParserState {
 	public LogicParserState() {
 		types.put("?", Type.GENERIC);
 		types.put("int", Type.createBuiltIn("int"));
+		types.put("nat", Type.createBuiltIn("nat"));
 	}
 
 	//endregion
@@ -177,7 +178,7 @@ public class LogicParserState {
 		Collection<PredicateDefinition> values = this.predicates.values();
 		Vector<PredicateDefinition> definitions = new Vector<>(PredicateDefinition.class, values);
 		Vector<Constant> constants = new Vector<>(Constant.class, this.constants.values());
-		return new Setup(definitions, constants);
+		return new Setup(new Vector<>(Type.class, types.values()), definitions, constants);
 	}
 
 	public LogicBase getLogicBase() {

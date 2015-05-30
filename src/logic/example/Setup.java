@@ -44,8 +44,8 @@ public class Setup {
 	 * @param definitions	The predicate definitions to be used
 	 * @param constants		The constants to be used
 	 */
-	public Setup(Vector<PredicateDefinition> definitions, Vector<Constant> constants) {
-		this.vocabulary = new Vocabulary(definitions);
+	public Setup(Vector<Type> types, Vector<PredicateDefinition> definitions, Vector<Constant> constants) {
+		this.vocabulary = new Vocabulary(types, definitions);
 		this.constants = constants;
 	}
 
@@ -59,7 +59,7 @@ public class Setup {
 		return predicates;
 	}
 
-	public Set<Type> getTypes() {
+	public Vector<Type> getTypes() {
 		return getVocabulary().getTypes();
 	}
 

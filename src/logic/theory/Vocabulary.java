@@ -5,9 +5,7 @@ import clausal_discovery.instance.Instance;
 import logic.bias.Type;
 import vector.Vector;
 
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Collects definitions and their typing information
@@ -16,6 +14,11 @@ import java.util.Set;
  */
 public class Vocabulary {
 
+	private final Vector<Type> types;
+
+	public Vector<Type> getTypes() {
+		return types;
+	}
 	private final Vector<PredicateDefinition> definitions;
 
 	public Vector<PredicateDefinition> getDefinitions() {
@@ -26,16 +29,14 @@ public class Vocabulary {
 	 * Creates a new vocabulary with the given definitions
 	 * @param definitions	The definitions
 	 */
-	public Vocabulary(Vector<PredicateDefinition> definitions) {
+	public Vocabulary(Vector<Type> types, Vector<PredicateDefinition> definitions) {
+		Set<Type> contained = new HashSet<>();
+		for(PredicateDefinition definition : definitions)
+			contained.addAll(definition.getTypes());
+		this.types = types.filter(type -> !type.isBuiltIn() && contained.contains(type));
 		this.definitions = definitions;
 	}
 
-	public Set<Type> getTypes() {
-		Set<Type> types = new HashSet<>();
-		for(PredicateDefinition definition : getDefinitions())
-			types.addAll(definition.getTypes());
-		return types;
-	}
 
 	/**
 	 * Returns an instance
