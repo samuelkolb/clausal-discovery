@@ -32,7 +32,6 @@ public class CommentParser extends ScopeParser<LogicParserState> {
 			line = false;
 		else
 			return false;
-		Log.LOG.printLine("Comment " + line);
 		return true;
 	}
 
