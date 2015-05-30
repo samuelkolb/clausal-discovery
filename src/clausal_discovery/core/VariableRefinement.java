@@ -150,7 +150,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public boolean nodeSelected(Node<ValidatedClause> node) {
-		return !subsetOccurs(node.getValue());
+		return !subsetOccurs(node.getValue(), true);
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public boolean processSolution(Result<ValidatedClause> result, Node<ValidatedClause> node) {
-		if(!this.validityAcceptance.test(node.getValue()))
+		if(subsetOccurs(node.getValue(), false) || !this.validityAcceptance.test(node.getValue()))
 			return true;
 		new EntailmentTestRunnable(result, node).run();
 		resultSet.add(node.getValue());
@@ -223,21 +223,21 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	private boolean canPrune(ValidatedClause clause, ValidatedClause newClause) {
 		return /**/clause.coversAll()
-				|| /**/(clause.getValidCount() == newClause.getValidCount()
-					&& clause.getValidity().equals(newClause.getValidity()));
+				|| /**/canPruneSoft(clause, newClause);
 	}
 
-	private boolean subsetOccurs(ValidatedClause statusClause) {
+	private boolean canPruneSoft(ValidatedClause clause, ValidatedClause newClause) {
+		return clause.getValidCount() == newClause.getValidCount()
+				&& clause.getValidity().equals(newClause.getValidity());
+	}
 
+	private boolean subsetOccurs(ValidatedClause statusClause, boolean pruneHard) {
 		for(ValidatedClause resultClause : resultSet)
-			if(canPrune(resultClause, statusClause) && resultClause.getClause().isSubsetOf(statusClause.getClause())) {
-				Log.LOG.printLine("INFO (" + resultClause + ") subset of (" + statusClause + ")");
+			if((pruneHard ? resultClause.coversAll() : canPruneSoft(resultClause, statusClause))
+					&& resultClause.getClause().isSubsetOf(statusClause.getClause())) {
+				Log.LOG.formatLine("%s   %s (%s)", pruneHard ? "FILTER" : "REJECT", statusClause, resultClause);
 				return true;
-			} else {
-				Log.LOG.printLine("INFO (" + resultClause + ") not a subset of (" + statusClause + ")");
 			}
-		if(!resultSet.isEmpty())
-			Log.LOG.printLine("INFO ");
 		return false;
 	}
 
