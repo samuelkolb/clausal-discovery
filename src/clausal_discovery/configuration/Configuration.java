@@ -100,8 +100,6 @@ public class Configuration {
 	 */
 	public TypePair<Configuration> split(double fraction) {
 		TypePair<LogicBase> logicBases = getLogicBase().split(fraction);
-		Log.LOG.saveState().on().formatLine("%.3f split of %d examples: %d-%d", fraction, getLogicBase().getExamples().size(),
-				logicBases.getFirst().getExamples().size(), logicBases.getSecond().getExamples().size()).revert();
 		return TypePair.of(copy(logicBases.getFirst()), copy(logicBases.getSecond()));
 	}
 

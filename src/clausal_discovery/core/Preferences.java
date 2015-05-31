@@ -3,6 +3,7 @@ package clausal_discovery.core;
 import clausal_discovery.validity.ValidityTable;
 import log.Log;
 import logic.example.Example;
+import util.Randomness;
 import vector.Vector;
 
 import java.util.*;
@@ -125,9 +126,9 @@ public class Preferences {
 		if(factor < 0 || factor > 1)
 			throw new IllegalArgumentException("Illegal factor: " + factor);
 		List<Group> groups = new ArrayList<>(getGroups());
-		Collections.shuffle(groups);
+		Collections.shuffle(groups, Randomness.getRandom());
 		int newSize = (int) Math.ceil(groups.size() * factor);
-		Log.LOG.formatLine("Resize from %d preferences to %d preferences", getGroups().size(), newSize);
+		Log.LOG.saveState().formatLine("Resize from %d preferences to %d preferences", getGroups().size(), newSize).revert();
 		return new Preferences(new Vector<>(Group.class, groups.subList(0, newSize)));
 	}
 
@@ -141,7 +142,7 @@ public class Preferences {
 			throw new IllegalArgumentException("Illegal factor: " + factor);
 		Log.LOG.printLine("Shuffle");
 		List<Group> groups = new ArrayList<>(getGroups());
-		Collections.shuffle(groups);
+		Collections.shuffle(groups, Randomness.getRandom());
 		Log.LOG.printLine("Noise: " + (int) (groups.size() * factor) + " of " + groups.size());
 		for(int i = 0; i < (int) (groups.size() * factor); i++)
 			groups.set(i, groups.get(i).disturb());

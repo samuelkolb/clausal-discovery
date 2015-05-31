@@ -15,6 +15,7 @@ import logic.expression.term.Variable;
 import logic.theory.Vocabulary;
 import pair.TypePair;
 import util.Numbers;
+import util.Randomness;
 import vector.Vector;
 
 import java.util.*;
@@ -101,7 +102,7 @@ public class Knowledge implements LogicBase {
 		int size = getExamples().size();
 		int index = Math.max(1, Math.min((int) Math.ceil(fraction * size), size - 1));
 		List<Example> examples = new ArrayList<>(getExamples());
-		Collections.shuffle(examples);
+		Collections.shuffle(examples, Randomness.getRandom());
 		Vector<Example> vector = new Vector<>(Example.class, examples);
 		return TypePair.of(copy(vector.subList(0, index)), copy(vector.subList(index, size)));
 	}

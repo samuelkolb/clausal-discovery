@@ -2,6 +2,7 @@ package parse;
 
 import clausal_discovery.core.PredicateDefinition;
 import log.Log;
+import logic.expression.visitor.ExpressionLogicPrinter;
 import util.Numbers;
 import util.Pair;
 import vector.Vector;
