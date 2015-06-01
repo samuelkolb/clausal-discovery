@@ -39,7 +39,7 @@ public class HousingOptimizationClient {
 			ClauseFunction function = clausalOptimization.getClauseFunction(preferences, C_FACTOR);
 			for(int i = 0; i < function.getWeights().length; i++) {
 				String printedWeight = frontPadCut(String.format("%f", function.getWeights().get(i)), ' ', 10, true);
-				Log.LOG.printLine(i + ": " + printedWeight +" : " + clausalOptimization.getSoftConstraints().get(i));
+				Log.LOG.printLine((i+1) + ": " + printedWeight +" : " + clausalOptimization.getSoftConstraints().get(i));
 			}
 
 		} catch(ParseException e) {

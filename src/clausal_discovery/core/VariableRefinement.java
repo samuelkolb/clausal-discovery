@@ -150,7 +150,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public boolean nodeSelected(Node<ValidatedClause> node) {
-		return !subsetOccurs(node.getValue(), true);
+		return /**true/*/!subsetOccurs(node.getValue(), true)/**/;
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	@Override
 	public boolean processSolution(Result<ValidatedClause> result, Node<ValidatedClause> node) {
-		if(subsetOccurs(node.getValue(), false) || !this.validityAcceptance.test(node.getValue()))
+		if(/**/subsetOccurs(node.getValue(), false) || /**/!this.validityAcceptance.test(node.getValue()))
 			return true;
 		new EntailmentTestRunnable(result, node).run();
 		resultSet.add(node.getValue());

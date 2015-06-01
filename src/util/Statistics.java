@@ -16,6 +16,10 @@ public class Statistics {
 		return array;
 	}
 
+	public int getSize() {
+		return data.length;
+	}
+
 	private Double mean = null;
 
 	public double getMean() {
