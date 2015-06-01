@@ -20,7 +20,18 @@ public class SudokuClient {
 	 * @param args	Ignored command line arguments
 	 */
 	public static void main(String[] args) {
-		List<ValidatedClause> clauses = new RunClient().run(Configuration.fromLocalFile("sudoku_light", 4, 4));
+
+		int variableCount = 4;
+		int clauseLength = 4;
+
+		if(args.length > 0)
+			variableCount = Integer.parseInt(args[0]);
+
+		if(args.length > 1)
+			clauseLength = Integer.parseInt(args[1]);
+
+		List<ValidatedClause> clauses = new RunClient().run(Configuration.fromLocalFile("sudoku_light",
+				variableCount, clauseLength));
 		Log.LOG.newLine().newLine();
 		for(ValidatedClause clause : clauses)
 			Log.LOG.printLine(IdpExpressionPrinter.print(clause.getClause().getFormula()) + ".");

@@ -49,13 +49,22 @@ public class SpeedTester {
 		/*
 		print(test(Arrays.asList(
 				() -> ColoringMinimalClient.main(args),
+				() -> ColoringMinimalClient.main(args),
+				() -> SudokuClient.main(args),
 				() -> SudokuClient.main(args),
 				() -> ElevatorClient.main(args),
+				() -> ElevatorClient.main(args),
+				() -> CoHousingClient.main(args),
 				() -> CoHousingClient.main(args)
 		), 8));
+		/*
+		print(test(() -> ColoringMinimalClient.main(args), 1));
 		/*/
-		print(test(() -> SudokuClient.main(args), 1));
-		/**/
+		print(test(Arrays.asList(
+				//() -> SudokuClient.main(new String[]{}),
+				() -> SudokuClient.main(new String[]{"6", "4"})
+		), 1));/**/
+
 	}
 
 	protected static void print(Statistics statistics) {
