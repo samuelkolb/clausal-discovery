@@ -21,12 +21,12 @@ public class HousingOptimisationTester {
 	 */
 	public static void main(String[] args) {
 		String name = "housing_opt_small";
-		OptimizationTestClient client = new OptimizationTestClient(name, name + "_2", 4, 3);
+		OptimizationTestClient client = new OptimizationTestClient(name, name + "_1", 4, 3);
 		OptimizationBatchTester batchTestClient = new OptimizationBatchTester(client);
-		batchTestClient.fixSplit(4).fixFraction(4);
+		batchTestClient.fixNoise(0).fixFraction(4);
 		for(int i = 0; i < 8; i++) {
 			Log.LOG.newLine();
-			batchTestClient.splitTest();
+			batchTestClient.selfTest();
 		}
 	}
 

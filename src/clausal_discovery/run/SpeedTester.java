@@ -61,8 +61,7 @@ public class SpeedTester {
 		print(test(() -> ColoringMinimalClient.main(args), 1));
 		/*/
 		print(test(Arrays.asList(
-				//() -> SudokuClient.main(new String[]{}),
-				() -> SudokuClient.main(new String[]{"6", "4"})
+				() -> ColoringMinimalClient.main(new String[]{})
 		), 1));/**/
 
 	}

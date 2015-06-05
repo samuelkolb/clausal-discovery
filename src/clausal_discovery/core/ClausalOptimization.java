@@ -9,6 +9,7 @@ import clausal_discovery.test.ScoreComparator;
 import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityTable;
 import idp.FileManager;
+import idp.IdpExpressionPrinter;
 import log.Log;
 import runtime.Terminal;
 import time.Stopwatch;
@@ -185,8 +186,10 @@ public class ClausalOptimization {
 		TemporaryFile temporaryFile = new TemporaryFile(inputFile, preferences.printOrderings(validity));
 		File outputFile = FILE_MANAGER.createRandomFile("txt");
 		String relativePath = "/executable/mac/svm_rank/svm_rank_learn";
+		//String relativePath = "/executable/java/rank/RankLib.jar";
 		String path = FileUtil.getLocalFile(getClass().getResource(relativePath)).getAbsolutePath();
 		String command = String.format("%s -c %.8f -w 3 %s %s",
+		//String command = String.format("java -jar %s -reg %s -train %s -ranker 4 -save %s",
 				path, preferences.getCValue(cFactor), inputFile.getAbsolutePath(), outputFile.getAbsolutePath());
 		String debugOutput = Terminal.get().runCommand(command);
 		temporaryFile.delete();
