@@ -4,13 +4,40 @@ import clausal_discovery.core.PredicateDefinition;
 import logic.bias.Type;
 import logic.expression.formula.Formula;
 import logic.theory.*;
+import map.DefaultMap;
+
+import java.util.Map;
 
 /**
  * The idp program printer prints a logic program (vocabulary, theory, structure) for idp
  *
  * @author Samuel Kolb
  */
-public class IdpProgramPrinter extends ProgramPrinter {
+public class IdpProgramPrinter {
+
+	public static class Cached extends IdpProgramPrinter {
+
+		private Map<Structure, String> structures = new DefaultMap<Structure, String>(this::printStructure, Structure.class,
+				new DefaultMap.GenerationPolicy.Save());
+
+		private String printStructure(Structure structure) {
+			StringBuilder builder = new StringBuilder("{\n");
+			for(Structure.TypeElement typeElement : structure.getTypeElements()) {
+				if(typeElement.getType().getName().equals("int"))
+					continue;
+				builder.append("\t").append(typeElement.print()).append("\n");
+			}
+			for(Structure.PredicateElement predicateElement : structure.getPredicateElements())
+				builder.append("\t").append(predicateElement.print()).append("\n");
+			builder.append("}\n\n");
+			return builder.toString();
+		}
+
+		@Override
+		public String printStructure(Structure structure, String name, String vocabularyName) {
+			return "structure " + name + ":" + vocabularyName + structures.get(structure);
+		}
+	}
 
 	private class TheoryVisitor implements Theory.Visitor<String> {
 
@@ -47,19 +74,16 @@ public class IdpProgramPrinter extends ProgramPrinter {
 	public static final String BACKGROUND_PREFIX = "B";
 	public static final String STRUCTURE_PREFIX = "S";
 
-	@Override
 	public String print(KnowledgeBase program) {
 		return printVocabulary(program.getVocabulary(), VOCABULARY_NAME)
 				+ printTheories(program, THEORY_PREFIX, BACKGROUND_PREFIX, VOCABULARY_NAME)
 				+ printStructures(program, STRUCTURE_PREFIX, VOCABULARY_NAME);
 	}
 
-	@Override
 	public String printTheory(Theory theory, String name, String vocabularyName) {
 		return theory.accept(new TheoryVisitor(name, vocabularyName));
 	}
 
-	@Override
 	public String printVocabulary(Vocabulary vocabulary, String name) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("vocabulary ").append(name).append(" {\n");
@@ -77,7 +101,6 @@ public class IdpProgramPrinter extends ProgramPrinter {
 		return builder.toString();
 	}
 
-	@Override
 	public String printStructure(Structure structure, String name, String vocabularyName) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("structure ").append(name).append(":").append(vocabularyName).append(" {\n");
@@ -89,6 +112,26 @@ public class IdpProgramPrinter extends ProgramPrinter {
 		for(Structure.PredicateElement predicateElement : structure.getPredicateElements())
 			builder.append("\t").append(predicateElement.print()).append("\n");
 		builder.append("}\n\n");
+		return builder.toString();
+	}
+
+	public String printTheories(KnowledgeBase program, String prefix, String backgroundPrefix,  String vocabularyName) {
+		if(program.getTheories().isEmpty())
+			return "";
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < program.getBackgroundTheories().size(); i++)
+			builder.append(printTheory(program.getBackgroundTheories().get(i), backgroundPrefix + i, vocabularyName));
+		for(int i = 0; i < program.getTheories().size(); i++)
+			builder.append(printTheory(program.getTheories().get(i), prefix + i, vocabularyName));
+		return builder.toString();
+	}
+
+	public String printStructures(KnowledgeBase program, String prefix, String vocabularyName) {
+		if(program.getStructures().isEmpty())
+			return "";
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < program.getStructures().size(); i++)
+			builder.append(printStructure(program.getStructures().get(i), prefix + i, vocabularyName));
 		return builder.toString();
 	}
 }

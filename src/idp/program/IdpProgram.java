@@ -17,6 +17,16 @@ public abstract class IdpProgram {
 		return knowledgeBase;
 	}
 
+	private IdpProgramPrinter printer = new IdpProgramPrinter();
+
+	public IdpProgramPrinter getPrinter() {
+		return printer;
+	}
+
+	public void setPrinter(IdpProgramPrinter printer) {
+		this.printer = printer;
+	}
+
 	//endregion
 
 	//region Construction

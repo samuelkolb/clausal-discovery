@@ -57,6 +57,8 @@ public class IdpExecutor implements LogicExecutor {
 		return fileManager;
 	}
 
+	private IdpProgramPrinter printer = new IdpProgramPrinter.Cached();
+
 	//endregion
 
 	//region Construction
@@ -152,6 +154,7 @@ public class IdpExecutor implements LogicExecutor {
 	 * @return	The output of idp
 	 */
 	public String execute(IdpProgram program) {
+		program.setPrinter(printer);
 		return execute(program.print());
 	}
 
