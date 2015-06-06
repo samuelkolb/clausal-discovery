@@ -124,14 +124,6 @@ public class StatusClause {
 			if(equalsSymmetric(clause))
 				return true;
 		return false;
-		/*for(int i = 0; i <= statusClause.getLength() - getLength(); i++) {
-			Optional<StatusClause> optionalClause = statusClause.getSubsetClause(i, getLength());
-			if((""+this).equals("row(0, 1) & row(0, 2) => false") && (""+statusClause).equals("row(0, 1) & value(0, 1) & row(0, 2) => false"))
-				Log.LOG.printLine(i+" "+optionalClause.get());
-			if(optionalClause.isPresent() && equalsSymmetric(optionalClause.get()))
-				return true;
-		}
-		return false;*/
 	}
 
 	private List<StatusClause> getSubsets(int size) {
@@ -246,8 +238,8 @@ public class StatusClause {
 
 	private boolean isConnected(Vector<Integer> indices) {
 		int max = getRank() - 1;
-		for(int i = 0; i < indices.size(); i++)
-			if(indices.get(i) <= max)
+		for(Integer index : indices)
+			if(index <= max)
 				return true;
 		return false;
 	}
@@ -255,10 +247,10 @@ public class StatusClause {
 	private boolean introducesVariablesInOrder(PositionedInstance instance) {
 		int max = getRank() - 1;
 		Vector<Integer> indices = instance.getInstance().getVariableIndices();
-		for(int i = 0; i < indices.size(); i++)
-			if((instance.isInBody()/*/ || (getLength() == 0)/**/) && indices.get(i) == max + 1)
-				max = indices.get(i);
-			else if(indices.get(i) > max)
+		for(Integer index : indices)
+			if((instance.isInBody()) && index == max + 1)
+				max = index;
+			else if(index > max)
 				return false;
 		return true;
 	}
@@ -276,13 +268,6 @@ public class StatusClause {
 	private boolean smallerThanOrEqual(List<PositionedInstance> instances) {
 		Optional<StatusClause> builtClause = getClause(instances);
 		return !builtClause.isPresent() || smallerThanOrEqual(builtClause.get());
-	}
-
-	private Optional<StatusClause> getSubsetClause(int start, int length) {
-		List<PositionedInstance> instances = new ArrayList<>(length);
-		for(int i = start; i < start + length; i++)
-			instances.add(getInstances().get(i));
-		return getClause(instances);
 	}
 
 	private Optional<StatusClause> getSubsetClause(Numbers.Permutation permutation) {
