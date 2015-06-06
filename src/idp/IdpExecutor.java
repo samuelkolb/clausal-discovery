@@ -13,7 +13,6 @@ import runtime.Terminal;
 import time.Stopwatch;
 import vector.Vector;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,18 +90,7 @@ public class IdpExecutor implements LogicExecutor {
 		return test;
 	}
 
-	private boolean[] executeTests(IdpProgram idpProgram) throws IllegalStateException {
-		String[] lines = executeSafe(idpProgram).trim().split("\n");
-		boolean[] result = new boolean[lines.length];
-		for(int i = 0; i < result.length; i++)
-			result[i] = getBoolean(lines[i]);
-		return result;
-	}
-
 	private boolean executeTest(IdpProgram idpProgram) throws IllegalStateException {
-		//Log.LOG.printLine(getDebugString(idpProgram));
-		//Log.LOG.printTitle("Program");
-		//Log.LOG.printLine(idpProgram.print()).newLine().newLine();
 		String string = executeSafe(idpProgram).trim();
 		try {
 			return getBoolean(string);
@@ -155,49 +143,9 @@ public class IdpExecutor implements LogicExecutor {
 	 */
 	public String execute(IdpProgram program) {
 		program.setPrinter(printer);
-		return execute(program.print());
-	}
-
-	/**
-	 * Executes an idp program and returns the result
-	 * @param idpProgram	The name of the idp program file
-	 * @return	The output of idp
-	 */
-	public String execute(String idpProgram) {
-		File idpFile = createFile(idpProgram);
-		return execute(idpFile);
-	}
-
-	/**
-	 * Executes an idp program and returns the result
-	 * @param file	The file containing an idp program
-	 * @return	The output of idp
-	 */
-	public String execute(File file) {
 		String idpPath = FileUtil.getLocalFile(getClass().getResource("/executable/mac/idp/bin/idp")).getAbsolutePath();
-		String filePath = file.getAbsolutePath();
-		String command = idpPath + " " + filePath;
-		String result = getTerminal().runCommand(command);
-		getTerminal().execute("unlink " + file.getAbsolutePath(), true);
-		return result;
+		return getTerminal().runCommand(idpPath, program.print());/**/
 	}
 
-	private File createFile(final String string) {
-		final File file = getFileManager().createRandomFile("idp");
-		getTerminal().execute("mkfifo " + file.getAbsolutePath(), true);
-		new Thread(() -> {
-			PrintWriter writer = null;
-			try {
-				writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-				writer.write(string);
-			} catch(IOException e) {
-				throw new IllegalStateException("Unexpected error.", e);
-			} finally {
-				if(writer != null)
-					writer.close();
-			}
-		}).start();
-		return file;
-	}
 	//endregion
 }
