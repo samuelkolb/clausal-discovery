@@ -5,11 +5,9 @@ import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
-import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.Vector;
-import vector.WriteOnceVector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,7 +96,7 @@ public class StatusClause {
 	 */
 	public Optional<StatusClause> processIfRepresentative(PositionedInstance instance) {
 		Optional<StatusClause> clause = addIfValid(instance);
-		if(clause.isPresent() && isRepresentativeWith(clause.get()))
+		if(clause.isPresent() && clause.get().isRepresentative())
 			return clause;
 		return Optional.empty();
 	}
@@ -265,56 +263,19 @@ public class StatusClause {
 		return true;
 	}
 
-	protected boolean isRepresentativeWith(StatusClause clause) {
-		// TODO make method of status clause
-		List<Numbers.Permutation> permutations = Numbers.getPermutations(clause.getLength());
+	protected boolean isRepresentative() {
+		List<Numbers.Permutation> permutations = Numbers.getPermutations(getLength());
 		for(Numbers.Permutation permutation : permutations) {
-			List<PositionedInstance> instances = new ArrayList<>();
-			for(int i : permutation.getArray())
-				instances.add(clause.getInstances().get(i));
-			if(!isRepresentativeWith(clause, instances)) {
-				//Log.LOG.printLine(clause + " " + instances);
+			List<PositionedInstance> instances = permutation.applyList(getInstances());
+			if(!smallerThanOrEqual(instances))
 				return false;
-			}
 		}
-
-		/*if(clause.getLength() > 1) {
-			List<PositionedInstance> copy = new ArrayList<>(clause.getInstances());
-			copy.remove(copy.size() - 1);
-			Optional<StatusClause> c2 = buildClause(copy);
-			if(!isRepresentativeWith(c2.get()))
-				Log.LOG.printLine("!!!!!     NOT SUBSET REPRESENTATIVE");
-		}*/
-
-
 		return true;
-		/*/
-		for(int i = 0; i < getInstances().size(); i++)
-			if(!isRepresentativeWith(clause, i, instance))
-				return false;
-		return true;*/
 	}
 
-	private boolean isRepresentativeWith(StatusClause clause, int index, PositionedInstance instance) {
-		List<PositionedInstance> instances = new ArrayList<>();
-		for(int i = 0; i < getInstances().size() + 1; i++)
-			if(i < index)
-				instances.add(getInstances().get(i));
-			else if(i == index)
-				instances.add(instance);
-			else
-				instances.add(getInstances().get(i - 1));
-
-		return isRepresentativeWith(clause, instances);
-	}
-
-	private boolean isRepresentativeWith(StatusClause clause, List<PositionedInstance> instances) {
+	private boolean smallerThanOrEqual(List<PositionedInstance> instances) {
 		Optional<StatusClause> builtClause = getClause(instances);
-		boolean representative = !builtClause.isPresent() || isRepresentative(clause, builtClause.get());
-		//Log.LOG.printLine((representative ? "Yes" : "No ") + " " + clause + " compared to " + builtClause + "? ");
-		// TODO
-
-		return representative;
+		return !builtClause.isPresent() || smallerThanOrEqual(builtClause.get());
 	}
 
 	private Optional<StatusClause> getSubsetClause(int start, int length) {
@@ -335,15 +296,14 @@ public class StatusClause {
 		return buildClause(instances);
 	}
 
-	private boolean isRepresentative(StatusClause clause, StatusClause newClause) {
+	private boolean smallerThanOrEqual(StatusClause newClause) {
 		InstanceComparator comparator = new InstanceComparator();
-		for(int i = 0; i < clause.getInstances().length; i++) {
-			int compare = comparator.compare(newClause.getInstances().get(i), clause.getInstances().get(i));
+		for(int i = 0; i < getInstances().length; i++) {
+			int compare = comparator.compare(newClause.getInstances().get(i), getInstances().get(i));
 			if(compare < 0)
 				return false;
-			//*
 			else if(compare > 0)
-				return true;//*/
+				return true;
 		}
 		return true;
 	}
