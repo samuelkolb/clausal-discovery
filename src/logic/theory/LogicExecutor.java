@@ -1,5 +1,6 @@
 package logic.theory;
 
+import cern.colt.bitvector.BitMatrix;
 import vector.Vector;
 
 import java.util.List;
@@ -20,15 +21,15 @@ public interface LogicExecutor {
 	default boolean testValidityTheory(KnowledgeBase knowledgeBase) {
 		if(knowledgeBase.getTheories().size() != 1)
 			throw new IllegalArgumentException("Requires exactly one theory");
-		return testValidityTheories(knowledgeBase).get(0).get(0);
+		return testValidityTheories(knowledgeBase).get(0, 0);
 	}
 
 	/**
 	 * Returns whether the theories in the given program are valid, a.k.a. have a model
 	 * @param knowledgeBase    The knowledge base to test
-	 * @return	An array containing the truth value of the validity test per theory
+	 * @return	A bit-matrix with a row for every theory and a column for every example
 	 */
-	List<Vector<Boolean>> testValidityTheories(KnowledgeBase knowledgeBase);
+	BitMatrix testValidityTheories(KnowledgeBase knowledgeBase);
 
 	/**
 	 * Returns whether the given program entails the given clause

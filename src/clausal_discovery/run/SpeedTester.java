@@ -46,23 +46,17 @@ public class SpeedTester {
 	}
 
 	public static void main(String[] args) {
-		/*
+		//*
 		print(test(Arrays.asList(
 				() -> ColoringMinimalClient.main(args),
-				() -> ColoringMinimalClient.main(args),
-				() -> SudokuClient.main(args),
-				() -> SudokuClient.main(args),
-				() -> ElevatorClient.main(args),
-				() -> ElevatorClient.main(args),
-				() -> CoHousingClient.main(args),
-				() -> CoHousingClient.main(args)
+				() -> SudokuClient.main(args)
 		), 8));
 		/*
 		print(test(() -> ColoringMinimalClient.main(args), 1));
 		/*/
-		print(test(Arrays.asList(
-				() -> ColoringMinimalClient.main(new String[]{})
-		), 1));/**/
+		/*print(test(Arrays.asList(
+				() -> HousingOptimizationClient.main(new String[]{})
+		), 8));/**/
 
 	}
 

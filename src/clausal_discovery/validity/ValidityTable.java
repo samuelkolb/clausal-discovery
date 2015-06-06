@@ -1,5 +1,7 @@
 package clausal_discovery.validity;
 
+import cern.colt.bitvector.BitMatrix;
+import cern.colt.bitvector.BitVector;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
@@ -11,10 +13,8 @@ import logic.theory.KnowledgeBase;
 import logic.theory.Structure;
 import logic.theory.Theory;
 import vector.Vector;
-import vector.WriteOnceVector;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,33 +27,26 @@ public class ValidityTable {
 
 	//region Variables
 
-	private final int clauseCount;
+	public Map<Example, Integer> examples = new HashMap<>();
 
 	public int getClauseCount() {
-		return clauseCount;
+		return validity.rows();
 	}
 
-	private final Map<Example, Vector<Boolean>> validity;
+	/**
+	 * One row per clause
+	 * One column per example
+	 */
+	private final BitMatrix validity;
 
 	//endregion
 
 	//region Construction
 
-	private ValidityTable(int clauseCount, Map<Example, Vector<Boolean>> validity) {
-		this.clauseCount = clauseCount;
+	private ValidityTable(BitMatrix validity, List<Example> examples) {
 		this.validity = validity;
-	}
-
-	/**
-	 * Returns a new validity table without the specified clause
-	 * @param index	The index of the clause to remove
-	 * @return	The new validity table
-	 */
-	public ValidityTable removeClause(int index) {
-		Map<Example, Vector<Boolean>> map = new HashMap<>();
-		for(Example example : validity.keySet())
-			map.put(example, validity.get(example).leaveOut(index));
-		return new ValidityTable(getClauseCount() - 1, map);
+		for(int i = 0; i < examples.size(); i++)
+			this.examples.put(examples.get(i), i);
 	}
 
 	/**
@@ -62,20 +55,19 @@ public class ValidityTable {
 	 * @return	A new validity table
 	 */
 	public static ValidityTable create(Vector<ValidatedClause> clauses) {
-		return new ValidityTable(clauses.size(), createValidityMap(clauses));
+		Vector<Example> examples = clauses.isEmpty() ? clauses.getFirst().getLogicBase().getExamples() : new Vector<>();
+		return new ValidityTable(createValidityMap(clauses), examples);
 	}
 
-	private static Map<Example, Vector<Boolean>> createValidityMap(Vector<ValidatedClause> clauses) {
-		Map<Example, Vector<Boolean>> validity = new LinkedHashMap<>();
+	private static BitMatrix createValidityMap(Vector<ValidatedClause> clauses) {
 		if(clauses.isEmpty())
-			return validity;
-		for(int i = 0; i < clauses.get(0).getLogicBase().getExamples().size(); i++) {
-			Vector<Boolean> vector = new WriteOnceVector<>(new Boolean[clauses.length]);
-			for(ValidatedClause clause : clauses)
-				vector.add(clause.getValidity().get(i));
-			validity.put(clauses.get(0).getLogicBase().getExamples().get(i), vector);
-		}
-		return validity;
+			return new BitMatrix(0, 0);
+		int numberExamples = clauses.get(0).getLogicBase().getExamples().size();
+		BitMatrix bitMatrix = new BitMatrix(numberExamples, clauses.size());
+		for(int clause = 0; clause < clauses.size(); clause++)
+			for(int i = 0; i < numberExamples; i++)
+				bitMatrix.put(clause, i, clauses.get(clause).getValidity().get(i));
+		return bitMatrix;
 	}
 
 	/**
@@ -113,15 +105,8 @@ public class ValidityTable {
 		Vector<Theory> theories = new Vector<>(Formula.class, clauses).map(Theory.class, InlineTheory::new);
 		Vector<Structure> structures = logicBase.getExamples().map(Structure.class, Example::getStructure);
 		KnowledgeBase base = new KnowledgeBase(logicBase.getVocabulary(), theories, structures);
-		List<Vector<Boolean>> validity = IdpExecutor.get().testValidityTheories(base);
-		Map<Example, Vector<Boolean>> map = new HashMap<>();
-		for(int i = 0; i < logicBase.getExamples().size(); i++) {
-			boolean[] array = new boolean[validity.size()];
-			for(int j = 0; j < array.length; j++)
-				array[j] = validity.get(j).get(i);
-			map.put(logicBase.getExamples().get(i), Vector.create(array));
-		}
-		return new ValidityTable(clauses.size(), map);
+		BitMatrix bitMatrix = IdpExecutor.get().testValidityTheories(base);
+		return new ValidityTable(bitMatrix, logicBase.getExamples());
 	}
 
 	/*private static Map<Example, Vector<Boolean>> createValidityMap(LogicBase logicBase, Vector<Theory> background,
@@ -150,19 +135,15 @@ public class ValidityTable {
 
 	//region Public methods
 
-	public Vector<Example> getExamples() {
-		return new Vector<>(Example.class, this.validity.keySet());
-	}
-
 	/**
 	 * Returns the validity vector for the given example
 	 * @param example	The example to return the values for
 	 * @return	A vector of booleans, where return.get(i) == true indicates that the example is valid for the ith clause
 	 */
-	public Vector<Boolean> getValidity(Example example) {
-		if(!this.validity.containsKey(example))
+	public BitVector getValidity(Example example) {
+		if(!this.examples.containsKey(example))
 			throw new IllegalArgumentException("Example not in validity table: " + example);
-		return this.validity.get(example);
+		return this.validity.part(this.examples.get(example), 0, 1, this.validity.columns()).toBitVector();
 	}
 
 	//endregion

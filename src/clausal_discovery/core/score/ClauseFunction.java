@@ -1,5 +1,6 @@
 package clausal_discovery.core.score;
 
+import cern.colt.bitvector.BitVector;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import clausal_discovery.validity.ValidityTable;
@@ -42,7 +43,7 @@ public class ClauseFunction implements ScoringFunction {
 
 	@Override
 	public double score(Example example) {
-		Vector<Boolean> validity = this.validityTable.getValidity(example);
+		BitVector validity = this.validityTable.getValidity(example);
 		double result = 0;
 		for(int i = 0; i < validity.size(); i++)
 			result += validity.get(i) ? weights.get(i) : 0;

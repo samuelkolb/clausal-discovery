@@ -47,7 +47,7 @@ public class StatusClauseFunction extends ClauseFunction {
 		return new StatusClauseFunction(getClauses(), getWeights(), validityTable);
 	}
 
-	public StatusClauseFunction leaveOut(int index) {
+	/*public StatusClauseFunction leaveOut(int index) {
 		return new StatusClauseFunction(getClauses().leaveOut(index), getWeights().leaveOut(index), getValidity().removeClause(index));
-	}
+	}*/
 }

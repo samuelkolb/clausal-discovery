@@ -1,6 +1,7 @@
 package clausal_discovery.validity;
 
 import basic.ArrayUtil;
+import cern.colt.bitvector.BitVector;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import vector.Vector;
@@ -32,11 +33,11 @@ public class ValidatedClause {
 		return clause;
 	}
 
-	private final Future<Vector<Boolean>> validity;
+	private final Future<BitVector> validity;
 
-	public Vector<Boolean> getValidity() {
+	public BitVector getValidity() {
 		try {
-			Vector<Boolean> vector = this.validity.get();
+			BitVector vector = this.validity.get();
 			if(vector.size() != getLogicBase().getExamples().size())
 				throw new IllegalArgumentException(String.format("Expected %d values, got %d", getLogicBase().getExamples().size(), vector.size()));
 			return vector;
@@ -49,7 +50,7 @@ public class ValidatedClause {
 
 	public int getValidCount() {
 		if(!validCount.isPresent())
-			validCount = Optional.of(count(getValidity()));
+			validCount = Optional.of(getValidity().cardinality());
 		return validCount.get();
 	}
 
@@ -62,7 +63,7 @@ public class ValidatedClause {
 	 * @param logicBase	The logic base
 	 */
 	public ValidatedClause(LogicBase logicBase) {
-		this(logicBase, new StatusClause(), Vector.create(ArrayUtil.fill(logicBase.getExamples().size(), false)));
+		this(logicBase, new StatusClause(), new BitVector(logicBase.getExamples().size()));
 	}
 
 	/**
@@ -71,11 +72,11 @@ public class ValidatedClause {
 	 * @param clause	The status clause
 	 * @param validity	The validity values
 	 */
-	public ValidatedClause(LogicBase logicBase, StatusClause clause, Vector<Boolean> validity) {
+	public ValidatedClause(LogicBase logicBase, StatusClause clause, BitVector validity) {
 		this(logicBase, clause, CompletableFuture.completedFuture(validity));
 	}
 
-	ValidatedClause(LogicBase logicBase, StatusClause clause, Future<Vector<Boolean>> validity) {
+	ValidatedClause(LogicBase logicBase, StatusClause clause, Future<BitVector> validity) {
 		this.logicBase = logicBase;
 		this.clause = clause;
 		this.validity = validity;
@@ -100,11 +101,4 @@ public class ValidatedClause {
 
 	//endregion
 
-	private int count(Vector<Boolean> validity) {
-		int count = 0;
-		for(Boolean bool : validity)
-			if(bool)
-				count++;
-		return count;
-	}
 }

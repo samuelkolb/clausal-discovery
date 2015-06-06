@@ -157,7 +157,7 @@ public class ClausalOptimization {
 		/*/return function;/**/
 	}
 
-	private StatusClauseFunction improve(StatusClauseFunction function, double score, Preferences preferences,
+	/*private StatusClauseFunction improve(StatusClauseFunction function, double score, Preferences preferences,
 										 double cFactor, ValidityTable validity, Vector<ValidatedClause> softClauses,
 										 Function<ClauseFunction, Double> ratingFunction) {
 		if(softClauses.isEmpty())
@@ -170,7 +170,7 @@ public class ClausalOptimization {
 		if(newScore < score)
 			return function;
 		return improve(newFunction, newScore, preferences, cFactor, newValidity, newSoftClauses, ratingFunction);
-	}
+	}*/
 
 	private int findMinimalWeight(StatusClauseFunction function) {
 		int min = 0;

@@ -2,6 +2,7 @@ package idp;
 
 import basic.FileUtil;
 import basic.StringUtil;
+import cern.colt.bitvector.BitMatrix;
 import idp.program.EntailsProgram;
 import idp.program.IdpProgram;
 import idp.program.ValidityProgram;
@@ -36,12 +37,6 @@ public class IdpExecutor implements LogicExecutor {
 		return executor;
 	}
 
-	private final Terminal terminal = Terminal.get();
-
-	public Terminal getTerminal() {
-		return terminal;
-	}
-
 	public final Stopwatch entailmentStopwatch = new Stopwatch();
 
 	public int entailmentCount = 0;
@@ -70,13 +65,17 @@ public class IdpExecutor implements LogicExecutor {
 	//region Public methods
 
 	@Override
-	public List<Vector<Boolean>> testValidityTheories(KnowledgeBase knowledgeBase) {
+	public BitMatrix testValidityTheories(KnowledgeBase knowledgeBase) {
 		String result = executeSafe(new ValidityProgram(knowledgeBase));
 		List<Vector<Boolean>> list = new ArrayList<>();
 		for(String line : result.trim().split("\n"))
 			if(line.trim().length() > 0)
 				list.add(new Vector<>(line.trim().split(" ")).map(Boolean.class, this::getBoolean));
-		return list;
+		BitMatrix bitMatrix = new BitMatrix(knowledgeBase.getStructures().size(), knowledgeBase.getTheories().size());
+		for(int row = 0; row < list.size(); row++)
+			for(int col = 0; col < list.get(row).size(); col++)
+				bitMatrix.put(col, row, list.get(row).get(col));
+		return bitMatrix;
 	}
 
 	@Override

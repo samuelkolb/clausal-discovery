@@ -1,5 +1,7 @@
 package clausal_discovery.validity;
 
+import cern.colt.bitvector.BitMatrix;
+import cern.colt.bitvector.BitVector;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import logic.expression.formula.Formula;
@@ -19,7 +21,7 @@ import java.util.concurrent.Executors;
  */
 public class ParallelValidityCalculator extends ValidityCalculator {
 
-	private class CheckValidityCallable implements Callable<Vector<Boolean>> {
+	private class CheckValidityCallable implements Callable<BitVector> {
 
 		private final Formula formula;
 
@@ -28,9 +30,10 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 		}
 
 		@Override
-		public Vector<Boolean> call() throws Exception {
+		public BitVector call() throws Exception {
 			Vector<Theory> theories = new Vector<>(getTheory(formula));
-			return getExecutor().testValidityTheories(getKnowledgeBase(theories)).get(0);
+			BitMatrix matrix = getExecutor().testValidityTheories(getKnowledgeBase(theories));
+			return matrix.part(0, 0, matrix.columns(), 1).toBitVector();
 		}
 	}
 

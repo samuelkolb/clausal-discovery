@@ -77,7 +77,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 	}
 
 	void extendValidityTable() {
-		Log.LOG.printLine("Calculating...");
+		/*Log.LOG.printLine("Calculating...");
 		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
 			theories.add(getTheory(formula));
@@ -85,7 +85,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 		for(int i = 0; i < formulas.size(); i++)
 			validityTable.put(formulas.get(i), validity.get(i));
 		formulas.clear();
-		Log.LOG.printLine("...Done");
+		Log.LOG.printLine("...Done");*/
 	}
 
 	//endregion

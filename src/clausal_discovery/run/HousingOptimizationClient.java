@@ -32,9 +32,9 @@ public class HousingOptimizationClient {
 	 */
 	public static void main(String[] args) {
 		try {
-			Configuration configuration = Configuration.fromLocalFile("housing_opt", 4, 3);
+			Configuration configuration = Configuration.fromLocalFile("housing_opt_small", 4, 3);
 			PreferenceParser preferenceParser = new PreferenceParser(configuration.getLogicBase().getExamples());
-			Preferences preferences = preferenceParser.parseLocalFile("housing_opt.logic");
+			Preferences preferences = preferenceParser.parseLocalFile("housing_opt_small.logic");
 			ClausalOptimization clausalOptimization = new ClausalOptimization(configuration);
 			ClauseFunction function = clausalOptimization.getClauseFunction(preferences, C_FACTOR);
 			for(int i = 0; i < function.getWeights().length; i++) {
