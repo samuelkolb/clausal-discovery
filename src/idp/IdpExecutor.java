@@ -143,8 +143,7 @@ public class IdpExecutor implements LogicExecutor {
 	 */
 	public String execute(IdpProgram program) {
 		program.setPrinter(printer);
-		String idpPath = FileUtil.getLocalFile(getClass().getResource("/executable/mac/idp/bin/idp")).getAbsolutePath();
-		return getTerminal().runCommand(idpPath, program.print());/**/
+		return IDP.execute(program.print());
 	}
 
 	//endregion

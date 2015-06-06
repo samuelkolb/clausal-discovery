@@ -85,5 +85,25 @@ public class TemporaryFile {
 		Terminal.get().execute("unlink " + getFile().getAbsolutePath(), true);
 	}
 
+	/*
+	 * 	private File createFile(final String string) {
+		final File file = getFileManager().createRandomFile("idp");
+		getTerminal().execute("mkfifo " + file.getAbsolutePath(), true);
+		new Thread(() -> {
+			PrintWriter writer = null;
+			try {
+				writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+				writer.write(string);
+			} catch(IOException e) {
+				throw new IllegalStateException("Unexpected error.", e);
+			} finally {
+				if(writer != null)
+					writer.close();
+			}
+		}).start();
+		return file;
+	}
+
+	 */
 	//endregion
 }

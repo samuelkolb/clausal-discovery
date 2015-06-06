@@ -2,6 +2,7 @@ package idp.client;
 
 import basic.FileUtil;
 import basic.StringUtil;
+import idp.IDP;
 import log.Log;
 import idp.IdpExecutor;
 
@@ -37,7 +38,7 @@ public class RunClient {
 		File clientFile = FileUtil.getLocalFile(RunClient.class.getResource("/idp_programs/" + filename));
 		String output;
 		try {
-			output = IdpExecutor.get().execute(clientFile);
+			output = IDP.execute(clientFile);
 			Log.LOG.printTitle("Client output");
 		} catch(IllegalArgumentException e) {
 			Log.LOG.printTitle("An error occurred");
