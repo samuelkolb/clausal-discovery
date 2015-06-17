@@ -1,6 +1,7 @@
 package clausal_discovery.core;
 
 import basic.StringUtil;
+import cern.colt.bitvector.BitVector;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
@@ -19,6 +20,58 @@ import java.util.stream.Collectors;
  * @author Samuel Kolb
  */
 public class StatusClause {
+
+	private class Index {
+
+		private InstanceList instanceList;
+
+		private BitVector body;
+
+		private BitVector head;
+
+		private final int size;
+
+		public Index(InstanceList list) {
+			this.body = new BitVector(list.size());
+			this.head = new BitVector(list.size());
+			this.size = 0;
+		}
+
+		private Index(InstanceList list, BitVector body, BitVector head, int size) {
+			this.instanceList = list;
+			this.body = body;
+			this.head = head;
+			this.size = size;
+		}
+
+		public Index add(int index, boolean body) {
+			BitVector newBody = body ? this.body.copy() : this.body;
+			BitVector newHead = body ? this.head : this.head.copy();
+			(body ? newBody : newHead).set(index);
+			return new Index(instanceList, newBody, newHead, size() + 1);
+		}
+
+		public int size() {
+			return size;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if(this == o) return true;
+			if(o == null || getClass() != o.getClass()) return false;
+
+			Index index = (Index) o;
+			return body.equals(index.body) && head.equals(index.head);
+
+		}
+
+		@Override
+		public int hashCode() {
+			int result = body.hashCode();
+			result = 31 * result + head.hashCode();
+			return result;
+		}
+	}
 
 	// region Variables
 
@@ -39,7 +92,7 @@ public class StatusClause {
 	}
 
 	public int getLength() {
-		return getInstances().size();
+		return instances.size();
 	}
 
 	// IVAR environment - The typing environment
@@ -59,7 +112,7 @@ public class StatusClause {
 	 */
 	public StatusClause() {
 		this.rank = 0;
-		this.instances = new Vector<>();
+		this.instances = new Index();
 		this.environment = new Environment();
 	}
 
@@ -231,9 +284,7 @@ public class StatusClause {
 		Instance containedInstance = positionedInstance.getInstance();
 		if(!containedInstance.getPredicate().equals(instance.getPredicate()))
 			return false;
-		if(!instance.getDefinition().isSymmetric())
-			return containedInstance.getVariableIndices().equals(instance.getVariableIndices());
-		return containedInstance.getVariableIndices().sortedCopy().equals(instance.getVariableIndices().sortedCopy());
+		return containedInstance.getVariableIndices().equals(instance.getVariableIndices());
 	}
 
 	private boolean isConnected(Vector<Integer> indices) {

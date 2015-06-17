@@ -117,17 +117,17 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	/**
 	 * Creates a new variable refinement operator
 	 * @param logicBase    	The logic base holding the vocabulary and examples
-	 * @param variables    	The number of variables that can be introduced
+	 * @param list	    	The instance list
 	 * @param background	The background theories provided to the search
 	 * @param validityTest	The validity test
 	 */
-	public VariableRefinement(LogicBase logicBase, int variables, Vector<Theory> background,
+	public VariableRefinement(LogicBase logicBase, InstanceList list, Vector<Theory> background,
 							  Predicate<ValidatedClause> validityTest) {
 		this.backgroundTheories = background.grow(new InlineTheory(logicBase.getSymmetryFormulas()));
-		this.instanceList = new InstanceList(logicBase.getSearchPredicates(), variables);
 		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
 		this.executor = IdpExecutor.get();
+		this.instanceList = list;
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor, background);
 		this.validityAcceptance = validityTest;
 	}

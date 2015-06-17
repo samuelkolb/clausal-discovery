@@ -1,6 +1,7 @@
 package clausal_discovery.core;
 
 import clausal_discovery.configuration.Configuration;
+import clausal_discovery.instance.InstanceList;
 import clausal_discovery.validity.ValidatedClause;
 import idp.IdpExecutor;
 import logic.expression.formula.Formula;
@@ -102,7 +103,8 @@ public class ClausalDiscovery {
 		int variables = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
 		Vector<Theory> background = configuration.getBackgroundTheories();
-		VariableRefinement refinement = new VariableRefinement(logicBase, variables, background, validityTest);
+		InstanceList list = new InstanceList(logicBase.getSearchPredicates(), variables);
+		VariableRefinement refinement = new VariableRefinement(logicBase, list, background, validityTest);
 		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(logicBase));
 		SearchAlgorithm<ValidatedClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
 		configuration.addPlugins(algorithm);
