@@ -21,7 +21,7 @@ public class RunClient {
 
 	static {
 		Log.LOG.addMessageFilter(message -> (message.MESSAGE == null || !message.MESSAGE.startsWith("INFO")));
-		//Log.LOG.addTransformer(new LinkTransformer());
+		Log.LOG.addTransformer(new LinkTransformer());
 	}
 
 	//region Variables
