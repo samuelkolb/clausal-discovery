@@ -4,6 +4,7 @@ import clausal_discovery.configuration.Configuration;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.validity.ValidatedClause;
 import idp.IdpExecutor;
+import log.Log;
 import logic.expression.formula.Formula;
 import logic.theory.InlineTheory;
 import logic.theory.Theory;

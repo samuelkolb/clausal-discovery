@@ -121,12 +121,12 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	public VariableRefinement(LogicBase logicBase, InstanceList list, Vector<Theory> background,
 							  Predicate<ValidatedClause> validityTest) {
 		this.backgroundTheories = background.grow(new InlineTheory(logicBase.getSymmetryFormulas()));
-		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 		this.logicBase = logicBase;
 		this.executor = IdpExecutor.get();
 		this.instanceList = list;
 		this.validityCalculator = new ParallelValidityCalculator(getLogicBase(), executor, background);
 		this.validityAcceptance = validityTest;
+		Log.LOG.printLine("Instance list with " + getInstanceList().size() + " elements\n");
 	}
 
 	// endregion
