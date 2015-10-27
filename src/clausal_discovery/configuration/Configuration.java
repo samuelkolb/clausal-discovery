@@ -15,8 +15,10 @@ import version3.algorithm.SearchAlgorithm;
 import version3.plugin.CountingPlugin;
 import version3.plugin.FileLoggingPlugin;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -134,6 +136,30 @@ public class Configuration {
 				? new Vector<>()
 				: new Vector<>(new FileTheory(FileUtil.getLocalFile(url)));
 		return new Configuration(logicBase, background, variableCount, clauseLength);
+	}
+
+	/**
+	 * Create a configuration using a logic and and optional background file.
+	 * @param file				The logic file
+	 * @param backgroundFile	An optional background file
+	 * @param variables			The number of variables per clause
+	 * @param literals			The number of literals per clause
+	 * @return	A configuration object
+	 * @throws ParseException	Iff a parsing exception occurs while parsing the logic file
+	 */
+	public static Configuration fromFile(File file, Optional<File> backgroundFile, int variables, int literals)
+			throws ParseException {
+		LogicBase logicBase;
+		try {
+			logicBase = new LogicParser().parse(FileUtil.readFile(file));
+		} catch(ParseException e) {
+			Log.LOG.formatLine("Error parsing file %s.logic\n%s", file.getName(), e.getMessage());
+			throw new IllegalArgumentException(e);
+		}
+		Vector<Theory> background = backgroundFile.isPresent()
+				? new Vector<>()
+				: new Vector<>(new FileTheory(backgroundFile.get()));
+		return new Configuration(logicBase, background, variables, literals);
 	}
 
 	/**
