@@ -21,9 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -214,8 +211,8 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		StatusClause clause = validatedClause.getClause();
 		List<StatusClause> children = new ArrayList<>();
 		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
-			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.inBody())).ifPresent(children::add);
-		if(clause.inBody())
+			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.isInBody())).ifPresent(children::add);
+		if(clause.isInBody())
 			for(int i = 0; i < getInstanceList().size(); i++)
 				clause.processIfRepresentative(getInstanceList().getInstance(i, false)).ifPresent(children::add);
 		return children.stream().map(validityCalculator::getValidatedClause).collect(Collectors.toList());
