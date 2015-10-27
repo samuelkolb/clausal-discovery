@@ -105,7 +105,7 @@ public class ClausalDiscovery {
 		Vector<Theory> background = configuration.getBackgroundTheories();
 		InstanceList list = new InstanceList(logicBase.getSearchPredicates(), variables);
 		VariableRefinement refinement = new VariableRefinement(logicBase, list, background, validityTest);
-		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(logicBase));
+		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(list, logicBase));
 		SearchAlgorithm<ValidatedClause> algorithm = new BreadthFirstSearch<>(refinement, StopCriterion.empty(), refinement);
 		configuration.addPlugins(algorithm);
 		algorithm.addPlugin(new MaximalDepthPlugin<>(configuration.getClauseLength()));

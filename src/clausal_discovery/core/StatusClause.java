@@ -1,12 +1,11 @@
 package clausal_discovery.core;
 
 import basic.StringUtil;
-import cern.colt.bitvector.BitVector;
-import cern.colt.function.IntProcedure;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
+import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.Vector;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.IntPredicate;
 
 /**
  * Represents a selection of indices that represent instances in the instances body and head
@@ -26,167 +24,6 @@ import java.util.function.IntPredicate;
  * @author Samuel Kolb
  */
 public class StatusClause {
-
-	private class AtomSet implements Comparable<AtomSet> {
-
-		private class LastFunction implements IntProcedure {
-
-			public int found = -1;
-
-			@Override
-			public boolean apply(int argument) {
-				if(argument > found) {
-					found = argument;
-				} else {
-					throw new IllegalStateException("Unexpected");
-				}
-				return true;
-			}
-		}
-
-		private InstanceList instanceList;
-
-		public InstanceList getInstanceList() {
-			return instanceList;
-		}
-
-		private BitVector vector;
-
-		private int size;
-
-		public AtomSet(InstanceList instanceList) {
-			this(instanceList, new BitVector(instanceList.size()));
-		}
-
-		public AtomSet(InstanceList instanceList, BitVector vector) {
-			this.instanceList = instanceList;
-			this.vector = vector;
-			this.size = vector.cardinality();
-		}
-
-		public AtomSet(AtomSet atomSet) {
-			this.instanceList = atomSet.instanceList;
-			this.vector = atomSet.vector.copy();
-			this.size = atomSet.size;
-		}
-
-		public boolean add(int atomIndex) {
-			if(atomIndex < 0 || atomIndex >= instanceList.size()) {
-				throw new IllegalArgumentException("Illegal atom index: " + atomIndex);
-			}
-
-			boolean wasInSet = vector.get(atomIndex);
-			size += wasInSet ? 0 : 1;
-			vector.set(atomIndex);
-			return !wasInSet;
-		}
-
-		public int size() {
-			return size;
-		}
-
-		public int lastIndex() {
-			LastFunction last = new LastFunction();
-			vector.forEachIndexFromToInState(0, vector.size() - 1, true, last);
-			return last.found;
-		}
-
-		public boolean isEmpty() {
-			return size() == 0;
-		}
-
-		public Vector<Instance> getInstances() {
-			Vector<Instance> instances = new WriteOnceVector<>(new Instance[size()]);
-			forEach(i -> instances.add(instanceList.get(i)));
-			return instances;
-		}
-
-		public Vector<PositionedInstance> getInstances(boolean inBody) {
-			Vector<PositionedInstance> instances = new WriteOnceVector<>(new PositionedInstance[size()]);
-			forEach(i -> instances.add(instanceList.getInstance(i, inBody)));
-			return instances;
-		}
-
-		public void forEach(IntPredicate predicate) {
-			vector.forEachIndexFromToInState(0, vector.size() - 1, true, predicate::test);
-		}
-
-		@Override
-		public int compareTo(AtomSet o) {
-			BitVector comparisonVector = vector.copy();
-			comparisonVector.xor(o.vector);
-			if(comparisonVector.cardinality() == 0) {
-				return 0;
-			} else {
-				int firstDifference = comparisonVector.indexOfFromTo(0, comparisonVector.size() - 1, true);
-				return vector.get(firstDifference) ? -1 : 1;
-			}
-		}
-	}
-
-	private class LiteralSet implements Comparable<LiteralSet> {
-
-		private AtomSet body;
-
-		private AtomSet head;
-
-		public LiteralSet(InstanceList list) {
-			this.body = new AtomSet(list);
-			this.head = new AtomSet(list);
-		}
-
-		private LiteralSet(AtomSet body, AtomSet head) {
-			this.body = body;
-			this.head = head;
-		}
-
-		public LiteralSet add(int index, boolean inBody) {
-			if(inBody) {
-				AtomSet newSet = new AtomSet(body);
-				newSet.add(index);
-				return new LiteralSet(newSet, head);
-			} else {
-				AtomSet newSet = new AtomSet(head);
-				newSet.add(index);
-				return new LiteralSet(body, newSet);
-			}
-		}
-
-		public int size() {
-			return body.size() + head.size();
-		}
-
-		public boolean isEmpty() {
-			return body.isEmpty() && head.isEmpty();
-		}
-
-		public boolean isInBody() {
-			return head.isEmpty();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if(this == o) return true;
-			if(o == null || getClass() != o.getClass()) return false;
-
-			LiteralSet literalSet = (LiteralSet) o;
-			return body.equals(literalSet.body) && head.equals(literalSet.head);
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = body.hashCode();
-			result = 31 * result + head.hashCode();
-			return result;
-		}
-
-		@Override
-		public int compareTo(LiteralSet o) {
-			int bodyCompare = body.compareTo(o.body);
-			return bodyCompare == 0 ? head.compareTo(head) : bodyCompare;
-		}
-	}
 
 	// region Variables
 
@@ -251,7 +88,7 @@ public class StatusClause {
 	 * @return The index of the last instance or -1 if none such instance exists
 	 */
 	public int getIndex() {
-		return isInBody() ? getLiteralSet().body.lastIndex() : getLiteralSet().head.lastIndex();
+		return isInBody() ? getLiteralSet().getBody().lastIndex() : getLiteralSet().getHead().lastIndex();
 	}
 
 	/**
@@ -262,8 +99,8 @@ public class StatusClause {
 	@Deprecated
 	public Vector<PositionedInstance> getInstances() {
 		Vector<PositionedInstance> vector = new WriteOnceVector<>(new PositionedInstance[size()]);
-		vector.addAll(getLiteralSet().body.getInstances(true));
-		vector.addAll(getLiteralSet().head.getInstances(false));
+		vector.addAll(getLiteralSet().getBody().getInstances(true));
+		vector.addAll(getLiteralSet().getHead().getInstances(false));
 		return vector;
 	}
 
@@ -328,8 +165,8 @@ public class StatusClause {
 
 	@Override
 	public String toString() {
-		List<String> head = literalSet.head.getInstances().map(String.class, Instance::toString);
-		List<String> body = literalSet.body.getInstances().map(String.class, Instance::toString);
+		List<String> body = literalSet.getBody().getInstances().map(String.class, Instance::toString);
+		List<String> head = literalSet.getHead().getInstances().map(String.class, Instance::toString);
 		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
 				+ (head.isEmpty() ? "false" : StringUtil.join(" | ", head));
 	}
@@ -343,7 +180,7 @@ public class StatusClause {
 	 * @return	An empty clause
 	 */
 	public StatusClause emptyClause() {
-		return new StatusClause(literalSet.body.instanceList);
+		return new StatusClause(literalSet.getBody().getInstanceList());
 	}
 
 	/**

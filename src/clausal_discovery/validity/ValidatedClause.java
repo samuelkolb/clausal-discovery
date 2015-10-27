@@ -1,10 +1,9 @@
 package clausal_discovery.validity;
 
-import basic.ArrayUtil;
 import cern.colt.bitvector.BitVector;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
-import vector.Vector;
+import clausal_discovery.instance.InstanceList;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -60,10 +59,11 @@ public class ValidatedClause {
 
 	/**
 	 * Creates a new validated clause with an empty status clause and all false validity values
-	 * @param logicBase	The logic base
+	 * @param instanceList	The instance list
+	 * @param logicBase		The logic base
 	 */
-	public ValidatedClause(LogicBase logicBase) {
-		this(logicBase, new StatusClause(), new BitVector(logicBase.getExamples().size()));
+	public ValidatedClause(InstanceList instanceList, LogicBase logicBase) {
+		this(logicBase, new StatusClause(instanceList), new BitVector(logicBase.getExamples().size()));
 	}
 
 	/**
