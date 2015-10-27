@@ -1,5 +1,0 @@
-theory B0 : V {
-	?2p : Person(p).
-	!a : ?1c : cost(a, c).
-	cheap(p) <=> p < 3.
-}
