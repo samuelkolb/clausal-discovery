@@ -47,6 +47,13 @@ public interface LogicBase {
 	List<LogicBase> split();
 
 	/**
+	 * Creates a new logic base that only contains the accepted examples
+	 * @param predicate	The predicate acting as filter
+	 * @return	A new logic base
+	 */
+	LogicBase filterExamples(java.util.function.Predicate<Example> predicate);
+
+	/**
 	 * Splits the logic base into two
 	 * @param fraction	The fraction of examples to retain in the first new logic base (bewteen 0 and 1)
 	 * @return	A pair of logic-bases

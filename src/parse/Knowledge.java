@@ -96,6 +96,12 @@ public class Knowledge implements LogicBase {
 	}
 
 	@Override
+	public LogicBase filterExamples(java.util.function.Predicate<Example> predicate) {
+		Vector<Example> examples = getExamples().filter(predicate);
+		return copy(examples);
+ 	}
+
+	@Override
 	public TypePair<LogicBase> split(double fraction) {
 		if(fraction < 0 || fraction > 1)
 			throw new IllegalArgumentException(String.format("Fraction must be between 0 and 1, was %f", fraction));
