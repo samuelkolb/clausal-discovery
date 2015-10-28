@@ -6,6 +6,7 @@ import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import idp.IdpExecutor;
+import log.Log;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.InlineTheory;
@@ -55,18 +56,18 @@ public class ValidityTable {
 	 * @return	A new validity table
 	 */
 	public static ValidityTable create(Vector<ValidatedClause> clauses) {
-		Vector<Example> examples = clauses.isEmpty() ? clauses.getFirst().getLogicBase().getExamples() : new Vector<>();
+		Vector<Example> examples = clauses.isEmpty() ? new Vector<>() : clauses.getFirst().getLogicBase().getExamples();
 		return new ValidityTable(createValidityMap(clauses), examples);
 	}
 
 	private static BitMatrix createValidityMap(Vector<ValidatedClause> clauses) {
 		if(clauses.isEmpty())
 			return new BitMatrix(0, 0);
-		int numberExamples = clauses.get(0).getLogicBase().getExamples().size();
+		int numberExamples = clauses.getFirst().getLogicBase().getExamples().size();
 		BitMatrix bitMatrix = new BitMatrix(numberExamples, clauses.size());
 		for(int clause = 0; clause < clauses.size(); clause++)
 			for(int i = 0; i < numberExamples; i++)
-				bitMatrix.put(clause, i, clauses.get(clause).getValidity().get(i));
+				bitMatrix.put(i, clause, clauses.get(clause).getValidity().get(i));
 		return bitMatrix;
 	}
 

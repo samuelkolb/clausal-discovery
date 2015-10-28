@@ -157,8 +157,8 @@ public class Configuration {
 			throw new IllegalArgumentException(e);
 		}
 		Vector<Theory> background = backgroundFile.isPresent()
-				? new Vector<>()
-				: new Vector<>(new FileTheory(backgroundFile.get()));
+				? new Vector<>(new FileTheory(backgroundFile.get()))
+				: new Vector<>();
 		return new Configuration(logicBase, background, variables, literals);
 	}
 
