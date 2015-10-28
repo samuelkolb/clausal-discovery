@@ -1,4 +1,0 @@
-(false <- neighbor(Country1, Country1))
-(false <- (color(Country1, Color2) & color(Country1, Color3) & (Color2 ~= Color3)))
-(neighbor(Country2, Country1) <- (neighbor(Country1, Country2) & (Country1 ~= Country2)))
-(false <- (color(Country1, Color2) & neighbor(Country3, Country1) & color(Country3, Color2) & (Country1 ~= Country3)))
