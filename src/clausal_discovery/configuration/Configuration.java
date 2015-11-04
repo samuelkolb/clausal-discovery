@@ -70,7 +70,14 @@ public class Configuration {
 		return clauseLength;
 	}
 
-	Configuration(LogicBase logicBase, Vector<Theory> background, int variableCount, int clauseLength) {
+	/**
+	 * Creates a configuration.
+	 * @param logicBase		The logic base
+	 * @param background	The background theories
+	 * @param variableCount	The number of variables to use
+	 * @param clauseLength	The number of literals to use
+	 */
+	public Configuration(LogicBase logicBase, Vector<Theory> background, int variableCount, int clauseLength) {
 		this.logicBase = logicBase;
 		this.backgroundTheories = background;
 		this.variableCount = variableCount;
