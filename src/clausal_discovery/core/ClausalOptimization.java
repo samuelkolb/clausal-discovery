@@ -11,6 +11,7 @@ import clausal_discovery.validity.ValidityTable;
 import idp.FileManager;
 import idp.IdpExpressionPrinter;
 import log.Log;
+import pair.Pair;
 import runtime.Terminal;
 import time.Stopwatch;
 import util.TemporaryFile;
