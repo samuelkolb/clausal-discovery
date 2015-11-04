@@ -4,6 +4,7 @@ import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.score.ClauseFunction;
 import clausal_discovery.validity.ValidityTable;
 import logic.expression.formula.Formula;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.ArrayList;
@@ -57,7 +58,8 @@ public class Constraints {
 		this.logicBase = logicBase;
 		this.hardConstraints = hardConstraints;
 		this.softConstraints = softConstraints;
-		this.clauseFunction = new ClauseFunction(weights, ValidityTable.create(logicBase, new ArrayList<>(softConstraints)));
+		this.clauseFunction = new ClauseFunction(new SafeList<>(weights), ValidityTable.create(logicBase,
+				new ArrayList<>(softConstraints)));
 	}
 
 

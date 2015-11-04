@@ -19,8 +19,8 @@ public class ClauseFunction implements ScoringFunction {
 
 	private final SafeList<Double> weights;
 
-	public Vector<Double> getWeights() {
-		return new Vector<>(Double.class, weights);
+	public SafeList<Double> getWeights() {
+		return weights;
 	}
 
 	private final ValidityTable validityTable;

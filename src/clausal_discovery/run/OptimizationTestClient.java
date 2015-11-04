@@ -16,6 +16,7 @@ import pair.TypePair;
 import parse.ConstraintParser;
 import parse.ParseException;
 import util.Pair;
+import vector.SafeList;
 import vector.Vector;
 
 import java.net.URL;
@@ -57,7 +58,7 @@ public class OptimizationTestClient {
 	 */
 	public OptimizationTestClient(Configuration configuration, Vector<Pair<Double, String>> constraints) {
 		this.configuration = configuration;
-		Vector<Double> weights = constraints.map(Double.class, Pair::getFirst);
+		SafeList<Double> weights = new SafeList<>(constraints).map(Pair::getFirst);
 		Vocabulary v = configuration.getLogicBase().getVocabulary();
 		Vector<Formula> formulas = constraints.map(Formula.class, p -> ConstraintParser.parseClause(v, p.getSecond()));
 		function = new ClauseFunction(weights, ValidityTable.create(configuration.getLogicBase(), formulas));

@@ -5,16 +5,15 @@ import basic.FileUtil;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.score.ClauseFunction;
 import clausal_discovery.core.score.StatusClauseFunction;
-import clausal_discovery.test.ScoreComparator;
 import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityTable;
 import idp.FileManager;
-import idp.IdpExpressionPrinter;
 import log.Log;
-import pair.Pair;
 import runtime.Terminal;
 import time.Stopwatch;
 import util.TemporaryFile;
+import vector.SafeList;
+import vector.SafeListBuilder;
 import vector.Vector;
 
 import java.io.File;
@@ -134,7 +133,7 @@ public class ClausalOptimization {
 	 */
 	public StatusClauseFunction getClauseFunction(Preferences preferences, double cFactor) {
 		if(getSoftValidity().getClauseCount() == 0)
-			return new StatusClauseFunction(new Vector<>(), new Vector<>(), getSoftValidity());
+			return new StatusClauseFunction(new Vector<>(), new SafeList<>(), getSoftValidity());
 		return getFunction(preferences, cFactor, getSoftValidity(), getSoftConstraints());
 	}
 
@@ -147,7 +146,7 @@ public class ClausalOptimization {
 	public StatusClauseFunction getClauseFunction(Preferences preferences, double cFactor,
 												  Function<ClauseFunction, Double> ratingFunction) {
 		if(getSoftValidity().getClauseCount() == 0)
-			return new StatusClauseFunction(new Vector<>(), new Vector<>(), getSoftValidity());
+			return new StatusClauseFunction(new Vector<>(), new SafeList<>(), getSoftValidity());
 		ValidityTable validity = getSoftValidity();
 		Vector<ValidatedClause> softClauses = getSoftConstraints();
 
@@ -216,7 +215,7 @@ public class ClausalOptimization {
 			}
 		}
 		Vector<StatusClause> clauses = softClauses.map(StatusClause.class, ValidatedClause::getClause);
-		return new StatusClauseFunction(clauses, new Vector<>(scores), validity);
+		return new StatusClauseFunction(clauses, SafeList.from(scores), validity);
 	}
 
 	//endregion

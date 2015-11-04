@@ -37,7 +37,7 @@ public class HousingOptimizationClient {
 			Preferences preferences = preferenceParser.parseLocalFile("housing_opt_small.logic");
 			ClausalOptimization clausalOptimization = new ClausalOptimization(configuration);
 			ClauseFunction function = clausalOptimization.getClauseFunction(preferences, C_FACTOR);
-			for(int i = 0; i < function.getWeights().length; i++) {
+			for(int i = 0; i < function.getWeights().size(); i++) {
 				String printedWeight = frontPadCut(String.format("%f", function.getWeights().get(i)), ' ', 10, true);
 				Log.LOG.printLine((i+1) + ": " + printedWeight +" : " + clausalOptimization.getSoftConstraints().get(i));
 			}

@@ -7,6 +7,7 @@ import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityTable;
 import logic.theory.Theory;
 import pair.Pair;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class StatusClauseFunction extends ClauseFunction {
 	 * @param weights       The weights per clause
 	 * @param validityTable The validity table
 	 */
-	public StatusClauseFunction(Vector<StatusClause> clauses, Vector<Double> weights, ValidityTable validityTable) {
+	public StatusClauseFunction(Vector<StatusClause> clauses, SafeList<Double> weights, ValidityTable validityTable) {
 		super(weights, validityTable);
 		if(weights.size() != clauses.size())
 			throw new IllegalArgumentException(String.format("Number of weights and clauses do not match, %d vs %d",
