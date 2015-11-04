@@ -7,6 +7,7 @@ import clausal_discovery.validity.ValidityTable;
 import log.Log;
 import logic.example.Example;
 import logic.theory.Theory;
+import vector.SafeList;
 import vector.Vector;
 
 /**
@@ -16,10 +17,10 @@ import vector.Vector;
  */
 public class ClauseFunction implements ScoringFunction {
 
-	private final Vector<Double> weights;
+	private final SafeList<Double> weights;
 
 	public Vector<Double> getWeights() {
-		return weights;
+		return new Vector<>(Double.class, weights);
 	}
 
 	private final ValidityTable validityTable;
@@ -33,7 +34,7 @@ public class ClauseFunction implements ScoringFunction {
 	 * @param weights       The weights
 	 * @param validityTable The validity table containing validity vectors for the clauses in this function
 	 */
-	public ClauseFunction(Vector<Double> weights, ValidityTable validityTable) {
+	public ClauseFunction(SafeList<Double> weights, ValidityTable validityTable) {
 		if(weights.size() != validityTable.getClauseCount())
 			throw new IllegalArgumentException(String.format("Number of weights and table do not match, %d vs %d",
 					weights.size(), validityTable.getClauseCount()));
