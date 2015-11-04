@@ -1,2 +1,0 @@
- 0.5 : live_in(0) & school_in(1) => false
- 0.5 : live_in(0) & work_in(1) => false
