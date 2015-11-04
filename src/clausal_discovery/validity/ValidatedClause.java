@@ -5,7 +5,6 @@ import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import clausal_discovery.instance.InstanceList;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -45,12 +44,12 @@ public class ValidatedClause {
 		}
 	}
 
-	private Optional<Integer> validCount = Optional.empty();
+	public int getSupportCount() {
+		return getValidity().cardinality();
+	}
 
-	public int getValidCount() {
-		if(!validCount.isPresent())
-			validCount = Optional.of(getValidity().cardinality());
-		return validCount.get();
+	public double getSupport() {
+		return getValidity().cardinality() / (double) getValidity().size();
 	}
 
 	//endregion
@@ -91,7 +90,7 @@ public class ValidatedClause {
 	 * @return	True iff this clause covers all examples in its logic base
 	 */
 	public boolean coversAll() {
-		return getValidCount() == getLogicBase().getExamples().size();
+		return getSupportCount() == getLogicBase().getExamples().size();
 	}
 
 	@Override

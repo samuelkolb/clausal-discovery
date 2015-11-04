@@ -224,7 +224,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	}
 
 	private boolean canPruneSoft(ValidatedClause clause, ValidatedClause newClause) {
-		return clause.getValidCount() == newClause.getValidCount()
+		return clause.getSupportCount() == newClause.getSupportCount()
 				&& clause.getValidity().equals(newClause.getValidity());
 	}
 

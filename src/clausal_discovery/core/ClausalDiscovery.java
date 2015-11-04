@@ -3,8 +3,6 @@ package clausal_discovery.core;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.validity.ValidatedClause;
-import idp.IdpExecutor;
-import log.Log;
 import logic.expression.formula.Formula;
 import logic.theory.InlineTheory;
 import logic.theory.Theory;
@@ -15,7 +13,6 @@ import version3.plugin.DuplicateEliminationPlugin;
 import version3.plugin.MaximalDepthPlugin;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -65,7 +62,7 @@ public class ClausalDiscovery {
 	 */
 	public List<ValidatedClause> findSoftConstraints(double support) {
 		double size = Math.ceil(getConfiguration().getLogicBase().getExamples().size() * support);
-		return run(getConfiguration(), c -> c.getValidCount() >= size);
+		return run(getConfiguration(), c -> c.getSupportCount() >= size);
 	}
 
 	/**
@@ -96,7 +93,7 @@ public class ClausalDiscovery {
 		}
 		return softClauses;
 		/*/
-		return run(newConfig, c -> c.getValidCount() > 0);
+		return run(newConfig, c -> c.getSupportCount() > 0);
 		/**/
 	}
 

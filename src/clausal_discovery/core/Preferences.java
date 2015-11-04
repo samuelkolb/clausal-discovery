@@ -109,7 +109,6 @@ public class Preferences {
 				for(Example example : ordering.get(j)) {
 					builder.append(ordering.size() - j).append(" qid:").append(i + 1);
 					for(int c = 0; c < validity.getValidity(example).size(); c++) {
-						Log.LOG.printLine(String.format(" %d:%d", c + 1, validity.getValidity(example).get(c) ? 1 : 0));
 						builder.append(String.format(" %d:%d", c + 1, validity.getValidity(example).get(c) ? 1 : 0));
 					}
 					builder.append(" #\n");

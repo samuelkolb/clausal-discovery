@@ -104,7 +104,7 @@ public class ConstraintParser implements LocalParser<Constraints> {
 		return parse.getConstraints();
 	}
 
-	private static Formula parseClause(Vocabulary vocabulary, String string) {
+	public static Formula parseClause(Vocabulary vocabulary, String string) {
 		String[] twoParts = string.split(" => ");
 		String[] bodyParts = twoParts[0].split(" & ");
 		String[] headParts = twoParts[1].split(" | ");

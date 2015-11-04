@@ -4,15 +4,22 @@ import basic.FileUtil;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.ClausalOptimization;
 import clausal_discovery.core.Constraints;
+import clausal_discovery.core.score.ClauseFunction;
 import clausal_discovery.core.score.ScoringFunction;
 import clausal_discovery.core.score.StatusClauseFunction;
 import clausal_discovery.test.OptimizationTester;
+import clausal_discovery.validity.ValidityTable;
 import log.Log;
+import logic.expression.formula.Formula;
+import logic.theory.Vocabulary;
 import pair.TypePair;
 import parse.ConstraintParser;
 import parse.ParseException;
+import util.Pair;
+import vector.Vector;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by samuelkolb on 12/05/15.
@@ -31,9 +38,29 @@ public class OptimizationTestClient {
 
 	//region Construction
 
+	/**
+	 * Creates an optimization test client.
+	 * @param logicName
+	 * @param constraintsName
+	 * @param variables
+	 * @param terms
+	 */
 	public OptimizationTestClient(String logicName, String constraintsName, int variables, int terms) {
 		configuration = Configuration.fromLocalFile(logicName, variables, terms);
 		this.function = getScoringFunction(configuration, constraintsName);
+	}
+
+	/**
+	 * Creates an optimization test client.
+	 * @param configuration	The configuration
+	 * @param constraints	The weighted constraints
+	 */
+	public OptimizationTestClient(Configuration configuration, Vector<Pair<Double, String>> constraints) {
+		this.configuration = configuration;
+		Vector<Double> weights = constraints.map(Double.class, Pair::getFirst);
+		Vocabulary v = configuration.getLogicBase().getVocabulary();
+		Vector<Formula> formulas = constraints.map(Formula.class, p -> ConstraintParser.parseClause(v, p.getSecond()));
+		function = new ClauseFunction(weights, ValidityTable.create(configuration.getLogicBase(), formulas));
 	}
 
 	//endregion
