@@ -64,6 +64,16 @@ public class OptimizationTestClient {
 		function = new ClauseFunction(weights, ValidityTable.create(configuration.getLogicBase(), formulas));
 	}
 
+	/**
+	 * Creates an optimization test client.
+	 * @param configuration		The configuration
+	 * @param clauseFunction	The clause function
+	 */
+	public OptimizationTestClient(Configuration configuration, ClauseFunction clauseFunction) {
+		this.configuration = configuration;
+		this.function = clauseFunction;
+	}
+
 	//endregion
 
 	//region Public methods
