@@ -67,7 +67,6 @@ public class ClausalDiscovery {
 
 	/**
 	 * Finds constraints that are true on at least one example
-	 * // TODO Prune soft constraints?
 	 * @param clauses	The hard constraints that are used as background knowledge
 	 * @return	A list of soft constraints
 	 */
@@ -77,24 +76,7 @@ public class ClausalDiscovery {
 				.map(new StatusClauseConverter())
 				.collect(Collectors.toList());
 		Configuration newConfig = getConfiguration().addBackgroundTheory(new InlineTheory(constraints));
-		/*
-		ExecutorService service = Executors.newFixedThreadPool(4);
-		List<Future<List<ValidatedClause>>> result = new ArrayList<>();
-		for(Configuration config : newConfig.split())
-			result.add(service.submit(() -> run(config, ValidatedClause::coversAll)));
-		List<ValidatedClause> softClauses = new ArrayList<>();
-		try {
-			for(Future<List<ValidatedClause>> future : result)
-				softClauses.addAll(future.get());
-		} catch(InterruptedException | ExecutionException e) {
-			throw new IllegalStateException(e);
-		} finally {
-			service.shutdownNow();
-		}
-		return softClauses;
-		/*/
 		return run(newConfig, c -> c.getSupportCount() > 0);
-		/**/
 	}
 
 	private List<ValidatedClause> run(Configuration configuration, Predicate<ValidatedClause> validityTest) {
