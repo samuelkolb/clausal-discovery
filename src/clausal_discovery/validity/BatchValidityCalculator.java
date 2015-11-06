@@ -2,14 +2,10 @@ package clausal_discovery.validity;
 
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
-import idp.IdpExpressionPrinter;
-import log.Log;
 import logic.expression.formula.Formula;
-import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
 import logic.theory.Theory;
 import vector.Vector;
-import vector.WriteOnceVector;
 
 import java.util.ArrayList;
 import java.util.List;

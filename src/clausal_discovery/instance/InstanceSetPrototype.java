@@ -2,17 +2,12 @@ package clausal_discovery.instance;
 
 import clausal_discovery.core.Environment;
 import clausal_discovery.core.PredicateDefinition;
-import log.Log;
 import util.Numbers;
 import vector.Vector;
-import vector.WriteOnceVector;
-import logic.bias.Type;
-import logic.expression.formula.Predicate;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * An instance set prototype contains prototypes of the same rank

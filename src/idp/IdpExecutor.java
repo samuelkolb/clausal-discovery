@@ -1,6 +1,5 @@
 package idp;
 
-import basic.FileUtil;
 import basic.StringUtil;
 import cern.colt.bitvector.BitMatrix;
 import idp.program.EntailsProgram;
@@ -10,7 +9,6 @@ import log.Log;
 import logic.theory.InlineTheory;
 import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
-import runtime.Terminal;
 import time.Stopwatch;
 import vector.Vector;
 
@@ -51,7 +49,7 @@ public class IdpExecutor implements LogicExecutor {
 		return fileManager;
 	}
 
-	private IdpProgramPrinter printer = new IdpProgramPrinter.Cached();
+	private final IdpProgramPrinter printer = new IdpProgramPrinter.Cached();
 
 	//endregion
 

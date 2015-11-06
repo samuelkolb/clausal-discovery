@@ -8,7 +8,7 @@ package util;
 public class Statistics {
 
 	//region Variables
-	private double[] data;
+	private final double[] data;
 
 	public double[] getData() {
 		double[] array = new double[data.length];

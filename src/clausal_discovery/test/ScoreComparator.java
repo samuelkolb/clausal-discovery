@@ -1,10 +1,8 @@
 package clausal_discovery.test;
 
-import clausal_discovery.core.Preferences;
 import clausal_discovery.core.score.ScoringFunction;
-import log.Log;
 import logic.example.Example;
-import util.Pair;
+import pair.Pair;
 import vector.Vector;
 
 import java.util.ArrayList;

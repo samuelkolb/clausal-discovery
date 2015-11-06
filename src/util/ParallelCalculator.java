@@ -13,7 +13,7 @@ public class ParallelCalculator<R> {
 
 	//region Variables
 
-	private List<Future<R>> futures = new ArrayList<>();
+	private final List<Future<R>> futures = new ArrayList<>();
 
 	private ExecutorService executorService;
 	//endregion

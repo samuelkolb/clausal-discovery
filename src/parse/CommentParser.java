@@ -1,8 +1,7 @@
 package parse;
 
-import log.Log;
-
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public class CommentParser extends ScopeParser<LogicParserState> {
 
 	@Override
 	public List<ScopeParser<LogicParserState>> getParsers() {
-		return Arrays.asList(new MatchParser<LogicParserState>() {
+		return Collections.singletonList(new MatchParser<LogicParserState>() {
 			@Override
 			public boolean matches(String string, LogicParserState parseState) throws ParsingError {
 				return !string.equals(line ? "\n" : "%");

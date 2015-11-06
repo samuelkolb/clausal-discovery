@@ -1,6 +1,5 @@
 package idp;
 
-import basic.FileUtil;
 import runtime.Terminal;
 import util.Path;
 

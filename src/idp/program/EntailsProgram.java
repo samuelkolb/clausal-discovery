@@ -1,7 +1,6 @@
 package idp.program;
 
 import idp.IdpProgramPrinter;
-import log.Log;
 import logic.theory.KnowledgeBase;
 import logic.theory.Theory;
 

@@ -1,9 +1,6 @@
 package logic.theory;
 
 import cern.colt.bitvector.BitMatrix;
-import vector.Vector;
-
-import java.util.List;
 
 /**
  * The logic executor abstracts the necessary (external) logical operations from the system in use

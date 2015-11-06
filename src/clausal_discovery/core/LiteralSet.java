@@ -9,13 +9,13 @@ import clausal_discovery.instance.InstanceList;
  */
 class LiteralSet implements Comparable<LiteralSet> {
 
-	private AtomSet body;
+	private final AtomSet body;
 
 	public AtomSet getBody() {
 		return body;
 	}
 
-	private AtomSet head;
+	private final AtomSet head;
 
 	public AtomSet getHead() {
 		return head;

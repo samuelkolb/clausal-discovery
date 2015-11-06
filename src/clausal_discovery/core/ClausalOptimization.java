@@ -13,7 +13,6 @@ import runtime.Terminal;
 import time.Stopwatch;
 import util.TemporaryFile;
 import vector.SafeList;
-import vector.SafeListBuilder;
 import vector.Vector;
 
 import java.io.File;
@@ -150,6 +149,7 @@ public class ClausalOptimization {
 		ValidityTable validity = getSoftValidity();
 		Vector<ValidatedClause> softClauses = getSoftConstraints();
 
+		// TODO cleanup
 		StatusClauseFunction function = getFunction(preferences, cFactor, validity, softClauses);
 		/*
 		double score = ratingFunction.apply(function);

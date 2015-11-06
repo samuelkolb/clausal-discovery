@@ -1,6 +1,5 @@
 package util;
 
-import log.Log;
 import runtime.Terminal;
 
 import java.io.*;

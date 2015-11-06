@@ -1,7 +1,6 @@
 package util;
 
 import basic.ArrayUtil;
-import log.Log;
 
 import java.util.*;
 
@@ -236,7 +235,6 @@ public class Numbers {
 	public static double[] range(double min, double max, double step) {
 		int size = (int) Math.ceil((max - min) / step) + 1;
 		double[] array = new double[size];
-		int index = 0;
 		for(int i = 0; i < size; i++)
 			array[i] = min + i * step;
 		return array;

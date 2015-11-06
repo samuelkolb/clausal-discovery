@@ -3,13 +3,11 @@ package clausal_discovery.test;
 import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.ClausalOptimization;
 import clausal_discovery.core.Preferences;
-import clausal_discovery.core.score.ClauseFunction;
 import clausal_discovery.core.score.ScoringFunction;
 import clausal_discovery.core.score.StatusClauseFunction;
 import log.Log;
 import logic.example.Example;
 import pair.Pair;
-import util.Numbers;
 import util.ParallelCalculator;
 import vector.Vector;
 

@@ -1,14 +1,9 @@
 package clausal_discovery.core.score;
 
 import cern.colt.bitvector.BitVector;
-import clausal_discovery.core.LogicBase;
-import clausal_discovery.core.StatusClause;
 import clausal_discovery.validity.ValidityTable;
-import log.Log;
 import logic.example.Example;
-import logic.theory.Theory;
 import vector.SafeList;
-import vector.Vector;
 
 /**
  * Created by samuelkolb on 01/05/15.

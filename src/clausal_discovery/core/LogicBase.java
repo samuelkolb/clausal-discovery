@@ -1,7 +1,6 @@
 package clausal_discovery.core;
 
 import logic.expression.formula.Formula;
-import logic.expression.formula.Predicate;
 import pair.TypePair;
 import vector.Vector;
 import logic.example.Example;

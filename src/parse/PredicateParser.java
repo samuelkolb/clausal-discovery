@@ -1,6 +1,6 @@
 package parse;
 
-import util.Pair;
+import pair.Pair;
 
 /**
  * Created by samuelkolb on 24/02/15.

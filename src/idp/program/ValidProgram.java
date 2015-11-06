@@ -30,7 +30,7 @@ public class ValidProgram extends IdpProgram {
 		}
 		procedure.append("print(\"\")\n");
 
-		Vector<Function> functions = new Vector<Function>(Functions.VALID.getFunction());
+		Vector<Function> functions = new Vector<>(Functions.VALID.getFunction());
 		builder.append(new Procedure(procedure.toString(), new Vector<>(), functions).print());
 		return builder.toString();
 	}

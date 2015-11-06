@@ -32,13 +32,13 @@ class AtomSet implements Comparable<AtomSet> {
 		}
 	}
 
-	private InstanceList instanceList;
+	private final InstanceList instanceList;
 
 	public InstanceList getInstanceList() {
 		return instanceList;
 	}
 
-	private BitVector vector;
+	private final BitVector vector;
 
 	private int size;
 

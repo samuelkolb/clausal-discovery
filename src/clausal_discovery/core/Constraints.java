@@ -1,6 +1,5 @@
 package clausal_discovery.core;
 
-import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.score.ClauseFunction;
 import clausal_discovery.validity.ValidityTable;
 import logic.expression.formula.Formula;

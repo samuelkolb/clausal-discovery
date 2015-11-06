@@ -9,8 +9,8 @@ import logic.expression.visitor.ExpressionVisitor;
  */
 public interface Expression {
 
-	public void accept(ExpressionVisitor expressionVisitor);
+	void accept(ExpressionVisitor expressionVisitor);
 
-	public boolean isGround();
+	boolean isGround();
 
 }

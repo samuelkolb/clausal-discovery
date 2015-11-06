@@ -6,7 +6,6 @@ import logic.expression.formula.Atom;
 import logic.expression.formula.Clause;
 import logic.expression.formula.InfixPredicate;
 import logic.expression.term.Variable;
-import logic.expression.visitor.ExpressionSkolemizer;
 
 import java.util.*;
 import java.util.function.Function;

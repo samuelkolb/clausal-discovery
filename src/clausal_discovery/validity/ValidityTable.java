@@ -6,7 +6,6 @@ import clausal_discovery.configuration.Configuration;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
 import idp.IdpExecutor;
-import log.Log;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.InlineTheory;
@@ -28,7 +27,7 @@ public class ValidityTable {
 
 	//region Variables
 
-	public Map<Example, Integer> examples = new HashMap<>();
+	public final Map<Example, Integer> examples = new HashMap<>();
 
 	public int getClauseCount() {
 		return validity.rows();

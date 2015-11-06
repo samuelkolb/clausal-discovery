@@ -2,9 +2,8 @@ package parse;
 
 import clausal_discovery.core.PredicateDefinition;
 import log.Log;
-import logic.expression.visitor.ExpressionLogicPrinter;
 import util.Numbers;
-import util.Pair;
+import pair.Pair;
 import vector.Vector;
 import clausal_discovery.core.LogicBase;
 import logic.bias.Type;

@@ -9,7 +9,6 @@ import logic.expression.term.Variable;
 import vector.Vector;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * An instance holds a predicate and variable indices, representing a predicate instance

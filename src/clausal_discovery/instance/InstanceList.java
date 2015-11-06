@@ -19,7 +19,7 @@ public class InstanceList {
 
 	// IVAR pairing - The mapping between indices and instances
 
-	private Pairing<Integer, Instance> pairing;
+	private final Pairing<Integer, Instance> pairing;
 
 	/**
 	 * Creates a new instance list

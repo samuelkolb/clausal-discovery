@@ -1,7 +1,6 @@
 package parse;
 
-import log.Log;
-import util.Pair;
+import pair.Pair;
 
 /**
  * Created by samuelkolb on 24/02/15.

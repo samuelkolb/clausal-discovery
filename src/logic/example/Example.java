@@ -25,7 +25,7 @@ public class Example {
 
 	// IVAR name - The name is used to identify the example
 
-	private String name;
+	private final String name;
 
 	public String getName() {
 		return name;

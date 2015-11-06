@@ -16,7 +16,7 @@ public interface LocalParser<R> {
 	 * @param name	The name of the file (including the extension)
 	 * @return	The result parsed from the file
 	 */
-	public default R parseLocalFile(String name) {
+	default R parseLocalFile(String name) {
 		File file = FileUtil.getLocalFile(getClass().getResource("/examples/" + name));
 		return parse(FileUtil.readFile(file));
 	}
@@ -26,5 +26,5 @@ public interface LocalParser<R> {
 	 * @param content	The string to parse
 	 * @return	The result
 	 */
-	public R parse(String content);
+	R parse(String content);
 }

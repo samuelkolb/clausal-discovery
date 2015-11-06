@@ -17,7 +17,7 @@ public class IdpProgramPrinter {
 
 	public static class Cached extends IdpProgramPrinter {
 
-		private Map<Structure, String> structures = new DefaultMap<Structure, String>(this::printStructure, Structure.class,
+		private final Map<Structure, String> structures = new DefaultMap<>(this::printStructure, Structure.class,
 				new DefaultMap.GenerationPolicy.Save());
 
 		private String printStructure(Structure structure) {

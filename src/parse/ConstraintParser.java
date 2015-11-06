@@ -22,15 +22,15 @@ public class ConstraintParser implements LocalParser<Constraints> {
 
 	private class ParserState {
 
-		private List<Formula> hardConstraints = new ArrayList<>();
+		private final List<Formula> hardConstraints = new ArrayList<>();
 
 		public void addHardConstraint(Formula formula) {
 			this.hardConstraints.add(formula);
 		}
 
-		private List<Formula> softConstraints = new ArrayList<>();
+		private final List<Formula> softConstraints = new ArrayList<>();
 
-		private List<Double> weights = new ArrayList<>();
+		private final List<Double> weights = new ArrayList<>();
 
 		public void addSoftConstraint(Double weight, Formula formula) {
 			this.softConstraints.add(formula);

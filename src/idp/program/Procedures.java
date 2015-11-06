@@ -11,7 +11,7 @@ import vector.Vector;
 public enum Procedures {
 
 	// 0: Theory, 1: Theory that might be entailed
-	ENTAILS("entails.txt", new Vector<String>("Entailing theory", "Entailed theory"), new Vector<Function>());
+	ENTAILS("entails.txt", new Vector<>("Entailing theory", "Entailed theory"), new Vector<Function>());
 
 	private final String program;
 

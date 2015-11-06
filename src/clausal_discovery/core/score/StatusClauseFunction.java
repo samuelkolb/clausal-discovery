@@ -1,17 +1,11 @@
 package clausal_discovery.core.score;
 
-import basic.ArrayUtil;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.StatusClause;
-import clausal_discovery.validity.ValidatedClause;
 import clausal_discovery.validity.ValidityTable;
 import logic.theory.Theory;
-import pair.Pair;
 import vector.SafeList;
 import vector.Vector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by samuelkolb on 01/05/15.

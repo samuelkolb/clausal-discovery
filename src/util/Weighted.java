@@ -1,7 +1,5 @@
 package util;
 
-import logic.expression.formula.Formula;
-
 /**
  * Represents a weighted formula
  *
@@ -9,13 +7,13 @@ import logic.expression.formula.Formula;
  */
 public class Weighted<T> {
 
-	private Double weight;
+	private final Double weight;
 
 	public Double getWeight() {
 		return weight;
 	}
 
-	private T object;
+	private final T object;
 
 	public T getObject() {
 		return object;

@@ -7,21 +7,21 @@ package logic.theory;
  */
 public interface Theory {
 
-	public static interface Visitor<T> {
+	interface Visitor<T> {
 
 		/**
 		 * Visit the given inline theory
 		 * @param inlineTheory	The theory to visit
 		 * @return	The result
 		 */
-		public T visit(InlineTheory inlineTheory);
+		T visit(InlineTheory inlineTheory);
 
 		/**
 		 * Visit the given file theory
 		 * @param fileTheory	The theory to visit
 		 * @return	The result
 		 */
-		public T visit(FileTheory fileTheory);
+		T visit(FileTheory fileTheory);
 	}
 
 	/**
@@ -29,5 +29,5 @@ public interface Theory {
 	 * @param visitor	The visitor to accept
 	 * @return	The result of visiting the visitor
 	 */
-	public <T> T accept(Visitor<T> visitor);
+	<T> T accept(Visitor<T> visitor);
 }

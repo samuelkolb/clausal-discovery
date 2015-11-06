@@ -5,7 +5,6 @@ import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
-import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.Vector;

@@ -1,9 +1,6 @@
 package clausal_discovery.core.score;
 
-import clausal_discovery.validity.ValidityTable;
-import log.Log;
 import logic.example.Example;
-import vector.Vector;
 
 import java.util.Comparator;
 
