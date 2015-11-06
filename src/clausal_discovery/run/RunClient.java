@@ -24,16 +24,6 @@ public class RunClient {
 		Log.LOG.addTransformer(new LinkTransformer());
 	}
 
-	//region Variables
-
-	//endregion
-
-	//region Construction
-
-	//endregion
-
-	//region Public methods
-
 	/**
 	 * Run clausal discovery with the given configuration
 	 * @param configuration	The run configuration
@@ -68,13 +58,7 @@ public class RunClient {
 		return clauses;
 	}
 
-	//endregion
-
-	// region Private methods
-
 	private double round(double time) {
 		return MathUtil.round(time / 1000, 3);
 	}
-
-	// endregion
 }
