@@ -1,3 +1,0 @@
-(human(Human1) <- female(Human1))
-(human(Human1) <- male(Human1))
-((female(Human1) | male(Human1)) <- human(Human1))
