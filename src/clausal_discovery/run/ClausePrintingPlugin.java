@@ -14,6 +14,8 @@ import java.util.List;
 /**
  * The clause printing plugin prints out nodes visited during the clausal discovery algorithm.
  * Because of the indexing scheme used by clauses, the regular printing plugin cannot be used.
+ *
+ * @author Samuel Kolb
  */
 public class ClausePrintingPlugin implements Plugin<StatusClause> {
 
