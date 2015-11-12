@@ -17,14 +17,10 @@ public abstract class IdpProgram {
 		return knowledgeBase;
 	}
 
-	private IdpProgramPrinter printer = new IdpProgramPrinter();
+	private final IdpProgramPrinter printer;
 
 	public IdpProgramPrinter getPrinter() {
 		return printer;
-	}
-
-	public void setPrinter(IdpProgramPrinter printer) {
-		this.printer = printer;
 	}
 
 	//endregion
@@ -33,10 +29,12 @@ public abstract class IdpProgram {
 
 	/**
 	 * Creates an IDP knowledgeBase which containsInstance a LogicProgram
-	 * @param knowledgeBase       	The LogicProgram
+	 * @param knowledgeBase     The LogicProgram
+	 * @param programPrinter	The idp program printer
 	 */
-	public IdpProgram(KnowledgeBase knowledgeBase) {
+	public IdpProgram(KnowledgeBase knowledgeBase, IdpProgramPrinter programPrinter) {
 		this.knowledgeBase = knowledgeBase;
+		this.printer = programPrinter;
 	}
 
 	//endregion
@@ -44,7 +42,7 @@ public abstract class IdpProgram {
 	//region Public methods
 
 	protected void printProgram(StringBuilder builder) {
-		builder.append(new IdpProgramPrinter().print(getKnowledgeBase()));
+		builder.append(getPrinter().print(getKnowledgeBase()));
 	}
 
 	protected String mergeBackground(String theory) {

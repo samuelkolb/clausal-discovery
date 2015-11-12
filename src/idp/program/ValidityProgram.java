@@ -1,5 +1,6 @@
 package idp.program;
 
+import idp.IdpProgramPrinter;
 import logic.theory.KnowledgeBase;
 
 /**
@@ -15,8 +16,13 @@ public class ValidityProgram extends ValidProgram {
 
 	//region Construction
 
-	public ValidityProgram(KnowledgeBase knowledgeBase) {
-		super(knowledgeBase);
+	/**
+	 * Creates a new validity program.
+	 * @param knowledgeBase	The knowledge base
+	 * @param printer		The program printer
+	 */
+	public ValidityProgram(KnowledgeBase knowledgeBase, IdpProgramPrinter printer) {
+		super(knowledgeBase, printer);
 	}
 
 	//endregion

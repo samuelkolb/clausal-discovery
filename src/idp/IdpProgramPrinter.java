@@ -1,6 +1,7 @@
 package idp;
 
 import clausal_discovery.core.PredicateDefinition;
+import log.Log;
 import logic.bias.Type;
 import logic.expression.formula.Formula;
 import logic.theory.*;
@@ -74,6 +75,13 @@ public class IdpProgramPrinter {
 	public static final String BACKGROUND_PREFIX = "B";
 	public static final String STRUCTURE_PREFIX = "S";
 
+	/**
+	 * Creates a program printer.
+	 */
+	private IdpProgramPrinter() {
+
+	}
+
 	public String print(KnowledgeBase program) {
 		return printVocabulary(program.getVocabulary(), VOCABULARY_NAME)
 				+ printTheories(program, THEORY_PREFIX, BACKGROUND_PREFIX, VOCABULARY_NAME)
@@ -102,6 +110,7 @@ public class IdpProgramPrinter {
 	}
 
 	public String printStructure(Structure structure, String name, String vocabularyName) {
+		Log.LOG.saveState().off().printLine("Here?").revert();
 		StringBuilder builder = new StringBuilder();
 		builder.append("structure ").append(name).append(":").append(vocabularyName).append(" {\n");
 		for(Structure.TypeElement typeElement : structure.getTypeElements()) {

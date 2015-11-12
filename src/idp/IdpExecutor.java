@@ -64,7 +64,7 @@ public class IdpExecutor implements LogicExecutor {
 
 	@Override
 	public BitMatrix testValidityTheories(KnowledgeBase knowledgeBase) {
-		String result = executeSafe(new ValidityProgram(knowledgeBase));
+		String result = executeSafe(new ValidityProgram(knowledgeBase, printer));
 		List<Vector<Boolean>> list = new ArrayList<>();
 		for(String line : result.trim().split("\n"))
 			if(line.trim().length() > 0)
@@ -79,7 +79,7 @@ public class IdpExecutor implements LogicExecutor {
 	@Override
 	public boolean entails(KnowledgeBase knowledgeBase, InlineTheory theory) {
 		entailmentStopwatch.start();
-		boolean test = executeTest(new EntailsProgram(knowledgeBase, theory));
+		boolean test = executeTest(new EntailsProgram(knowledgeBase, printer, theory));
 		entailmentStopwatch.pause();
 		entailmentCount++;
 		if(!test)
@@ -139,7 +139,6 @@ public class IdpExecutor implements LogicExecutor {
 	 * @return	The output of idp
 	 */
 	public String execute(IdpProgram program) {
-		program.setPrinter(printer);
 		return IDP.execute(program.print());
 	}
 

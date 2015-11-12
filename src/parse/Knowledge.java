@@ -63,7 +63,7 @@ public class Knowledge implements LogicBase {
 
 	@Override
 	public String toString() {
-		return new IdpProgramPrinter().printVocabulary(getVocabulary(), "Vocabulary")
+		return new IdpProgramPrinter.Cached().printVocabulary(getVocabulary(), "Vocabulary")
 				+ StringUtil.join("\n", examples.getArray());
 	}
 

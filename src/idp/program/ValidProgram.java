@@ -1,5 +1,6 @@
 package idp.program;
 
+import idp.IdpProgramPrinter;
 import logic.theory.KnowledgeBase;
 import vector.Vector;
 
@@ -12,10 +13,11 @@ public class ValidProgram extends IdpProgram {
 
 	/**
 	 * Constructs a new valid program
-	 * @param knowledgeBase			The logic program with the theory and structures
+	 * @param knowledgeBase		The logic program with the theory and structures
+	 * @param printer			The idp program printer
 	 */
-	public ValidProgram(KnowledgeBase knowledgeBase) {
-		super(knowledgeBase);
+	public ValidProgram(KnowledgeBase knowledgeBase, IdpProgramPrinter printer) {
+		super(knowledgeBase, printer);
 	}
 
 	@Override

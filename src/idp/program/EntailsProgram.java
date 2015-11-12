@@ -22,10 +22,11 @@ public class EntailsProgram extends IdpProgram {
 	/**
 	 * Constructs a new entails program
 	 * @param program	The logic program containing vocabulary and theory
+	 * @param printer	The program printer
 	 * @param theory	The theory that has to be checked
 	 */
-	public EntailsProgram(KnowledgeBase program, Theory theory) {
-		super(program);
+	public EntailsProgram(KnowledgeBase program, IdpProgramPrinter printer, Theory theory) {
+		super(program, printer);
 		if(getKnowledgeBase().getTheories().size() != 1)
 			throw new IllegalArgumentException("Knowledge base should contains exactly one theory");
 		this.theory = theory;
@@ -39,7 +40,7 @@ public class EntailsProgram extends IdpProgram {
 	public String print() {
 		StringBuilder builder = new StringBuilder();
 		printProgram(builder);
-		builder.append(new IdpProgramPrinter().printTheory(theory, "T1", "V"));
+		builder.append(getPrinter().printTheory(theory, "T1", "V"));
 		String program = String.format("t0 = %s\n", mergeBackground("T0"))
 				+ String.format("t1 = %s\n", "T1")
 				+ ENTAIL_PROCEDURE.printProgram("t0", "t1");
