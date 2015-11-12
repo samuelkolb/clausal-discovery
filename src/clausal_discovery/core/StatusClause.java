@@ -5,6 +5,7 @@ import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
+import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.Vector;
@@ -75,11 +76,11 @@ public class StatusClause {
 	// region Public methods
 
 	/**
-	 * Returns whether this status clause is currently in the body
-	 * @return	True iff the status clause is currently in the body
+	 * Returns whether this clause has a head
+	 * @return	True iff there are one or more atoms in the head of this clause
 	 */
-	public boolean isInBody() {
-		return getLiteralSet().isInBody();
+	public boolean hasHead() {
+		return getLiteralSet().hasHead();
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class StatusClause {
 	 * @return The index of the last instance or -1 if none such instance exists
 	 */
 	public int getIndex() {
-		return isInBody() ? getLiteralSet().getBody().lastIndex() : getLiteralSet().getHead().lastIndex();
+		return hasHead() ? getLiteralSet().getHead().lastIndex() : getLiteralSet().getBody().lastIndex();
 	}
 
 	/**
@@ -135,9 +136,13 @@ public class StatusClause {
 	 * @return	True iff this clause equals a subset of the given status clause of the same length as this clause
 	 */
 	public boolean isSubsetOf(StatusClause statusClause) {
-		for(StatusClause clause : statusClause.getSubsets(literalSet.size()))
-			if(equalsSymmetric(clause))
+		// not-opt
+		//boolean test = statusClause.getLiteralSet().isSubsetOf(statusClause.getLiteralSet());
+		for(StatusClause clause : statusClause.getSubsets(literalSet.size())) {
+			if(equalsSymmetric(clause)) {
 				return true;
+			}
+		}
 		return false;
 	}
 
@@ -207,9 +212,9 @@ public class StatusClause {
 	protected boolean canAdd(PositionedInstance positionedInstance) {
 		Instance instance = positionedInstance.getInstance();
 		// TODO containsInstance instance => sort variables to compare
-		if(isInBody() == positionedInstance.isInBody() && positionedInstance.getIndex() <= getIndex())
+		if(hasHead() == !positionedInstance.isInBody() && positionedInstance.getIndex() <= getIndex())
 			return false;
-		if(!isInBody() && positionedInstance.isInBody())
+		if(hasHead() && positionedInstance.isInBody())
 			return false;
 		if(!getEnvironment().isValidInstance(instance))
 			return false;
@@ -221,6 +226,11 @@ public class StatusClause {
 		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(positionedInstance);
 	}
 
+	/**
+	 * Determines whether this clause is equal to the given clause (up to symmetries).
+	 * @param clause	The clause to check
+	 * @return True iff the given clause is equal to this clause
+	 */
 	protected boolean equalsSymmetric(StatusClause clause) {
 		// not-opt revisit
 		for(PositionedInstance instance : clause.getInstances())
@@ -229,6 +239,11 @@ public class StatusClause {
 		return true;
 	}
 
+	/**
+	 * Determines whether this clause contains the given instance (up to symmetry).
+	 * @param containedInstance	The instance to check
+	 * @return	True iff this clause contains the instance or a symmetric variant
+	 */
 	protected boolean containsElementSymmetric(PositionedInstance containedInstance) {
 		for(PositionedInstance instance : getInstances())
 			if(equalsSymmetric(instance, containedInstance))
@@ -236,12 +251,19 @@ public class StatusClause {
 		return false;
 	}
 
+	/**
+	 * Determines whether two instances are equal (up to symmetry).
+	 * @param instance1	The first instance
+	 * @param instance2	The second instance
+	 * @return	True iff the clauses are equal
+	 */
 	protected boolean equalsSymmetric(PositionedInstance instance1, PositionedInstance instance2) {
+		// not-opt
 		return containsInstance(instance1, instance2.getInstance()) && instance1.isInBody() == instance2.isInBody();
 	}
 
 	/**
-	 * Returns whether this clause containsInstance the given instance
+	 * Returns whether this clause contains the given instance
 	 * @param instance	The instance
 	 * @return	True iff this instance has been added to this status clause already
 	 */
@@ -306,15 +328,6 @@ public class StatusClause {
 
 	private boolean smallerThanOrEqual(StatusClause newClause) {
 		return getLiteralSet().compareTo(newClause.getLiteralSet()) <= 0;
-		/*InstanceComparator comparator = new InstanceComparator();
-		for(int i = 0; i < getInstances().length; i++) {
-			int compare = comparator.compare(newClause.getInstances().get(i), getInstances().get(i));
-			if(compare < 0)
-				return false;
-			else if(compare > 0)
-				return true;
-		}
-		return true;*/
 	}
 
 	private Optional<StatusClause> buildClause(List<PositionedInstance> instances) {

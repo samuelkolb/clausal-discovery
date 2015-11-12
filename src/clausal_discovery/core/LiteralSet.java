@@ -51,8 +51,12 @@ class LiteralSet implements Comparable<LiteralSet> {
 		return body.isEmpty() && head.isEmpty();
 	}
 
-	public boolean isInBody() {
-		return head.isEmpty();
+	public boolean isSubsetOf(LiteralSet literalSet) {
+		return getHead().isSubsetOf(literalSet.getHead()) && getBody().isSubsetOf(literalSet.getBody());
+	}
+
+	public boolean hasHead() {
+		return !head.isEmpty();
 	}
 
 	@Override

@@ -210,8 +210,8 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 		StatusClause clause = validatedClause.getClause();
 		List<StatusClause> children = new ArrayList<>();
 		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)
-			clause.processIfRepresentative(getInstanceList().getInstance(i, clause.isInBody())).ifPresent(children::add);
-		if(clause.isInBody())
+			clause.processIfRepresentative(getInstanceList().getInstance(i, !clause.hasHead())).ifPresent(children::add);
+		if(!clause.hasHead())
 			for(int i = 0; i < getInstanceList().size(); i++)
 				clause.processIfRepresentative(getInstanceList().getInstance(i, false)).ifPresent(children::add);
 		return children.stream().map(validityCalculator::getValidatedClause).collect(Collectors.toList());

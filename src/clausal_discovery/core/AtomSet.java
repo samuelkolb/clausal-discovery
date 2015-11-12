@@ -95,8 +95,12 @@ class AtomSet implements Comparable<AtomSet> {
 		return instances;
 	}
 
-	public void forEach(IntPredicate predicate) {
-		vector.forEachIndexFromToInState(0, vector.size() - 1, true, predicate::test);
+	public boolean forEach(IntPredicate predicate) {
+		return vector.forEachIndexFromToInState(0, vector.size() - 1, true, predicate::test);
+	}
+
+	public boolean isSubsetOf(AtomSet atomSet) {
+		return !forEach(atomSet.vector::get);
 	}
 
 	@Override
