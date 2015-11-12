@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Samuel Kolb
  */
-public class IdpProgramPrinter {
+public abstract class IdpProgramPrinter {
 
 	public static class Cached extends IdpProgramPrinter {
 
@@ -75,13 +75,6 @@ public class IdpProgramPrinter {
 	public static final String BACKGROUND_PREFIX = "B";
 	public static final String STRUCTURE_PREFIX = "S";
 
-	/**
-	 * Creates a program printer.
-	 */
-	private IdpProgramPrinter() {
-
-	}
-
 	public String print(KnowledgeBase program) {
 		return printVocabulary(program.getVocabulary(), VOCABULARY_NAME)
 				+ printTheories(program, THEORY_PREFIX, BACKGROUND_PREFIX, VOCABULARY_NAME)
@@ -109,20 +102,7 @@ public class IdpProgramPrinter {
 		return builder.toString();
 	}
 
-	public String printStructure(Structure structure, String name, String vocabularyName) {
-		Log.LOG.saveState().off().printLine("Here?").revert();
-		StringBuilder builder = new StringBuilder();
-		builder.append("structure ").append(name).append(":").append(vocabularyName).append(" {\n");
-		for(Structure.TypeElement typeElement : structure.getTypeElements()) {
-			if(typeElement.getType().getName().equals("int"))
-				continue;
-			builder.append("\t").append(typeElement.print()).append("\n");
-		}
-		for(Structure.PredicateElement predicateElement : structure.getPredicateElements())
-			builder.append("\t").append(predicateElement.print()).append("\n");
-		builder.append("}\n\n");
-		return builder.toString();
-	}
+	public abstract String printStructure(Structure structure, String name, String vocabularyName);
 
 	public String printTheories(KnowledgeBase program, String prefix, String backgroundPrefix,  String vocabularyName) {
 		if(program.getTheories().isEmpty())
