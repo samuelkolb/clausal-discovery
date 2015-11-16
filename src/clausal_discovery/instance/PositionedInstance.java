@@ -1,5 +1,9 @@
 package clausal_discovery.instance;
 
+import cern.colt.bitvector.BitVector;
+import clausal_discovery.core.AtomSet;
+import clausal_discovery.core.LiteralSet;
+
 /**
  * Created by samuelkolb on 12/04/15.
  *
@@ -35,16 +39,33 @@ public class PositionedInstance {
 		return getInstanceList().get(getIndex());
 	}
 
+	private final LiteralSet enabledSet;
+
+	public LiteralSet getEnabledSet() {
+		return enabledSet;
+	}
+
+	private final LiteralSet disabledSet;
+
+	public LiteralSet getDisableSet() {
+		return disabledSet;
+	}
+
 	/**
 	 * Creates a new positioned instance
-	 * @param instanceList	The instance list
-	 * @param inBody		Whether this instance is a body or a head instance
-	 * @param index			The index of the instance within the instance list
+	 * @param instanceList    The instance list
+	 * @param inBody        Whether this instance is a body or a head instance
+	 * @param index            The index of the instance within the instance list
+	 * @param enabledSet
+	 * @param disabledSet
 	 */
-	PositionedInstance(InstanceList instanceList, boolean inBody, int index) {
+	PositionedInstance(InstanceList instanceList, boolean inBody, int index, LiteralSet enabledSet,
+					   LiteralSet disabledSet) {
 		this.instanceList = instanceList;
 		this.inBody = inBody;
 		this.index = index;
+		this.enabledSet = enabledSet;
+		this.disabledSet = disabledSet;
 	}
 
 	/**
@@ -54,7 +75,7 @@ public class PositionedInstance {
 	 * 			| && return.isInBody() == inBody
 	 */
 	public PositionedInstance clone(boolean inBody) {
-		return new PositionedInstance(getInstanceList(), inBody, getIndex());
+		return this.getInstanceList().getInstance(getIndex(), inBody);
 	}
 
 	@Override
@@ -63,8 +84,7 @@ public class PositionedInstance {
 		if(o == null || getClass() != o.getClass()) return false;
 
 		PositionedInstance instance = (PositionedInstance) o;
-
-		return inBody == instance.inBody && index == instance.index;
+		return instanceList == instance.instanceList && inBody == instance.inBody && index == instance.index;
 
 	}
 

@@ -5,6 +5,7 @@ import cern.colt.function.IntProcedure;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
+import logic.expression.formula.Atom;
 import vector.Vector;
 import vector.WriteOnceVector;
 
@@ -15,7 +16,7 @@ import java.util.function.IntPredicate;
  *
  * @author Samuel Kolb
  */
-class AtomSet implements Comparable<AtomSet> {
+public class AtomSet implements Comparable<AtomSet> {
 
 	private class LastFunction implements IntProcedure {
 
@@ -48,7 +49,7 @@ class AtomSet implements Comparable<AtomSet> {
 
 	public AtomSet(InstanceList instanceList, BitVector vector) {
 		this.instanceList = instanceList;
-		this.vector = vector;
+		this.vector = vector.copy();
 		this.size = vector.cardinality();
 	}
 

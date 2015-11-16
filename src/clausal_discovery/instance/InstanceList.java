@@ -5,6 +5,8 @@ import association.Pairing;
 import basic.StringUtil;
 import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
+import vector.SafeList;
+import vector.SafeListBuilder;
 import vector.Vector;
 
 import java.util.ArrayList;
@@ -23,6 +25,10 @@ public class InstanceList {
 
 	private final Pairing<Integer, Instance> pairing;
 
+	private final SafeList<PositionedInstance> bodyAtoms;
+
+	private final SafeList<PositionedInstance> headAtoms;
+
 	/**
 	 * Creates a new instance list
 	 * @param predicates	The predicates to use
@@ -30,16 +36,14 @@ public class InstanceList {
 	 */
 	public InstanceList(Vector<PredicateDefinition> predicates, int variables) {
 		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
-	}
-
-	/**
-	 * Create a specific instance list
-	 * @param instances	The instances in order
-	 */
-	public InstanceList(Vector<Instance> instances) {
-		this.pairing = new HashPairing<>(false, false);
-		for(int i = 0; i < instances.size(); i++)
-			this.pairing.associate(i, instances.get(i));
+		SafeListBuilder<PositionedInstance> body = SafeList.build(this.pairing.size());
+		SafeListBuilder<PositionedInstance> head = SafeList.build(this.pairing.size());
+		for(int i = 0; i < this.pairing.size(); i++) {
+			body.add(new PositionedInstance(this, true, i, enabledSet, disabledSet));
+			head.add(new PositionedInstance(this, false, i, enabledSet, disabledSet));
+		}
+		this.bodyAtoms = body.create();
+		this.headAtoms = head.create();
 	}
 
 	/**
@@ -66,7 +70,7 @@ public class InstanceList {
 	 * @return	A positioned instance
 	 */
 	public PositionedInstance getInstance(int index, boolean inBody) {
-		return new PositionedInstance(this, inBody, index);
+		return (inBody ? this.bodyAtoms : this.headAtoms).get(index);
 	}
 
 	/**

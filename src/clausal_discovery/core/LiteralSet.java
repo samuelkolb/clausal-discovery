@@ -7,7 +7,7 @@ import clausal_discovery.instance.InstanceList;
  *
  * @author Samuel Kolb
  */
-class LiteralSet implements Comparable<LiteralSet> {
+public class LiteralSet implements Comparable<LiteralSet> {
 
 	private final AtomSet body;
 
