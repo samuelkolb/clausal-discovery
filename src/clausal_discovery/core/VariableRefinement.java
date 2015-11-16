@@ -120,7 +120,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	 */
 	public VariableRefinement(LogicBase logicBase, InstanceList list, Vector<Theory> background,
 							  Predicate<ValidatedClause> validityTest) {
-		this.backgroundTheories = background.grow(new InlineTheory(logicBase.getSymmetryFormulas()));
+		this.backgroundTheories = background.grow(new InlineTheory(logicBase.getBackgroundKnowledge()));
 		this.logicBase = logicBase;
 		this.executor = IdpExecutor.get();
 		this.instanceList = list;
@@ -207,6 +207,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	}
 
 	private List<ValidatedClause> getChildren(ValidatedClause validatedClause) {
+		// TODO BitVector per clause with allowed clauses
 		StatusClause clause = validatedClause.getClause();
 		List<StatusClause> children = new ArrayList<>();
 		for(int i = clause.getIndex() + 1; i < getInstanceList().size(); i++)

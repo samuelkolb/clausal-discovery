@@ -39,6 +39,7 @@ public class LogicParser implements LocalParser<LogicBase> {
 		parsers.add(new CommentParser());
 		parsers.add(new TypeDefParser());
 		parsers.add(new PredicateDefParser());
+		parsers.add(new EnumParser());
 		parsers.add(new ExampleParser());
 		parsers.add(new SearchParser());
 		parsers.add(new PreferenceParser.PreferenceIgnoreParser());

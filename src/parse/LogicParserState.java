@@ -1,9 +1,13 @@
 package parse;
 
+import association.Association;
+import association.HashAssociation;
 import clausal_discovery.core.PredicateDefinition;
 import log.Log;
+import logic.bias.EnumType;
 import util.Numbers;
 import pair.Pair;
+import vector.SafeList;
 import vector.Vector;
 import clausal_discovery.core.LogicBase;
 import logic.bias.Type;
@@ -15,6 +19,7 @@ import logic.expression.term.Constant;
 import logic.expression.term.Term;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The logic parser state stores state information that is added during the parsing of a logic file
@@ -84,6 +89,15 @@ public class LogicParserState {
 	}
 
 	/**
+	 * Adds the given enum type.
+	 * @param enumType	The enum to add
+	 */
+	public void addEnum(EnumType enumType) {
+		Log.LOG.printLine("INFO added enum " + enumType.getName());
+		types.put(enumType.getName(), enumType);
+	}
+
+	/**
 	 * Checks whether this state containsInstance a predicate definition with the given name
 	 * @param predicateName	The name of the predicate to check for
 	 * @return	True iff a predicate definition with the given name has already been added to this state
@@ -148,6 +162,17 @@ public class LogicParserState {
 	}
 
 	/**
+	 * Resets the example state.
+	 */
+	public void resetExample() {
+		instances.clear();
+		constants.clear();
+		types.values().stream().filter(type -> type instanceof EnumType)
+				.forEach(type -> ((EnumType) type).getConstants().forEach(c -> constants.put(c.getName(), c)));
+		positiveExample = true;
+	}
+
+	/**
 	 * Add an example and reset the current example properties (instances, constants, ...)
 	 * @param name	The name of the example
 	 */
@@ -155,9 +180,6 @@ public class LogicParserState {
 		Log.LOG.formatLine("INFO added example %s", name);
 		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
 		examples.add(new Example(name, getSetup(), instances1, positiveExample));
-		instances.clear();
-		constants.clear();
-		positiveExample = true;
 	}
 
 	public void setPositiveExample(boolean b) {

@@ -9,6 +9,8 @@ import vector.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by samuelkolb on 12/04/15.
@@ -109,9 +111,7 @@ public class InstanceList {
 
 	@Override
 	public String toString() {
-		List<String> strings = new ArrayList<>();
-		for(Integer key : this.pairing.keySet())
-			strings.add(key + ": " + get(key));
-		return StringUtil.join(", ", strings.toArray());
+		Set<Integer> keys = this.pairing.keySet();
+		return StringUtil.join(", ", keys.stream().map(key -> key + ": " + get(key)).collect(Collectors.toList()));
 	}
 }

@@ -35,6 +35,7 @@ public class ExampleParser extends ScopeParser<LogicParserState> {
 	public boolean activatesWith(String string, LogicParserState parseState) throws ParsingError {
 		if(!string.matches("example\\s+\\w+\\s+([+-]\\s+)?\\{\\s*\\n"))
 			return false;
+		parseState.resetExample();
 		String[] parts = string.split("\\s+");
 		this.name = parts[1];
 		if(parts[2].equals("+"))

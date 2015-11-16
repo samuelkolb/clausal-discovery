@@ -82,6 +82,4 @@ public class PredicateDefinition {
 					throw new IllegalArgumentException("In symmetric predicates all arguments must have the same type");
 		}
 	}
-
-
 }

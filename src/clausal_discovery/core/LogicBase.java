@@ -7,6 +7,7 @@ import logic.example.Example;
 import logic.theory.Vocabulary;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by samuelkolb on 05/12/14.
@@ -34,10 +35,10 @@ public interface LogicBase {
 	Vector<PredicateDefinition> getSearchPredicates();
 
 	/**
-	 * Returns the formulas that describe the symmetries of predicates in this logic base
+	 * Returns the formulas that describe the background knowledge in this logic base.
 	 * @return	A list of formulas
 	 */
-	List<Formula> getSymmetryFormulas();
+	List<Formula> getBackgroundKnowledge();
 
 	/**
 	 * Splits the logic base into a list of logic bases containing one example each
@@ -50,7 +51,7 @@ public interface LogicBase {
 	 * @param predicate	The predicate acting as filter
 	 * @return	A new logic base
 	 */
-	LogicBase filterExamples(java.util.function.Predicate<Example> predicate);
+	LogicBase filterExamples(Predicate<Example> predicate);
 
 	/**
 	 * Splits the logic base into two

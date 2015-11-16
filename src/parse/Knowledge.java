@@ -68,7 +68,7 @@ public class Knowledge implements LogicBase {
 	}
 
 	@Override
-	public List<Formula> getSymmetryFormulas() {
+	public List<Formula> getBackgroundKnowledge() {
 		List<Formula> formulas = new ArrayList<>();
 		for(PredicateDefinition definition : getSearchPredicates().filter(PredicateDefinition::isSymmetric)) {
 			Predicate predicate = definition.getPredicate();
