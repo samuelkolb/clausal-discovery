@@ -3,7 +3,12 @@ package clausal_discovery.instance;
 import association.HashPairing;
 import association.Pairing;
 import basic.StringUtil;
+import clausal_discovery.core.LiteralSet;
 import clausal_discovery.core.PredicateDefinition;
+import clausal_discovery.core.bias.Bias;
+import clausal_discovery.core.bias.ConnectedInstanceBias;
+import clausal_discovery.core.bias.InstanceBias;
+import clausal_discovery.core.bias.OrderedInstanceBias;
 import util.Numbers;
 import vector.SafeList;
 import vector.SafeListBuilder;
@@ -15,7 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by samuelkolb on 12/04/15.
+ * Represents a list of instances to reduce duplicates while building clauses in an incremental fashion.
  *
  * @author Samuel Kolb
  */
@@ -25,9 +30,29 @@ public class InstanceList {
 
 	private final Pairing<Integer, Instance> pairing;
 
+	private final InstanceBias instanceBias = new ConnectedInstanceBias().combineWith(new OrderedInstanceBias());
+
+	private final Bias bias = new OrderedInstanceBias();
+
+	public InstanceBias getInstanceBias() {
+		return instanceBias;
+	}
+
 	private final SafeList<PositionedInstance> bodyAtoms;
 
 	private final SafeList<PositionedInstance> headAtoms;
+
+	private final LiteralSet enabled;
+
+	public LiteralSet getEnabled() {
+		return enabled;
+	}
+
+	private final LiteralSet disabled;
+
+	public LiteralSet getDisabled() {
+		return disabled;
+	}
 
 	/**
 	 * Creates a new instance list
@@ -36,14 +61,46 @@ public class InstanceList {
 	 */
 	public InstanceList(Vector<PredicateDefinition> predicates, int variables) {
 		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
-		SafeListBuilder<PositionedInstance> body = SafeList.build(this.pairing.size());
-		SafeListBuilder<PositionedInstance> head = SafeList.build(this.pairing.size());
-		for(int i = 0; i < this.pairing.size(); i++) {
-			body.add(new PositionedInstance(this, true, i, enabledSet, disabledSet));
-			head.add(new PositionedInstance(this, false, i, enabledSet, disabledSet));
+		SafeListBuilder<PositionedInstance> body = SafeList.build(size());
+		SafeListBuilder<PositionedInstance> head = SafeList.build(size());
+		LiteralSet enabled = new LiteralSet(this);
+		LiteralSet disabled = new LiteralSet(this);
+		for(int i = 0; i < size(); i++) {
+			for(boolean inBody : new boolean[]{true, false}) {
+				if(bias.enables(get(i), inBody)) {
+					enabled = enabled.add(i, inBody);
+				}
+				if(bias.disables(get(i), inBody)) {
+					disabled = disabled.add(i, inBody);
+				}
+				LiteralSet enabledSet = new LiteralSet(this);
+				LiteralSet disabledSet = new LiteralSet(this);
+				disabledSet = disabledSet.add(i, !inBody);
+				for(int j = 0; j < size(); j++) {
+					// Use order and bias to calculated enabled and disabled instances
+					if(j <= i) {
+						disabledSet = disabledSet.add(j, inBody);
+					}
+					if(!inBody) {
+						disabledSet = disabledSet.add(j, false);
+					}
+					// not-opt j < i not necessary
+					for(boolean testInBody : new boolean[]{true, false}) {
+						if(getInstanceBias().enables(get(i), inBody, get(j), testInBody)) {
+							enabledSet = enabledSet.add(j, testInBody);
+						}
+						if(getInstanceBias().disables(get(i), inBody, get(j), testInBody)) {
+							disabledSet = disabledSet.add(j, testInBody);
+						}
+					}
+				}
+				(inBody ? body : head).add(new PositionedInstance(this, inBody, i, enabledSet, disabledSet));
+			}
 		}
 		this.bodyAtoms = body.create();
 		this.headAtoms = head.create();
+		this.disabled = disabled;
+		this.enabled = enabled.minus(disabled);
 	}
 
 	/**

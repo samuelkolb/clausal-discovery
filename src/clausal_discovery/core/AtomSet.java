@@ -70,6 +70,24 @@ public class AtomSet implements Comparable<AtomSet> {
 		return !wasInSet;
 	}
 
+	public AtomSet union(AtomSet set) {
+		BitVector vector = this.vector.copy();
+		vector.or(set.vector);
+		return new AtomSet(getInstanceList(), vector);
+	}
+
+	public AtomSet intersect(AtomSet set) {
+		BitVector vector = this.vector.copy();
+		vector.and(set.vector);
+		return new AtomSet(getInstanceList(), vector);
+	}
+
+	public AtomSet minus(AtomSet set) {
+		BitVector vector = this.vector.copy();
+		vector.andNot(set.vector);
+		return new AtomSet(getInstanceList(), vector);
+	}
+
 	public int size() {
 		return size;
 	}

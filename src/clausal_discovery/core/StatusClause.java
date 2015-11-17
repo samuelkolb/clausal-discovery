@@ -5,7 +5,6 @@ import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
-import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.Vector;
@@ -43,6 +42,10 @@ public class StatusClause {
 		return literalSet;
 	}
 
+	private final LiteralSet enabled;
+
+	private final LiteralSet disabled;
+
 	// IVAR environment - The typing environment
 
 	private final Environment environment;
@@ -63,12 +66,16 @@ public class StatusClause {
 		this.rank = 0;
 		this.literalSet = new LiteralSet(instanceList);
 		this.environment = new Environment();
+		this.enabled = instanceList.getEnabled();
+		this.disabled = instanceList.getDisabled();
 	}
 
-	private StatusClause(int rank, LiteralSet literalSet, Environment environment) {
-		this.rank = rank;
-		this.literalSet = literalSet;
-		this.environment = environment;
+	private StatusClause(StatusClause clause, PositionedInstance instance) {
+		this.rank = Math.max(clause.getRank(), instance.getInstance().getMax() + 1);
+		this.environment = clause.getEnvironment().addInstance(instance.getInstance());
+		this.literalSet = clause.literalSet.add(instance.getIndex(), instance.isInBody());
+		this.disabled = clause.disabled.union(instance.getDisableSet());
+		this.enabled = clause.enabled.union(instance.getEnabledSet()).minus(this.disabled);
 	}
 
 	// endregion
@@ -124,10 +131,12 @@ public class StatusClause {
 	public Optional<StatusClause> addIfValid(PositionedInstance instance) {
 		if(!canAdd(instance))
 			return Optional.empty();
-		int newRank = Math.max(getRank(), instance.getInstance().getMax() + 1);
-		Environment newEnvironment = getEnvironment().addInstance(instance.getInstance());
-		LiteralSet newLiteralSet = literalSet.add(instance.getIndex(), instance.isInBody());
-		return Optional.of(new StatusClause(newRank, newLiteralSet, newEnvironment));
+		StatusClause statusClause = growClause(instance);
+		return Optional.of(statusClause);
+	}
+
+	protected StatusClause growClause(PositionedInstance instance) {
+		return new StatusClause(this, instance);
 	}
 
 	/**

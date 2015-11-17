@@ -43,6 +43,18 @@ public class LiteralSet implements Comparable<LiteralSet> {
 		}
 	}
 
+	public LiteralSet union(LiteralSet literalSet) {
+		return new LiteralSet(body.union(literalSet.body), head.union(literalSet.head));
+	}
+
+	public LiteralSet intersect(LiteralSet literalSet) {
+		return new LiteralSet(body.intersect(literalSet.body), head.intersect(literalSet.head));
+	}
+
+	public LiteralSet minus(LiteralSet literalSet) {
+		return new LiteralSet(body.minus(literalSet.body), head.minus(literalSet.head));
+	}
+
 	public int size() {
 		return body.size() + head.size();
 	}

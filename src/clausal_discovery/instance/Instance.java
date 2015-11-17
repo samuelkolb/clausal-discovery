@@ -34,7 +34,7 @@ public class Instance {
 		return variableIndices;
 	}
 
-	private int max;
+	private final int max;
 
 	public int getMax() {
 		return max;
@@ -52,10 +52,16 @@ public class Instance {
 	public Instance(PredicateDefinition definition, Vector<Integer> variableIndices) {
 		assert definition.getPredicate().getArity() == variableIndices.size();
 		this.definition = definition;
+		// TODO Check if necessary?
 		this.variableIndices = definition.isSymmetric() ? variableIndices.sortedCopy() : variableIndices;
-		this.max = variableIndices.get(0);
-		for(int i = 1; i < variableIndices.size(); i++)
-			this.max = Math.max(this.max, variableIndices.get(i));
+		int max = -1;
+		for(int i = 0; i < variableIndices.size(); i++) {
+			if(i < 0) {
+				throw new IllegalArgumentException("Variable indices have to be zero or higher.");
+			}
+			max = Math.max(max, variableIndices.get(i));
+		}
+		this.max = max;
 	}
 
 	//endregion
