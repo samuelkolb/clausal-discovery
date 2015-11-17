@@ -36,7 +36,12 @@ class AtomComparator implements Comparator<Instance> {
 				return v;
 			}
 		}
-		for(int i = 0; i < o1.getVariableIndices().size(); i++) {
+		for(int i = 0; i < Math.max(o1.getVariableIndices().size(), o2.getVariableIndices().size()); i++) {
+			if(i >= o1.getVariableIndices().size()) {
+				return -1;
+			} else if(i >= o2.getVariableIndices().size()) {
+				return 1;
+			}
 			int o = Integer.compare(o1.getVariableIndices().get(i), o2.getVariableIndices().get(i));
 			if(o != 0) {
 				return o;
