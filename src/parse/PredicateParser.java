@@ -21,7 +21,7 @@ public class PredicateParser extends MatchParser<LogicParserState> {
 
 	@Override
 	public boolean matches(String string, LogicParserState parseState) throws ParsingError {
-		if(!string.matches("\\s+[a-zA-Z_]+\\(.*\\)"))
+		if(!string.matches("\\s+[a-zA-Z_\\d]+\\(.*\\)"))
 			return false;
 		Pair<String, String[]> predicate = parseState.parsePredicate(string.trim());
 		if(!parseState.containsPredicate(predicate.getFirst()))
