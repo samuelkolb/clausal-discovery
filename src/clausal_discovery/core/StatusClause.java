@@ -1,10 +1,12 @@
 package clausal_discovery.core;
 
 import basic.StringUtil;
+import clausal_discovery.core.bias.Bias;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
+import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.Vector;
@@ -42,9 +44,11 @@ public class StatusClause {
 		return literalSet;
 	}
 
-	private final LiteralSet enabled;
+	private final Bias bias;
 
-	private final LiteralSet disabled;
+	public Bias getBias() {
+		return bias;
+	}
 
 	// IVAR environment - The typing environment
 
@@ -66,16 +70,14 @@ public class StatusClause {
 		this.rank = 0;
 		this.literalSet = new LiteralSet(instanceList);
 		this.environment = new Environment();
-		this.enabled = instanceList.getEnabled();
-		this.disabled = instanceList.getDisabled();
+		this.bias = instanceList.getBias();
 	}
 
-	private StatusClause(StatusClause clause, PositionedInstance instance) {
+	private StatusClause(StatusClause clause, PositionedInstance instance, Bias bias) {
 		this.rank = Math.max(clause.getRank(), instance.getInstance().getMax() + 1);
 		this.environment = clause.getEnvironment().addInstance(instance.getInstance());
 		this.literalSet = clause.literalSet.add(instance.getIndex(), instance.isInBody());
-		this.disabled = clause.disabled.union(instance.getDisableSet());
-		this.enabled = clause.enabled.union(instance.getEnabledSet()).minus(this.disabled);
+		this.bias = bias;
 	}
 
 	// endregion
@@ -129,14 +131,27 @@ public class StatusClause {
 	 * @return	An optional containing either the valid clause or an empty optional
 	 */
 	public Optional<StatusClause> addIfValid(PositionedInstance instance) {
-		if(!canAdd(instance))
+		boolean isEnabled = getBias().allows(instance);
+		//boolean canAdd = canAdd(instance);
+		if(!isEnabled) {
 			return Optional.empty();
-		StatusClause statusClause = growClause(instance);
-		return Optional.of(statusClause);
-	}
+		}
+		/*if(!isEnabled && canAdd) {
+			Log.LOG.saveState().on().printLine("Disabled, can add").revert();
+			Log.LOG.saveState().on().printLine(getLiteralSet()).revert();
+			Log.LOG.saveState().on().printLine(getBias()).revert();
+			Log.LOG.saveState().on().printLine(instance).newLine().revert();
+		} else if(isEnabled && !canAdd) {
+			Log.LOG.saveState().on().printLine("Enabled, cannot add").revert();
+			Log.LOG.saveState().on().printLine(getLiteralSet()).revert();
+			Log.LOG.saveState().on().printLine(getBias()).revert();
+			Log.LOG.saveState().on().printLine(instance).newLine().revert();
+		}*/
+		if(!canAdd(instance)) {
+			return Optional.empty();
 
-	protected StatusClause growClause(PositionedInstance instance) {
-		return new StatusClause(this, instance);
+		}
+		return Optional.of(new StatusClause(this, instance, getBias().process(instance)));
 	}
 
 	/**

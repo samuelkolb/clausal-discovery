@@ -1,6 +1,10 @@
 package clausal_discovery.core;
 
+import basic.StringUtil;
 import clausal_discovery.instance.InstanceList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Efficiently represents an ordered set of literals (a clause)
@@ -26,7 +30,10 @@ public class LiteralSet implements Comparable<LiteralSet> {
 		this.head = new AtomSet(list);
 	}
 
-	private LiteralSet(AtomSet body, AtomSet head) {
+	public LiteralSet(AtomSet body, AtomSet head) {
+		if(!body.getInstanceList().equals(head.getInstanceList())) {
+			throw new IllegalArgumentException("Both the body and head atom sets must have the same instance list");
+		}
 		this.body = body;
 		this.head = head;
 	}
@@ -53,6 +60,10 @@ public class LiteralSet implements Comparable<LiteralSet> {
 
 	public LiteralSet minus(LiteralSet literalSet) {
 		return new LiteralSet(body.minus(literalSet.body), head.minus(literalSet.head));
+	}
+
+	public boolean contains(int index, boolean inBody) {
+		return (inBody ? getBody() : getHead()).contains(index);
 	}
 
 	public int size() {
@@ -92,5 +103,13 @@ public class LiteralSet implements Comparable<LiteralSet> {
 	public int compareTo(LiteralSet o) {
 		int bodyCompare = body.compareTo(o.body);
 		return bodyCompare == 0 ? head.compareTo(head) : bodyCompare;
+	}
+
+	@Override
+	public String toString() {
+		List<String> list = new ArrayList<>();
+		getBody().forEach(i -> list.add("~" + getBody().getInstanceList().get(i)));
+		getHead().forEach(i -> list.add("" + getHead().getInstanceList().get(i)));
+		return "[" + StringUtil.join(", ", list) + "]";
 	}
 }

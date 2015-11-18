@@ -1,15 +1,16 @@
 package clausal_discovery.instance;
 
-import cern.colt.bitvector.BitVector;
-import clausal_discovery.core.AtomSet;
+import clausal_discovery.core.Literal;
 import clausal_discovery.core.LiteralSet;
+import logic.expression.formula.Predicate;
+import vector.Vector;
 
 /**
  * Created by samuelkolb on 12/04/15.
  *
  * @author Samuel Kolb
  */
-public class PositionedInstance {
+public class PositionedInstance implements Literal {
 
 	// IVAR instance - The instance list used for clause ordering
 
@@ -98,5 +99,25 @@ public class PositionedInstance {
 	@Override
 	public String toString() {
 		return (isInBody() ? "~" : "") + getInstance();
+	}
+
+	@Override
+	public Predicate getPredicate() {
+		return getInstance().getPredicate();
+	}
+
+	@Override
+	public Vector<Integer> getVariables() {
+		return getInstance().getVariableIndices();
+	}
+
+	@Override
+	public int getRank() {
+		return getInstance().getMax();
+	}
+
+	@Override
+	public boolean isPositive() {
+		return !isInBody();
 	}
 }

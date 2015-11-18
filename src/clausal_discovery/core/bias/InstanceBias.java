@@ -52,4 +52,25 @@ public interface InstanceBias {
 			}
 		};
 	}
+
+	/**
+	 * Restricts a bias to be only enable or disable instances in the head or body.
+	 * @param enableBody	True if enabling should be restricted to the body of the clause, false for the head
+	 * @param disableBody	True if disabling should be restricted to the body of the clause, false for the head
+	 * @return	A new bias
+	 */
+	default InstanceBias restrict(boolean enableBody, boolean disableBody) {
+		InstanceBias original = this;
+		return new InstanceBias() {
+			@Override
+			public boolean enables(Instance current, boolean inBody, Instance testInstance, boolean testInBody) {
+				return testInBody == enableBody && original.enables(current, inBody, testInstance, testInBody);
+			}
+
+			@Override
+			public boolean disables(Instance current, boolean inBody, Instance testInstance, boolean testInBody) {
+				return testInBody == disableBody && original.enables(current, inBody, testInstance, testInBody);
+			}
+		};
+	}
 }

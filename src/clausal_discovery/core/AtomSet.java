@@ -98,6 +98,10 @@ public class AtomSet implements Comparable<AtomSet> {
 		return last.found;
 	}
 
+	public boolean contains(int index) {
+		return this.vector.get(index);
+	}
+
 	public boolean isEmpty() {
 		return size() == 0;
 	}

@@ -11,9 +11,7 @@ public class ConnectedInstanceBias implements InstanceBias {
 
 	@Override
 	public boolean enables(Instance current, boolean inBody, Instance testInstance, boolean testInBody) {
-		if(!testInBody) {
-			return false;
-		} else if(testInstance.getVariableIndices().isEmpty()) {
+		if(testInstance.getVariableIndices().isEmpty()) {
 			// The test instance has no variables
 			return true;
 		} else if(current.getVariableIndices().isEmpty()) {

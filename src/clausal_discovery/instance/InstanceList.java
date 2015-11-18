@@ -3,18 +3,26 @@ package clausal_discovery.instance;
 import association.HashPairing;
 import association.Pairing;
 import basic.StringUtil;
+import cern.colt.bitvector.BitVector;
+import clausal_discovery.core.AtomSet;
 import clausal_discovery.core.LiteralSet;
 import clausal_discovery.core.PredicateDefinition;
 import clausal_discovery.core.bias.Bias;
+import clausal_discovery.core.bias.BiasModule;
+import clausal_discovery.core.bias.InitialBias;
 import clausal_discovery.core.bias.ConnectedInstanceBias;
 import clausal_discovery.core.bias.InstanceBias;
 import clausal_discovery.core.bias.OrderedInstanceBias;
+import clausal_discovery.core.bias.RangeRestrictionBias;
+import log.Log;
 import util.Numbers;
 import vector.SafeList;
 import vector.SafeListBuilder;
 import vector.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,7 +40,9 @@ public class InstanceList {
 
 	private final InstanceBias instanceBias = new ConnectedInstanceBias().combineWith(new OrderedInstanceBias());
 
-	private final Bias bias = new OrderedInstanceBias();
+	private final InitialBias initialBias = new OrderedInstanceBias();
+
+	private final List<BiasModule> modules = Collections.singletonList(new RangeRestrictionBias(this));
 
 	public InstanceBias getInstanceBias() {
 		return instanceBias;
@@ -42,17 +52,9 @@ public class InstanceList {
 
 	private final SafeList<PositionedInstance> headAtoms;
 
-	private final LiteralSet enabled;
+	private final Bias bias;
 
-	public LiteralSet getEnabled() {
-		return enabled;
-	}
-
-	private final LiteralSet disabled;
-
-	public LiteralSet getDisabled() {
-		return disabled;
-	}
+	private final List<LiteralSet> rankSets = new ArrayList<>();
 
 	/**
 	 * Creates a new instance list
@@ -63,15 +65,15 @@ public class InstanceList {
 		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
 		SafeListBuilder<PositionedInstance> body = SafeList.build(size());
 		SafeListBuilder<PositionedInstance> head = SafeList.build(size());
-		LiteralSet enabled = new LiteralSet(this);
-		LiteralSet disabled = new LiteralSet(this);
+		LiteralSet unlocked = new LiteralSet(this);
+		LiteralSet blocked = new LiteralSet(this);
 		for(int i = 0; i < size(); i++) {
 			for(boolean inBody : new boolean[]{true, false}) {
-				if(bias.enables(get(i), inBody)) {
-					enabled = enabled.add(i, inBody);
+				if(initialBias.enables(get(i), inBody)) {
+					unlocked = unlocked.add(i, inBody);
 				}
-				if(bias.disables(get(i), inBody)) {
-					disabled = disabled.add(i, inBody);
+				if(initialBias.disables(get(i), inBody)) {
+					blocked = blocked.add(i, inBody);
 				}
 				LiteralSet enabledSet = new LiteralSet(this);
 				LiteralSet disabledSet = new LiteralSet(this);
@@ -82,7 +84,7 @@ public class InstanceList {
 						disabledSet = disabledSet.add(j, inBody);
 					}
 					if(!inBody) {
-						disabledSet = disabledSet.add(j, false);
+						disabledSet = disabledSet.add(j, true);
 					}
 					// not-opt j < i not necessary
 					for(boolean testInBody : new boolean[]{true, false}) {
@@ -99,8 +101,32 @@ public class InstanceList {
 		}
 		this.bodyAtoms = body.create();
 		this.headAtoms = head.create();
-		this.disabled = disabled;
-		this.enabled = enabled.minus(disabled);
+		for(int i = 0; i < variables; i++) {
+			BitVector vector = new BitVector(size());
+			for(int j = 0; j < size(); j++) {
+				vector.put(j, get(j).getMax() <= i);
+			}
+			AtomSet set = new AtomSet(this, vector);
+			this.rankSets.add(new LiteralSet(set, set));
+		}
+		this.bias = new Bias(unlocked, blocked, this.modules);
+	}
+
+	/**
+	 * Returns the instance list bias.
+	 * @return	A bias
+	 */
+	public Bias getBias() {
+		return this.bias;
+	}
+
+	/**
+	 * Returns the set of literals that contain only variables of the given rank or below.
+	 * @param rank	The rank
+	 * @return	A literal set
+	 */
+	public LiteralSet getRankSet(int rank) {
+		return this.rankSets.get(rank);
 	}
 
 	/**
@@ -148,6 +174,7 @@ public class InstanceList {
 			InstanceSetPrototype instanceSetPrototype = instanceSetPrototypes.get(choice.getDistinctCount() - 1);
 			instanceList.addAll(instanceSetPrototype.getInstances(choice.getArray()));
 		}
+		instanceList.sort(new AtomComparator(definitions));
 		Pairing<Integer, Instance> pairing = new HashPairing<>(false, false);
 		for(int i = 0; i < instanceList.size(); i++)
 			pairing.put(i, instanceList.get(i));

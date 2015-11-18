@@ -1,49 +1,61 @@
 package clausal_discovery.core.bias;
 
-import clausal_discovery.instance.Instance;
+import clausal_discovery.core.LiteralSet;
+import clausal_discovery.instance.PositionedInstance;
+import vector.SafeList;
+
+import java.util.List;
 
 /**
- * Represents a bias expressing how instances enable or disable other instances.
+ * Created by samuelkolb on 18/11/15.
  *
  * @author Samuel Kolb
  */
-public interface Bias {
+public class Bias {
+
+	private final LiteralSet unlocked;
+
+	private final LiteralSet maskedUnlocked;
+
+	private final LiteralSet blocked;
+
+	private final SafeList<BiasModule> modules;
 
 	/**
-	 * Returns whether this bias enables the test instance
-	 * @param testInstance	The instance to test
-	 * @param testInBody	Whether the test instance is a body atom
-	 * @return	True iff this bias enables the test instance
+	 * Creates a bias with a set of unlocked and blocked literals, as well as a list of bias modules.
+	 * @param unlocked	The unlocked literals
+	 * @param blocked	The blocked literals
+	 * @param modules	The bias modules
 	 */
-	boolean enables(Instance testInstance, boolean testInBody);
+	public Bias(LiteralSet unlocked, LiteralSet blocked, List<BiasModule> modules) {
+		this.unlocked = unlocked.minus(blocked);
+		this.blocked = blocked;
+		this.modules = SafeList.from(modules);
+		this.maskedUnlocked = this.modules.foldLeft(this.unlocked, (ls, m) -> ls.intersect(m.getMask()));
+	}
 
 	/**
-	 * Returns whether this bias disables the test instance
-	 * @param testInstance	The instance to test
-	 * @param testInBody	Whether the test instance is a body atom
-	 * @return	True iff this bias disables the test instance
+	 * Creates a new bias using the given literal.
+	 * @param literal	The literal
+	 * @return	An updated bias
 	 */
-	boolean disables(Instance testInstance, boolean testInBody);
+	public Bias process(PositionedInstance literal) {
+		LiteralSet newUnlocked = this.unlocked.union(literal.getEnabledSet());
+		LiteralSet newBlocked = this.blocked.union(literal.getDisableSet());
+		return new Bias(newUnlocked, newBlocked, modules.map(m -> m.extend(literal)));
+	}
 
 	/**
-	 * Combines this bias with another bias.
-	 * The combined bias enables/disables instances if this bias or the given bias enable/disable them respectively.
-	 * @param bias	The other bias
-	 * @return	A new bias
+	 * Checks the given literal.
+	 * @param literal	The literal to check
+	 * @return	True iff this bias allows the given literal
 	 */
-	default Bias combineWith(Bias bias) {
-		Bias original = this;
-		return new Bias() {
+	public boolean allows(PositionedInstance literal) {
+		return this.maskedUnlocked.contains(literal.getIndex(), literal.isInBody());
+	}
 
-			@Override
-			public boolean enables(Instance testInstance, boolean testInBody) {
-				return original.enables(testInstance, testInBody) || bias.enables(testInstance, testInBody);
-			}
-
-			@Override
-			public boolean disables(Instance testInstance, boolean testInBody) {
-				return original.disables(testInstance, testInBody) || bias.disables(testInstance, testInBody);
-			}
-		};
+	@Override
+	public String toString() {
+		return this.maskedUnlocked.toString();
 	}
 }
