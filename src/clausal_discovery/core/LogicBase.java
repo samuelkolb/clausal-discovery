@@ -2,6 +2,7 @@ package clausal_discovery.core;
 
 import logic.expression.formula.Formula;
 import pair.TypePair;
+import vector.SafeList;
 import vector.Vector;
 import logic.example.Example;
 import logic.theory.Vocabulary;
@@ -26,13 +27,13 @@ public interface LogicBase {
 	 * Returns the examples that can be used to validate clauses
 	 * @return	A list of examples
 	 */
-	Vector<Example> getExamples();
+	SafeList<Example> getExamples();
 
 	/**
 	 * Returns the predicates that can be used in clauses
 	 * @return	A list of predicates
 	 */
-	Vector<PredicateDefinition> getSearchPredicates();
+	SafeList<PredicateDefinition> getSearchList();
 
 	/**
 	 * Returns the formulas that describe the background knowledge in this logic base.

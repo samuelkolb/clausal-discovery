@@ -2,7 +2,9 @@ package logic.theory;
 
 import clausal_discovery.core.PredicateDefinition;
 import clausal_discovery.instance.Instance;
+import log.Log;
 import logic.bias.Type;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.*;
@@ -14,14 +16,15 @@ import java.util.*;
  */
 public class Vocabulary {
 
-	private final Vector<Type> types;
+	private final SafeList<Type> types;
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return types;
 	}
-	private final Vector<PredicateDefinition> definitions;
 
-	public Vector<PredicateDefinition> getDefinitions() {
+	private final SafeList<PredicateDefinition> definitions;
+
+	public SafeList<PredicateDefinition> getDefinitions() {
 		return definitions;
 	}
 
@@ -29,11 +32,11 @@ public class Vocabulary {
 	 * Creates a new vocabulary with the given definitions
 	 * @param definitions	The definitions
 	 */
-	public Vocabulary(Vector<Type> types, Vector<PredicateDefinition> definitions) {
+	public Vocabulary(SafeList<Type> types, SafeList<PredicateDefinition> definitions) {
 		Set<Type> contained = new HashSet<>();
 		for(PredicateDefinition definition : definitions)
 			contained.addAll(definition.getTypes());
-		this.types = types.filter(type -> !type.isBuiltIn() && contained.contains(type));
+		this.types = types.filter(type -> !type.isBuiltIn()/* && contained.contains(type)*/); // TODO revisit removal check
 		this.definitions = definitions;
 	}
 

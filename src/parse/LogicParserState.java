@@ -1,15 +1,10 @@
 package parse;
 
-import association.Association;
-import association.HashAssociation;
+import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.PredicateDefinition;
+import idp.IdpProgramPrinter;
 import log.Log;
 import logic.bias.EnumType;
-import util.Numbers;
-import pair.Pair;
-import vector.SafeList;
-import vector.Vector;
-import clausal_discovery.core.LogicBase;
 import logic.bias.Type;
 import logic.example.Example;
 import logic.example.Setup;
@@ -17,9 +12,18 @@ import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.expression.term.Term;
+import pair.Pair;
+import util.Numbers;
+import vector.SafeList;
+import vector.Vector;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The logic parser state stores state information that is added during the parsing of a logic file
@@ -95,6 +99,7 @@ public class LogicParserState {
 	public void addEnum(EnumType enumType) {
 		Log.LOG.printLine("INFO added enum " + enumType.getName());
 		types.put(enumType.getName(), enumType);
+		enumType.getConstants().forEach(c -> types.put(c.getType().getName(), c.getType()));
 	}
 
 	/**
@@ -197,21 +202,28 @@ public class LogicParserState {
 	}
 
 	public Setup getSetup() {
-		Collection<PredicateDefinition> values = this.predicates.values();
-		Vector<PredicateDefinition> definitions = new Vector<>(PredicateDefinition.class, values);
-		Vector<Constant> constants = new Vector<>(Constant.class, this.constants.values());
-		return new Setup(new Vector<>(Type.class, types.values()), definitions, constants);
+		SafeList<PredicateDefinition> definitions = SafeList.from(this.predicates.values());
+		SafeList<Constant> constants = SafeList.from(this.constants.values());
+		SafeList<Type> types = SafeList.from(this.types.values());
+		return new Setup(types, definitions, constants);
 	}
 
 	public LogicBase getLogicBase() {
-		Vector<Example> examples = new Vector<>(Example.class, this.examples);
+		SafeList<Example> examples = SafeList.from(this.examples);
 
 		Vector<PredicateDefinition> search;
 		if(searchPredicates.isEmpty())
 			search = new Vector<>(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
 		else
 			search = new Vector<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
-		return new Knowledge(getSetup().getVocabulary(), examples, search);
+		SafeList<EnumType> enumList = SafeList.from(this.types.values()).filter(EnumType.class);
+		List<PredicateDefinition> enumDefinitions = new ArrayList<>();
+		enumList.forEach(t -> t.getConstants().forEach(c -> {
+			Predicate predicate = new Predicate(c.getName(), c.getType());
+			enumDefinitions.add(new PredicateDefinition(predicate, false, true));
+		}));
+		SafeList<PredicateDefinition> searchList = SafeList.from(search).grow(enumDefinitions);
+		return new Knowledge(getSetup().getVocabulary(), examples, searchList);
 	}
 
 	/**

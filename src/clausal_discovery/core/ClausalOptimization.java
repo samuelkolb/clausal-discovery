@@ -35,9 +35,9 @@ public class ClausalOptimization {
 
 		private final Stopwatch stopwatch = new Stopwatch();
 
-		private Vector<ValidatedClause> hardConstraints;
+		private SafeList<ValidatedClause> hardConstraints;
 
-		private Vector<ValidatedClause> softConstraints;
+		private SafeList<ValidatedClause> softConstraints;
 
 		private ValidityTable validity;
 
@@ -46,11 +46,11 @@ public class ClausalOptimization {
 			Configuration config = getConfiguration();
 			ClausalDiscovery clausalDiscovery = new ClausalDiscovery(config);
 			List<ValidatedClause> allClauses = clausalDiscovery.findSoftConstraints(new ArrayList<>());
-			hardConstraints = new Vector<>(ValidatedClause.class, allClauses).filter(ValidatedClause::coversAll);
-			softConstraints = new Vector<>(ValidatedClause.class, allClauses).filter(c -> !c.coversAll());
+			hardConstraints = SafeList.from(allClauses).filter(ValidatedClause::coversAll);
+			softConstraints = SafeList.from(allClauses).filter(c -> !c.coversAll());
 			prettyPrint("Hard Constraints", hardConstraints);
 			prettyPrint("Soft Constraints", softConstraints);
-			Vector<StatusClause> clauses = softConstraints.map(StatusClause.class, ValidatedClause::getClause);
+			SafeList<StatusClause> clauses = softConstraints.map(ValidatedClause::getClause);
 			validity = ValidityTable.create(config, clauses);
 			Log.LOG.formatLine("Calculations done in %.2f seconds", stopwatch.stop() / 1000).newLine();
 			return this;
@@ -78,11 +78,11 @@ public class ClausalOptimization {
 		return getRun().stopwatch.stop();
 	}
 
-	public Vector<ValidatedClause> getHardConstraints() {
+	public SafeList<ValidatedClause> getHardConstraints() {
 		return getRun().hardConstraints;
 	}
 
-	public Vector<ValidatedClause> getSoftConstraints() {
+	public SafeList<ValidatedClause> getSoftConstraints() {
 		return getRun().softConstraints;
 	}
 
@@ -132,7 +132,7 @@ public class ClausalOptimization {
 	 */
 	public StatusClauseFunction getClauseFunction(Preferences preferences, double cFactor) {
 		if(getSoftValidity().getClauseCount() == 0)
-			return new StatusClauseFunction(new Vector<>(), new SafeList<>(), getSoftValidity());
+			return new StatusClauseFunction(new SafeList<>(), new SafeList<>(), getSoftValidity());
 		return getFunction(preferences, cFactor, getSoftValidity(), getSoftConstraints());
 	}
 
@@ -145,9 +145,9 @@ public class ClausalOptimization {
 	public StatusClauseFunction getClauseFunction(Preferences preferences, double cFactor,
 												  Function<ClauseFunction, Double> ratingFunction) {
 		if(getSoftValidity().getClauseCount() == 0)
-			return new StatusClauseFunction(new Vector<>(), new SafeList<>(), getSoftValidity());
+			return new StatusClauseFunction(new SafeList<>(), new SafeList<>(), getSoftValidity());
 		ValidityTable validity = getSoftValidity();
-		Vector<ValidatedClause> softClauses = getSoftConstraints();
+		SafeList<ValidatedClause> softClauses = getSoftConstraints();
 
 		// TODO cleanup
 		StatusClauseFunction function = getFunction(preferences, cFactor, validity, softClauses);
@@ -181,7 +181,7 @@ public class ClausalOptimization {
 	}
 
 	private StatusClauseFunction getFunction(Preferences preferences, double cFactor, ValidityTable validity,
-											 Vector<ValidatedClause> softClauses) {
+											 SafeList<ValidatedClause> softClauses) {
 		File inputFile = FILE_MANAGER.createRandomFile("txt");
 		TemporaryFile temporaryFile = new TemporaryFile(inputFile, preferences.printOrderings(validity));
 		File outputFile = FILE_MANAGER.createRandomFile("txt");
@@ -214,7 +214,7 @@ public class ClausalOptimization {
 				System.exit(1);
 			}
 		}
-		Vector<StatusClause> clauses = softClauses.map(StatusClause.class, ValidatedClause::getClause);
+		SafeList<StatusClause> clauses = softClauses.map(ValidatedClause::getClause);
 		return new StatusClauseFunction(clauses, SafeList.from(scores), validity);
 	}
 

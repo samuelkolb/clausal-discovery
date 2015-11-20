@@ -7,6 +7,7 @@ import clausal_discovery.core.StatusClause;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.Theory;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.concurrent.Callable;
@@ -31,7 +32,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 
 		@Override
 		public BitVector call() throws Exception {
-			Vector<Theory> theories = new Vector<>(getTheory(formula));
+			SafeList<Theory> theories = new SafeList<>(getTheory(formula));
 			BitMatrix matrix = getExecutor().testValidityTheories(getKnowledgeBase(theories));
 			return matrix.part(0, 0, matrix.columns(), 1).toBitVector();
 		}
@@ -49,7 +50,7 @@ public class ParallelValidityCalculator extends ValidityCalculator {
 	 * @param executor				The executor to be used for validity tests
 	 * @param backgroundTheories	The background theories
 	 */
-	public ParallelValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+	public ParallelValidityCalculator(LogicBase base, LogicExecutor executor, SafeList<Theory> backgroundTheories) {
 		super(base, executor, backgroundTheories);
 		this.executorService = Executors.newFixedThreadPool(16);
 	}

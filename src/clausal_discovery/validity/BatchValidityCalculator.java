@@ -5,6 +5,7 @@ import clausal_discovery.core.StatusClause;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.Theory;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 	 * @param executor				The executor to be used for validity tests
 	 * @param backgroundTheories	The background theories
 	 */
-	public BatchValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+	public BatchValidityCalculator(LogicBase base, LogicExecutor executor, SafeList<Theory> backgroundTheories) {
 		super(base, executor, backgroundTheories);
 	}
 

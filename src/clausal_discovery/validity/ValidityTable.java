@@ -12,6 +12,7 @@ import logic.theory.InlineTheory;
 import logic.theory.KnowledgeBase;
 import logic.theory.Structure;
 import logic.theory.Theory;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.HashMap;
@@ -54,15 +55,15 @@ public class ValidityTable {
 	 * @param clauses	The clauses with their validity values
 	 * @return	A new validity table
 	 */
-	public static ValidityTable create(Vector<ValidatedClause> clauses) {
-		Vector<Example> examples = clauses.isEmpty() ? new Vector<>() : clauses.getFirst().getLogicBase().getExamples();
+	public static ValidityTable create(SafeList<ValidatedClause> clauses) {
+		SafeList<Example> examples = clauses.isEmpty() ? new SafeList<>() : clauses.first().getLogicBase().getExamples();
 		return new ValidityTable(createValidityMap(clauses), examples);
 	}
 
-	private static BitMatrix createValidityMap(Vector<ValidatedClause> clauses) {
+	private static BitMatrix createValidityMap(SafeList<ValidatedClause> clauses) {
 		if(clauses.isEmpty())
 			return new BitMatrix(0, 0);
-		int numberExamples = clauses.getFirst().getLogicBase().getExamples().size();
+		int numberExamples = clauses.first().getLogicBase().getExamples().size();
 		BitMatrix bitMatrix = new BitMatrix(numberExamples, clauses.size());
 		for(int clause = 0; clause < clauses.size(); clause++)
 			for(int i = 0; i < numberExamples; i++)
@@ -76,7 +77,7 @@ public class ValidityTable {
 	 * @param clauses		The clauses to check validity for
 	 * @return	The validity table
 	 */
-	public static ValidityTable create(Configuration configuration, Vector<StatusClause> clauses) {
+	public static ValidityTable create(Configuration configuration, SafeList<StatusClause> clauses) {
 		return create(configuration.getLogicBase(), configuration.getBackgroundTheories(), clauses);
 	}
 
@@ -87,9 +88,9 @@ public class ValidityTable {
 	 * @param clauses		The clauses to check validity for
 	 * @return	The validity table
 	 */
-	public static ValidityTable create(LogicBase logicBase, Vector<Theory> background, Vector<StatusClause> clauses) {
+	public static ValidityTable create(LogicBase logicBase, SafeList<Theory> background, SafeList<StatusClause> clauses) {
 		ValidityCalculator calculator = new ParallelValidityCalculator(logicBase, IdpExecutor.get(), background);
-		ValidityTable table = create(clauses.map(ValidatedClause.class, calculator::getValidatedClause));
+		ValidityTable table = create(clauses.map(calculator::getValidatedClause));
 		calculator.shutdown();
 		return table;
 	}
@@ -102,8 +103,8 @@ public class ValidityTable {
 	 * @return	The validity table
 	 */
 	public static ValidityTable create(LogicBase logicBase, List<Formula> clauses) {
-		Vector<Theory> theories = new Vector<>(Formula.class, clauses).map(Theory.class, InlineTheory::new);
-		Vector<Structure> structures = logicBase.getExamples().map(Structure.class, Example::getStructure);
+		SafeList<Theory> theories = SafeList.from(clauses).map(InlineTheory::new);
+		SafeList<Structure> structures = logicBase.getExamples().map(Example::getStructure);
 		KnowledgeBase base = new KnowledgeBase(logicBase.getVocabulary(), theories, structures);
 		BitMatrix bitMatrix = IdpExecutor.get().testValidityTheories(base);
 		return new ValidityTable(bitMatrix, logicBase.getExamples());

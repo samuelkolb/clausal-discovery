@@ -5,6 +5,7 @@ import clausal_discovery.instance.PositionedInstance;
 import log.Log;
 import logic.expression.formula.Predicate;
 import org.junit.Test;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class SubsetTest {
 	public void testSubsetSymmetry_True() {
 		// TODO second clause does not introduce variables in order
 		PredicateDefinition definition = new PredicateDefinition(new Predicate("n", 2), true, false);
-		InstanceList list = new InstanceList(new Vector<>(definition), 4);
+		InstanceList list = new InstanceList(new SafeList<>(definition), 4);
 		StatusClause accepted = getStatusClause(list, Arrays.asList(list.getInstance(0, true), list.getInstance(1, true)));
 		Log.LOG.printLine(accepted);
 		Log.LOG.printLine(list.getInstance(0, true));

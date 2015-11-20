@@ -26,6 +26,6 @@ public class EnumType extends Type {
 	 */
 	public EnumType(String name, List<String> constants) {
 		super(name);
-		this.constants = new SafeList<>(constants, s -> new Constant(s, this));
+		this.constants = new SafeList<>(constants, s -> new Constant(s, getSubtype(s)));
 	}
 }

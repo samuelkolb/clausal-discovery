@@ -2,6 +2,7 @@ package parse;
 
 import clausal_discovery.core.Preferences;
 import logic.example.Example;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.*;
@@ -34,7 +35,7 @@ public class PreferenceParser extends MatchParser<List<List<List<Example>>>> imp
 	 * Creates a new preference parser
 	 * @param examples	The examples to resolve indices
 	 */
-	public PreferenceParser(Vector<Example> examples) {
+	public PreferenceParser(SafeList<Example> examples) {
 		this.examples = new HashMap<>();
 		for(Example example : examples)
 			this.examples.put(example.getName(), example);

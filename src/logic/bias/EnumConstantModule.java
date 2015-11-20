@@ -6,6 +6,7 @@ import logic.expression.formula.And;
 import logic.expression.formula.Atom;
 import logic.expression.formula.Clause;
 import logic.expression.formula.Formula;
+import logic.expression.formula.InfixPredicate;
 import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
@@ -29,6 +30,10 @@ public class EnumConstantModule { // TODO contemplate implement as predicate def
 		public EnumPredicate(Predicate predicate) {
 			super(predicate);
 		}
+
+	}
+
+	public class EnumType {
 
 	}
 
@@ -59,7 +64,7 @@ public class EnumConstantModule { // TODO contemplate implement as predicate def
 
 	public List<Formula> getBackgroundKnowledge() {
 		Variable[] v = new Variable[]{new Variable("x"), new Variable("y")};
-		Atom head = new PredicateInstance(new Predicate("=", 2), v[0], v[1]);
+		Atom head = new PredicateInstance(new InfixPredicate("=", Type.GENERIC, Type.GENERIC), v[0], v[1]);
 		Formula formula = Clause.horn(head, getPredicate().getInstance(v[0]), getPredicate().getInstance(v[1]));
 		return Collections.singletonList(formula);
 	}

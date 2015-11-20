@@ -14,9 +14,9 @@ import vector.Vector;
  */
 public class StatusClauseFunction extends ClauseFunction {
 
-	private final Vector<StatusClause> clauses;
+	private final SafeList<StatusClause> clauses;
 
-	public Vector<StatusClause> getClauses() {
+	public SafeList<StatusClause> getClauses() {
 		return clauses;
 	}
 
@@ -27,7 +27,7 @@ public class StatusClauseFunction extends ClauseFunction {
 	 * @param weights       The weights per clause
 	 * @param validityTable The validity table
 	 */
-	public StatusClauseFunction(Vector<StatusClause> clauses, SafeList<Double> weights, ValidityTable validityTable) {
+	public StatusClauseFunction(SafeList<StatusClause> clauses, SafeList<Double> weights, ValidityTable validityTable) {
 		super(weights, validityTable);
 		if(weights.size() != clauses.size())
 			throw new IllegalArgumentException(String.format("Number of weights and clauses do not match, %d vs %d",
@@ -42,7 +42,7 @@ public class StatusClauseFunction extends ClauseFunction {
 	 * @param backgroundTheories The background knowledge to use
 	 * @return A copy with a new validity table
 	 */
-	public StatusClauseFunction copy(LogicBase logicBase, Vector<Theory> backgroundTheories) {
+	public StatusClauseFunction copy(LogicBase logicBase, SafeList<Theory> backgroundTheories) {
 		ValidityTable validityTable = ValidityTable.create(logicBase, backgroundTheories, getClauses());
 		return new StatusClauseFunction(getClauses(), getWeights(), validityTable);
 	}

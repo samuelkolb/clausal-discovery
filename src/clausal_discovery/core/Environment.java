@@ -18,6 +18,7 @@ public class Environment {
 
 	// IVAR variableTypes - Maps integers to types
 
+	// not-opt could be list / array
 	private final Map<Integer, Type> variableTypes;
 
 	/**
@@ -79,5 +80,14 @@ public class Environment {
 				throw new IllegalStateException();
 		}
 		return new Environment(variables);
+	}
+
+	/**
+	 * Returns the type of the given variable.
+	 * @param variable	The variable
+	 * @return	The (most general )type this environment can assign to the given variable
+	 */
+	public Type getType(int variable) {
+		return this.variableTypes.get(variable);
 	}
 }

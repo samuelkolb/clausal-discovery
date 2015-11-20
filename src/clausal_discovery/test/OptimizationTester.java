@@ -9,6 +9,7 @@ import log.Log;
 import logic.example.Example;
 import pair.Pair;
 import util.ParallelCalculator;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.ArrayList;
@@ -102,11 +103,11 @@ public class OptimizationTester {
 
 	/**
 	 * Creates preferences using the given examples and scoring function
-	 * @param examples	The examples to create preferences over
-	 * @param function	The function to induce the ordering
+	 * @param examples    The examples to create preferences over
+	 * @param function    The function to induce the ordering
 	 * @return	A preferences object
 	 */
-	public Preferences generatePreferences(Vector<Example> examples, ScoringFunction function) {
+	public Preferences generatePreferences(SafeList<Example> examples, ScoringFunction function) {
 		List<List<List<Example>>> orders = new ArrayList<>();
 		for(int i = 0; i < examples.size(); i++)
 			for(int j = i + 1; j < examples.size(); j++) {

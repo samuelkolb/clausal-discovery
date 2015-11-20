@@ -5,23 +5,22 @@ import association.Pairing;
 import basic.StringUtil;
 import cern.colt.bitvector.BitVector;
 import clausal_discovery.core.AtomSet;
+import clausal_discovery.core.Literal;
 import clausal_discovery.core.LiteralSet;
 import clausal_discovery.core.PredicateDefinition;
 import clausal_discovery.core.bias.Bias;
 import clausal_discovery.core.bias.BiasModule;
 import clausal_discovery.core.bias.InitialBias;
-import clausal_discovery.core.bias.ConnectedInstanceBias;
-import clausal_discovery.core.bias.InstanceBias;
-import clausal_discovery.core.bias.OrderedInstanceBias;
+import clausal_discovery.core.bias.ConnectedLiteralBias;
+import clausal_discovery.core.bias.LiteralBias;
+import clausal_discovery.core.bias.OrderedLiteralBias;
 import clausal_discovery.core.bias.RangeRestrictionBias;
-import log.Log;
 import util.Numbers;
 import vector.SafeList;
 import vector.SafeListBuilder;
 import vector.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -38,14 +37,14 @@ public class InstanceList {
 
 	private final Pairing<Integer, Instance> pairing;
 
-	private final InstanceBias instanceBias = new ConnectedInstanceBias().combineWith(new OrderedInstanceBias());
+	private final LiteralBias literalBias = new ConnectedLiteralBias().combineWith(new OrderedLiteralBias());
 
-	private final InitialBias initialBias = new OrderedInstanceBias();
+	private final InitialBias initialBias = new OrderedLiteralBias();
 
 	private final List<BiasModule> modules = Collections.singletonList(new RangeRestrictionBias(this));
 
-	public InstanceBias getInstanceBias() {
-		return instanceBias;
+	public LiteralBias getLiteralBias() {
+		return literalBias;
 	}
 
 	private final SafeList<PositionedInstance> bodyAtoms;
@@ -61,7 +60,7 @@ public class InstanceList {
 	 * @param predicates	The predicates to use
 	 * @param variables		The number of variables to be used
 	 */
-	public InstanceList(Vector<PredicateDefinition> predicates, int variables) {
+	public InstanceList(SafeList<PredicateDefinition> predicates, int variables) {
 		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
 		SafeListBuilder<PositionedInstance> body = SafeList.build(size());
 		SafeListBuilder<PositionedInstance> head = SafeList.build(size());
@@ -69,10 +68,10 @@ public class InstanceList {
 		LiteralSet blocked = new LiteralSet(this);
 		for(int i = 0; i < size(); i++) {
 			for(boolean inBody : new boolean[]{true, false}) {
-				if(initialBias.enables(get(i), inBody)) {
+				if(initialBias.enables(get(i, !inBody))) {
 					unlocked = unlocked.add(i, inBody);
 				}
-				if(initialBias.disables(get(i), inBody)) {
+				if(initialBias.disables(get(i, !inBody))) {
 					blocked = blocked.add(i, inBody);
 				}
 				LiteralSet enabledSet = new LiteralSet(this);
@@ -88,10 +87,10 @@ public class InstanceList {
 					}
 					// not-opt j < i not necessary
 					for(boolean testInBody : new boolean[]{true, false}) {
-						if(getInstanceBias().enables(get(i), inBody, get(j), testInBody)) {
+						if(getLiteralBias().enables(get(i, !inBody), get(j, !inBody))) {
 							enabledSet = enabledSet.add(j, testInBody);
 						}
-						if(getInstanceBias().disables(get(i), inBody, get(j), testInBody)) {
+						if(getLiteralBias().disables(get(i, !inBody), get(j, !inBody))) {
 							disabledSet = disabledSet.add(j, testInBody);
 						}
 					}
@@ -139,6 +138,17 @@ public class InstanceList {
 	}
 
 	/**
+	 * Returns the positive or negative literal with the given index
+	 * @param index		The index of the literal
+	 * @param positive	If the positive literal should be returned (negative literal if false)
+	 * @return	A literal
+	 */
+	private Literal get(int index, boolean positive) {
+		// not-opt uses the intermediate instance
+		return new Literal.BasicLiteral(get(index).getPredicate(), get(index).getVariableIndices(), positive);
+	}
+
+	/**
 	 * Returns the size of this instance list
 	 * @return	The size of this instance list
 	 */
@@ -167,7 +177,7 @@ public class InstanceList {
 		return this.pairing.getKey(instance);
 	}
 
-	private Pairing<Integer, Instance> getInstances(Vector<PredicateDefinition> definitions, int variables) {
+	private Pairing<Integer, Instance> getInstances(SafeList<PredicateDefinition> definitions, int variables) {
 		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(definitions);
 		List<Instance> instanceList = new ArrayList<>();
 		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.length)) {
@@ -190,7 +200,7 @@ public class InstanceList {
 		return choices;
 	}
 
-	private int getMaximalVariables(int variables, Vector<PredicateDefinition> predicates) {
+	private int getMaximalVariables(int variables, SafeList<PredicateDefinition> predicates) {
 		int max = 0;
 		for(PredicateDefinition definition : predicates)
 			max = Math.max(max, definition.getPredicate().getArity());

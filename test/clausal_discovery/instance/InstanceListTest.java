@@ -49,7 +49,7 @@ public class InstanceListTest {
 
 	@Test
 	public void testCreationScenario() {
-		InstanceList list = new InstanceList(new Vector<>(unary1, unary2, binary1, binary2, tertiary), 3);
+		InstanceList list = new InstanceList(SafeList.from(unary1, unary2, binary1, binary2, tertiary), 3);
 		// 0, 0-1, 0-1-2, 0-2, 1, 1-2, 2
 		// region instances
 		List<Instance> instances = combine(Arrays.asList(
@@ -117,7 +117,7 @@ public class InstanceListTest {
 
 	@Test
 	public void testCreationSymmetricScenario() {
-		InstanceList list = new InstanceList(new Vector<>(symmetric), 4);
+		InstanceList list = new InstanceList(SafeList.from(symmetric), 4);
 		// 0, 0-1, 0-1-2, 0-1-3, 0-2, 0-2-3, 0-3 1, 1-2, 1-2-3, 1-3, 2, 2-3, 3
 		// region instances
 		List<Instance> instances = combine(Arrays.asList(

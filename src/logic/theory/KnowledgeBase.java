@@ -1,5 +1,6 @@
 package logic.theory;
 
+import vector.SafeList;
 import vector.Vector;
 
 /**
@@ -15,32 +16,32 @@ public class KnowledgeBase {
 		return vocabulary;
 	}
 
-	private final Vector<Theory> theories;
+	private final SafeList<Theory> theories;
 
-	public Vector<Theory> getTheories() {
+	public SafeList<Theory> getTheories() {
 		return theories;
 	}
 
-	private final Vector<Theory> backgroundTheories;
+	private final SafeList<Theory> backgroundTheories;
 
-	public Vector<Theory> getBackgroundTheories() {
+	public SafeList<Theory> getBackgroundTheories() {
 		return backgroundTheories;
 	}
 
-	private final Vector<Structure> structures;
+	private final SafeList<Structure> structures;
 
-	public Vector<Structure> getStructures() {
+	public SafeList<Structure> getStructures() {
 		return structures;
 	}
 
 	/**
 	 * Creates a new logic program without background theories
-	 * @param vocabulary	The type and predicate definitions
-	 * @param theories		The theories
-	 * @param structures	The structures
+	 * @param vocabulary    The type and predicate definitions
+	 * @param theories        The theories
+	 * @param structures    The structures
 	 */
-	public KnowledgeBase(Vocabulary vocabulary, Vector<Theory> theories, Vector<Structure> structures) {
-		this(vocabulary, theories, new Vector<>(), structures);
+	public KnowledgeBase(Vocabulary vocabulary, SafeList<Theory> theories, SafeList<Structure> structures) {
+		this(vocabulary, theories, new SafeList<>(), structures);
 	}
 
 	/**
@@ -50,8 +51,8 @@ public class KnowledgeBase {
 	 * @param backgroundTheories	The background theories
 	 * @param structures			The structures
 	 */
-	public KnowledgeBase(Vocabulary vocabulary, Vector<Theory> theories,
-						 Vector<Theory> backgroundTheories, Vector<Structure> structures) {
+	public KnowledgeBase(Vocabulary vocabulary, SafeList<Theory> theories,
+						 SafeList<Theory> backgroundTheories, SafeList<Structure> structures) {
 		this.vocabulary = vocabulary;
 		this.theories = theories;
 		this.backgroundTheories = backgroundTheories;

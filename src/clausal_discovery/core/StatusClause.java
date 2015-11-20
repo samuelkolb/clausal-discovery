@@ -7,8 +7,12 @@ import clausal_discovery.instance.InstanceComparator;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import log.Log;
+import logic.bias.EnumType;
+import logic.bias.Type;
 import logic.expression.formula.Formula;
 import util.Numbers;
+import vector.SafeList;
+import vector.SafeListBuilder;
 import vector.Vector;
 import vector.WriteOnceVector;
 
@@ -193,10 +197,24 @@ public class StatusClause {
 
 	@Override
 	public String toString() {
-		List<String> body = literalSet.getBody().getInstances().map(String.class, Instance::toString);
-		List<String> head = literalSet.getHead().getInstances().map(String.class, Instance::toString);
+		List<String> body = literalSet.getBody().getInstances().map(this::printInstance);
+		List<String> head = literalSet.getHead().getInstances().map(this::printInstance);
 		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
 				+ (head.isEmpty() ? "false" : StringUtil.join(" | ", head));
+	}
+
+	private String printInstance(Instance instance) {
+		StringBuilder builder = new StringBuilder(instance.getPredicate().getName()).append("(");
+		SafeListBuilder<String> listBuilder = SafeList.build(instance.getVariableIndices().size());
+		for(Integer variable : instance.getVariableIndices()) {
+			/*Type type = getEnvironment().getType(variable);
+			if(type.hasParent() && type.getParent() instanceof EnumType) {
+				listBuilder.add(type.getName());
+			} else {*/
+				listBuilder.add("x" + variable);
+			//} // TODO print enums?
+		}
+		return builder.append(StringUtil.join(", ", listBuilder.create())).append(")").toString();
 	}
 
 	public Formula getFormula() {

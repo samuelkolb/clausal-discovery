@@ -16,6 +16,7 @@ import logic.theory.Vocabulary;
 import pair.TypePair;
 import util.Numbers;
 import util.Randomness;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.*;
@@ -35,42 +36,43 @@ public class Knowledge implements LogicBase {
 		return vocabulary;
 	}
 
-	private final Vector<Example> examples;
+	private final SafeList<Example> examples;
 
 	@Override
-	public Vector<Example> getExamples() {
+	public SafeList<Example> getExamples() {
 		return examples;
 	}
 
-	private final Vector<PredicateDefinition> searchPredicates;
+	private final SafeList<PredicateDefinition> searchList;
 
 	@Override
-	public Vector<PredicateDefinition> getSearchPredicates() {
-		return searchPredicates;
+	public SafeList<PredicateDefinition> getSearchList() {
+		return searchList;
 	}
 
 	/**
 	 * Creates a new knowledge instances with a vocabulary, examples and a list of search predicates
-	 * @param vocabulary        The vocabulary
-	 * @param examples         	The list of examples
-	 * @param searchPredicates  The list of search predicates
+	 * @param vocabulary    The vocabulary
+	 * @param examples      The list of examples
+	 * @param searchList	The list of search predicates
 	 */
-	public Knowledge(Vocabulary vocabulary, Vector<Example> examples, Vector<PredicateDefinition> searchPredicates) {
+	public Knowledge(Vocabulary vocabulary, SafeList<Example> examples, SafeList<PredicateDefinition> searchList) {
 		this.vocabulary = vocabulary;
 		this.examples = examples;
-		this.searchPredicates = searchPredicates;
+		this.searchList = searchList;
 	}
 
 	@Override
 	public String toString() {
 		return new IdpProgramPrinter.Cached().printVocabulary(getVocabulary(), "Vocabulary")
-				+ StringUtil.join("\n", examples.getArray());
+				+ StringUtil.join("\n", examples);
 	}
 
 	@Override
 	public List<Formula> getBackgroundKnowledge() {
+		// TODO add background knowledge
 		List<Formula> formulas = new ArrayList<>();
-		for(PredicateDefinition definition : getSearchPredicates().filter(PredicateDefinition::isSymmetric)) {
+		for(PredicateDefinition definition : getSearchList().filter(PredicateDefinition::isSymmetric)) {
 			Predicate predicate = definition.getPredicate();
 			Vector<Integer> variableIndices = ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1));
 			Map<Integer, Variable> variableMap = new HashMap<>();
@@ -91,13 +93,13 @@ public class Knowledge implements LogicBase {
 	@Override
 	public List<LogicBase> split() {
 		return getExamples().stream()
-				.map(example -> copy(new Vector<>(example)))
+				.map(example -> copy(new SafeList<>(example)))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public LogicBase filterExamples(java.util.function.Predicate<Example> predicate) {
-		Vector<Example> examples = getExamples().filter(predicate);
+		SafeList<Example> examples = getExamples().filter(predicate);
 		return copy(examples);
  	}
 
@@ -109,11 +111,11 @@ public class Knowledge implements LogicBase {
 		int index = Math.max(1, Math.min((int) Math.ceil(fraction * size), size - 1));
 		List<Example> examples = new ArrayList<>(getExamples());
 		Collections.shuffle(examples, Randomness.getRandom());
-		Vector<Example> vector = new Vector<>(Example.class, examples);
-		return TypePair.of(copy(vector.subList(0, index)), copy(vector.subList(index, size)));
+		SafeList<Example> safeList = SafeList.from(examples);
+		return new TypePair.Implementation<>(copy(safeList.subList(0, index)), copy(safeList.subList(index, size)));
 	}
 
-	private Knowledge copy(Vector<Example> examples) {
-		return new Knowledge(getVocabulary(), examples, getSearchPredicates());
+	private Knowledge copy(SafeList<Example> examples) {
+		return new Knowledge(getVocabulary(), examples, getSearchList());
 	}
 }

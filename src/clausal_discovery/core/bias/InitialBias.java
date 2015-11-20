@@ -1,5 +1,6 @@
 package clausal_discovery.core.bias;
 
+import clausal_discovery.core.Literal;
 import clausal_discovery.instance.Instance;
 
 /**
@@ -11,19 +12,17 @@ public interface InitialBias {
 
 	/**
 	 * Returns whether this bias enables the test instance
-	 * @param testInstance	The instance to test
-	 * @param testInBody	Whether the test instance is a body atom
+	 * @param test	The tested literal
 	 * @return	True iff this bias enables the test instance
 	 */
-	boolean enables(Instance testInstance, boolean testInBody);
+	boolean enables(Literal test);
 
 	/**
 	 * Returns whether this bias disables the test instance
-	 * @param testInstance	The instance to test
-	 * @param testInBody	Whether the test instance is a body atom
+	 * @param test	The tested literal
 	 * @return	True iff this bias disables the test instance
 	 */
-	boolean disables(Instance testInstance, boolean testInBody);
+	boolean disables(Literal test);
 
 	/**
 	 * Combines this bias with another bias.
@@ -36,13 +35,13 @@ public interface InitialBias {
 		return new InitialBias() {
 
 			@Override
-			public boolean enables(Instance testInstance, boolean testInBody) {
-				return original.enables(testInstance, testInBody) || initialBias.enables(testInstance, testInBody);
+			public boolean enables(Literal test) {
+				return original.enables(test) || initialBias.enables(test);
 			}
 
 			@Override
-			public boolean disables(Instance testInstance, boolean testInBody) {
-				return original.disables(testInstance, testInBody) || initialBias.disables(testInstance, testInBody);
+			public boolean disables(Literal test) {
+				return original.disables(test) || initialBias.disables(test);
 			}
 		};
 	}

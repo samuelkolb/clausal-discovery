@@ -5,9 +5,8 @@ import cern.colt.function.IntProcedure;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
-import logic.expression.formula.Atom;
-import vector.Vector;
-import vector.WriteOnceVector;
+import vector.SafeList;
+import vector.SafeListBuilder;
 
 import java.util.function.IntPredicate;
 
@@ -106,16 +105,16 @@ public class AtomSet implements Comparable<AtomSet> {
 		return size() == 0;
 	}
 
-	public Vector<Instance> getInstances() {
-		Vector<Instance> instances = new WriteOnceVector<>(new Instance[size()]);
-		forEach(i -> instances.add(instanceList.get(i)));
-		return instances;
+	public SafeList<Instance> getInstances() {
+		SafeListBuilder<Instance> builder = SafeList.build(size());
+		forEach(i -> {builder.add(instanceList.get(i)); return true;});
+		return builder.create();
 	}
 
-	public Vector<PositionedInstance> getInstances(boolean inBody) {
-		Vector<PositionedInstance> instances = new WriteOnceVector<>(new PositionedInstance[size()]);
-		forEach(i -> instances.add(instanceList.getInstance(i, inBody)));
-		return instances;
+	public SafeList<PositionedInstance> getInstances(boolean inBody) {
+		SafeListBuilder<PositionedInstance> builder = SafeList.build(size());
+		forEach(i -> {builder.add(instanceList.getInstance(i, inBody)); return true;});
+		return builder.create();
 	}
 
 	public boolean forEach(IntPredicate predicate) {

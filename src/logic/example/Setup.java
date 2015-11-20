@@ -2,6 +2,7 @@ package logic.example;
 
 import clausal_discovery.core.PredicateDefinition;
 import logic.expression.term.Constant;
+import vector.SafeList;
 import vector.Vector;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
@@ -29,9 +30,9 @@ public class Setup {
 
 	// IVAR constants - The constants defined in this setup
 
-	private final Vector<Constant> constants;
+	private final SafeList<Constant> constants;
 
-	public Vector<Constant> getConstants() {
+	public SafeList<Constant> getConstants() {
 		return constants;
 	}
 
@@ -44,7 +45,7 @@ public class Setup {
 	 * @param definitions	The predicate definitions to be used
 	 * @param constants		The constants to be used
 	 */
-	public Setup(Vector<Type> types, Vector<PredicateDefinition> definitions, Vector<Constant> constants) {
+	public Setup(SafeList<Type> types, SafeList<PredicateDefinition> definitions, SafeList<Constant> constants) {
 		this.vocabulary = new Vocabulary(types, definitions);
 		this.constants = constants;
 	}
@@ -59,7 +60,7 @@ public class Setup {
 		return predicates;
 	}
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return getVocabulary().getTypes();
 	}
 

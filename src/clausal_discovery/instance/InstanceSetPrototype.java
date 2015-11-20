@@ -3,6 +3,7 @@ package clausal_discovery.instance;
 import clausal_discovery.core.Environment;
 import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class InstanceSetPrototype {
 		return getPrototypes().map(Instance.class, p -> p.instantiate(indices));
 	}
 
-	public static Vector<InstanceSetPrototype> createInstanceSets(Vector<PredicateDefinition> definitions) {
+	public static Vector<InstanceSetPrototype> createInstanceSets(SafeList<PredicateDefinition> definitions) {
 		int maxArity = definitions.get(0).getArity();
 		for(int i = 1; i < definitions.size(); i++)
 			maxArity = Math.max(maxArity, definitions.get(i).getArity());
