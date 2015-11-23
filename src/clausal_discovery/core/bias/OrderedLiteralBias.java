@@ -36,7 +36,6 @@ public class OrderedLiteralBias implements LiteralBias, InitialBias {
 			if(i == min + 1) {
 				min++;
 			} else if(i > min) {
-				Log.LOG.printLine("Rejected: " + test);
 				return false;
 			}
 		}

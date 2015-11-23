@@ -6,7 +6,7 @@ import logic.expression.formula.Atom;
 import logic.expression.formula.Predicate;
 import logic.expression.term.Term;
 import logic.expression.term.Variable;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.Map;
 
@@ -28,9 +28,9 @@ public class Instance {
 		return getDefinition().getPredicate();
 	}
 
-	private Vector<Integer> variableIndices;
+	private SafeList<Integer> variableIndices;
 
-	public Vector<Integer> getVariableIndices() {
+	public SafeList<Integer> getVariableIndices() {
 		return variableIndices;
 	}
 
@@ -49,19 +49,14 @@ public class Instance {
 	 * @param definition        The predicate definition of this instance
 	 * @param variableIndices   The variable indices
 	 */
-	public Instance(PredicateDefinition definition, Vector<Integer> variableIndices) {
-		assert definition.getPredicate().getArity() == variableIndices.size();
-		this.definition = definition;
-		// TODO Check if necessary?
-		this.variableIndices = definition.isSymmetric() ? variableIndices.sortedCopy() : variableIndices;
-		int max = -1;
-		for(int i = 0; i < variableIndices.size(); i++) {
-			if(i < 0) {
-				throw new IllegalArgumentException("Variable indices have to be zero or higher.");
-			}
-			max = Math.max(max, variableIndices.get(i));
+	public Instance(PredicateDefinition definition, SafeList<Integer> variableIndices) {
+		variableIndices = definition.transform(variableIndices); // TODO reflect if optimal
+		if(!definition.accepts(variableIndices)) {
+			throw new IllegalArgumentException();
 		}
-		this.max = max;
+		this.definition = definition;
+		this.variableIndices = definition.transform(variableIndices);
+		this.max = variableIndices.foldLeft(-1, Math::max);
 	}
 
 	//endregion

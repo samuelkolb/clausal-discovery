@@ -1,6 +1,8 @@
 package util;
 
 import basic.ArrayUtil;
+import vector.SafeList;
+import vector.SafeListBuilder;
 
 import java.util.*;
 
@@ -241,10 +243,10 @@ public class Numbers {
 	}
 
 	private static List<Permutation> convert(List<int[]> arrays) {
-		List<Permutation> permutations = new ArrayList<>(arrays.size());
+		SafeListBuilder<Permutation> builder = SafeList.build(arrays.size());
 		for(int[] array : arrays)
-			permutations.add(new Permutation(array));
-		return permutations;
+			builder.add(new Permutation(array));
+		return builder.create();
 	}
 
 	public static long getFactorial(int n) {

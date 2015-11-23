@@ -24,9 +24,9 @@ public class InstanceSetPrototype {
 		return rank;
 	}
 
-	private final Vector<InstancePrototype> prototypes;
+	private final SafeList<InstancePrototype> prototypes;
 
-	public Vector<InstancePrototype> getPrototypes() {
+	public SafeList<InstancePrototype> getPrototypes() {
 		return prototypes;
 	}
 
@@ -34,7 +34,7 @@ public class InstanceSetPrototype {
 
 	//region Construction
 
-	protected InstanceSetPrototype(Vector<InstancePrototype> prototypes) {
+	protected InstanceSetPrototype(SafeList<InstancePrototype> prototypes) {
 		this.rank = prototypes.isEmpty() ? 0 : prototypes.get(0).getRank();
 		for(int i = 1; i < prototypes.size(); i++) assert prototypes.get(i).getRank() == getRank();
 		this.prototypes = prototypes;
@@ -43,8 +43,8 @@ public class InstanceSetPrototype {
 	//endregion
 
 	//region Public methods
-	public Vector<Instance> getInstances(int[] indices) {
-		return getPrototypes().map(Instance.class, p -> p.instantiate(indices));
+	public SafeList<Instance> getInstances(int[] indices) {
+		return getPrototypes().map(p -> p.instantiate(indices));
 	}
 
 	public static Vector<InstanceSetPrototype> createInstanceSets(SafeList<PredicateDefinition> definitions) {
@@ -70,12 +70,14 @@ public class InstanceSetPrototype {
 		List<InstancePrototype> prototypes = new ArrayList<>();
 		for(PredicateDefinition definition : definitions) {
 			List<Numbers.Permutation> permutations = Numbers.take(rank, definition.getArity());
-			for(Numbers.Permutation permutation : permutations)
-				if(new Environment().isValidInstance(definition, new Vector<>(permutation.getIntegerArray())))
-					if(!definition.isSymmetric() || permutation.isSorted())
-						prototypes.add(new InstancePrototype(definition, permutation));
+			for(Numbers.Permutation permutation : permutations) {
+				SafeList<Integer> variables = SafeList.from(permutation.getIntegerArray());
+				if(new Environment().isValidInstance(definition, variables) && definition.accepts(variables)) {
+					prototypes.add(new InstancePrototype(definition, permutation));
+				}
+			}
 		}
-		return new InstanceSetPrototype(new Vector<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
+		return new InstanceSetPrototype(SafeList.from(prototypes));
 	}
 	//endregion
 }

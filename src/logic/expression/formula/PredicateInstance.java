@@ -1,9 +1,11 @@
 package logic.expression.formula;
 
 import logic.bias.Type;
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.term.Term;
 import logic.expression.visitor.ExpressionVisitor;
+
+import java.util.List;
 
 /**
  * Created by samuelkolb on 22/10/14.
@@ -13,17 +15,15 @@ import logic.expression.visitor.ExpressionVisitor;
 public class PredicateInstance extends Atom {
 
 	//region Variables
-	private static final String arityError = "%d terms provided to predicate %s of arity %d";
-
 	private final Predicate predicate;
 
 	public Predicate getPredicate() {
 		return predicate;
 	}
 
-	private final Vector<Term> terms;
+	private final SafeList<Term> terms;
 
-	public Vector<Term> getTerms() {
+	public SafeList<Term> getTerms() {
 		return terms;
 	}
 
@@ -35,21 +35,46 @@ public class PredicateInstance extends Atom {
 
 	//region Construction
 
+	/**
+	 * Creates a predicate instance with no terms.
+	 * @param predicate	The predicate definition of arity 0
+	 */
 	public PredicateInstance(Predicate predicate) {
-		this(predicate, new Term[0]);
+		this(predicate, new SafeList<>());
 	}
 
+	/**
+	 * Creates a predicate instance.
+	 * @param predicate	The predicate definition
+	 * @param terms		The terms
+	 */
 	public PredicateInstance(Predicate predicate, Term... terms) {
+		this(predicate, SafeList.from(terms));
+	}
+
+	/**
+	 * Creates a predicate instance.
+	 * @param predicate	The predicate definition
+	 * @param terms		The terms
+	 */
+	public PredicateInstance(Predicate predicate, List<Term> terms) {
+		test(predicate, terms);
 		this.predicate = predicate;
-		this.terms = new Vector<>(terms);
-		int arity = getPredicate().getArity();
-		if(getTerms().length != arity)
-			throw new IllegalArgumentException(String.format(arityError, getTerms().length, predicate.getName(), arity));
-		for(int i = 0; i < getPredicate().getArity(); i++) {
-			Type type = getPredicate().getTypes().e(i);
-			Term term = getTerm(i);
-			if(!type.isSuperTypeOf(term.getType()))
-				throw new IllegalArgumentException("Term " + term + " should be " + type + ", was " + term.getType());
+		this.terms = SafeList.from(terms);
+	}
+
+	protected void test(Predicate predicate, List<Term> terms) {
+		int arity = predicate.getArity();
+		if(arity != terms.size()) {
+			final String message = "%d terms provided to predicate %s of arity %d";
+			throw new IllegalArgumentException(String.format(message, getTerms().size(), predicate.getName(), arity));
+		}
+		for(int i = 0; i < arity; i++) {
+			Type type = predicate.getTypes().get(i);
+			if(!type.isSuperTypeOf(terms.get(i).getType())) {
+				final String message = "Term %s should be of type %s but was of type %s";
+				throw new IllegalArgumentException(String.format(message, terms.get(i), type, terms.get(i).getType()));
+			}
 		}
 	}
 

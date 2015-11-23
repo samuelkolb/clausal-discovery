@@ -4,7 +4,9 @@ import basic.ArrayUtil;
 import basic.StringUtil;
 import logic.bias.Type;
 import logic.expression.term.Term;
-import vector.Vector;
+import vector.SafeList;
+
+import java.util.List;
 
 /**
  * Created by samuelkolb on 22/10/14.
@@ -25,9 +27,9 @@ public class Predicate {
 
 	// IVAR types - The argument types
 
-	private final Vector<Type> types;
+	private final SafeList<Type> types;
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return types;
 	}
 
@@ -52,7 +54,17 @@ public class Predicate {
 	 */
 	public Predicate(String name, Type... types) {
 		this.name = name;
-		this.types = ArrayUtil.wrap(types);
+		this.types = SafeList.from(types);
+	}
+
+	/**
+	 * Creates a new predicate.
+	 * @param name	The name of the predicate
+	 * @param types	The types of the predicate
+	 */
+	public Predicate(String name, List<Type> types) {
+		this.name = name;
+		this.types = SafeList.from(types);
 	}
 
 	//endregion
@@ -69,13 +81,23 @@ public class Predicate {
 		return new PredicateInstance(this, terms);
 	}
 
+	/**
+	 * Creates and returns an instance of this predicate.
+	 * @param terms The terms to instantiate the predicate with, the amount of terms must match the arity of this
+	 *              predicate
+	 * @return  An instance of this predicate
+	 */
+	public PredicateInstance getInstance(List<Term> terms) {
+		return new PredicateInstance(this, terms);
+	}
+
 	public int getArity() {
-		return types.length;
+		return types.size();
 	}
 
 	@Override
 	public String toString() {
-		return getName() + "(" + StringUtil.join(", ", (Object[]) getTypes().getArray()) + ")";
+		return getName() + "(" + StringUtil.join(", ", getTypes()) + ")";
 	}
 
 	@Override

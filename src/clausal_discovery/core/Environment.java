@@ -3,6 +3,7 @@ package clausal_discovery.core;
 import clausal_discovery.instance.Instance;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
+import vector.SafeList;
 import vector.Vector;
 
 import java.util.HashMap;
@@ -47,7 +48,7 @@ public class Environment {
 	 * @param indices		The variable indices
 	 * @return	True iff the given instance is consistent
 	 */
-	public boolean isValidInstance(PredicateDefinition definition, Vector<Integer> indices) {
+	public boolean isValidInstance(PredicateDefinition definition, SafeList<Integer> indices) {
 		Map<Integer, Type> variables = new HashMap<>(variableTypes);
 		for(int i = 0; i < definition.getArity(); i++) {
 			Integer integer = indices.get(i);
@@ -69,7 +70,7 @@ public class Environment {
 		return addInstance(instance.getPredicate(), instance.getVariableIndices());
 	}
 
-	protected Environment addInstance(Predicate predicate, Vector<Integer> indices) {
+	protected Environment addInstance(Predicate predicate, SafeList<Integer> indices) {
 		Map<Integer, Type> variables = new HashMap<>(variableTypes);
 		for(int i = 0; i < predicate.getArity(); i++) {
 			Integer integer = indices.get(i);

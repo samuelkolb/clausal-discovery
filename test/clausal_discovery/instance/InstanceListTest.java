@@ -1,6 +1,7 @@
 package clausal_discovery.instance;
 
 import clausal_discovery.core.PredicateDefinition;
+import clausal_discovery.core.bias.SymmetricPredicateDefinition;
 import log.Log;
 import logic.expression.formula.Predicate;
 import org.junit.BeforeClass;
@@ -44,7 +45,7 @@ public class InstanceListTest {
 		binary1 = new PredicateDefinition(new Predicate("b1", 2));
 		binary2 = new PredicateDefinition(new Predicate("b2", 2));
 		tertiary = new PredicateDefinition(new Predicate("t", 3));
-		symmetric = new PredicateDefinition(new Predicate("s", 3), true, false);
+		symmetric = new SymmetricPredicateDefinition(new Predicate("s", 3));
 	}
 
 	@Test
@@ -160,7 +161,7 @@ public class InstanceListTest {
 		for(int i = 0; i < variables.length / definition.getArity(); i++) {
 			int[] array = new int[definition.getArity()];
 			System.arraycopy(variables, i * definition.getArity(), array, 0, definition.getArity());
-			instances.add(new Instance(definition, Vector.create(array)));
+			instances.add(new Instance(definition, SafeList.from(Vector.create(array))));
 		}
 		return instances;
 	}

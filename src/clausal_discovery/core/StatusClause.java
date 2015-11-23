@@ -264,7 +264,7 @@ public class StatusClause {
 			return false;/*/
 		if(containsInstance(positionedInstance.getInstance()))
 			return false;/**/
-		Vector<Integer> indices = instance.getVariableIndices();
+		SafeList<Integer> indices = instance.getVariableIndices();
 		return (getRank() == 0 || isConnected(indices)) && introducesVariablesInOrder(positionedInstance);
 	}
 
@@ -323,7 +323,7 @@ public class StatusClause {
 		return containedInstance.getVariableIndices().equals(instance.getVariableIndices());
 	}
 
-	private boolean isConnected(Vector<Integer> indices) {
+	private boolean isConnected(SafeList<Integer> indices) {
 		int max = getRank() - 1;
 		for(Integer index : indices)
 			if(index <= max)
@@ -333,7 +333,7 @@ public class StatusClause {
 
 	private boolean introducesVariablesInOrder(PositionedInstance instance) {
 		int max = getRank() - 1;
-		Vector<Integer> indices = instance.getInstance().getVariableIndices();
+		SafeList<Integer> indices = instance.getInstance().getVariableIndices();
 		for(Integer index : indices)
 			if((instance.isInBody()) && index == max + 1)
 				max = index;
@@ -402,8 +402,8 @@ public class StatusClause {
 		}
 	}
 
-	private Vector<Integer> getVariables(Map<Integer, Integer> mapping, Instance instance) {
-		return instance.getVariableIndices().map(Integer.class, mapping::get);
+	private SafeList<Integer> getVariables(Map<Integer, Integer> mapping, Instance instance) {
+		return instance.getVariableIndices().map(mapping::get);
 	}
 	// endregion
 }

@@ -16,7 +16,7 @@ public interface Literal {
 
 		private final Predicate predicate;
 
-		private final Vector<Integer> variables;
+		private final SafeList<Integer> variables;
 
 		private final int rank;
 
@@ -28,7 +28,7 @@ public interface Literal {
 		 * @param variables		The variables (represented as integers)
 		 * @param isPositive	Whether this is a positive literal
 		 */
-		public BasicLiteral(Predicate predicate, Vector<Integer> variables, boolean isPositive) {
+		public BasicLiteral(Predicate predicate, SafeList<Integer> variables, boolean isPositive) {
 			this.predicate = predicate;
 			this.variables = variables;
 			this.rank = new SafeList<>(variables).foldLeft(-1, Math::max);
@@ -41,7 +41,7 @@ public interface Literal {
 		}
 
 		@Override
-		public Vector<Integer> getVariables() {
+		public SafeList<Integer> getVariables() {
 			return variables;
 		}
 
@@ -54,11 +54,16 @@ public interface Literal {
 		public boolean isPositive() {
 			return isPositive;
 		}
+
+		@Override
+		public String toString() {
+			return (isPositive() ? "" : "~") + getPredicate().getName() + getVariables().map(v -> "v" + v);
+		}
 	}
 
 	Predicate getPredicate();
 
-	Vector<Integer> getVariables();
+	SafeList<Integer> getVariables();
 
 	int getRank();
 

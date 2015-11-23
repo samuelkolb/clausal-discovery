@@ -1,5 +1,6 @@
 package clausal_discovery.core;
 
+import clausal_discovery.core.bias.SymmetricPredicateDefinition;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import log.Log;
@@ -48,7 +49,7 @@ public class SubsetTest {
 	@Test
 	public void testSubsetSymmetry_True() {
 		// TODO second clause does not introduce variables in order
-		PredicateDefinition definition = new PredicateDefinition(new Predicate("n", 2), true, false);
+		PredicateDefinition definition = new SymmetricPredicateDefinition(new Predicate("n", 2));
 		InstanceList list = new InstanceList(new SafeList<>(definition), 4);
 		StatusClause accepted = getStatusClause(list, Arrays.asList(list.getInstance(0, true), list.getInstance(1, true)));
 		Log.LOG.printLine(accepted);

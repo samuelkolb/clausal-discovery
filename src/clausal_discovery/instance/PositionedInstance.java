@@ -3,6 +3,7 @@ package clausal_discovery.instance;
 import clausal_discovery.core.Literal;
 import clausal_discovery.core.LiteralSet;
 import logic.expression.formula.Predicate;
+import vector.SafeList;
 import vector.Vector;
 
 /**
@@ -107,7 +108,7 @@ public class PositionedInstance implements Literal {
 	}
 
 	@Override
-	public Vector<Integer> getVariables() {
+	public SafeList<Integer> getVariables() {
 		return getInstance().getVariableIndices();
 	}
 

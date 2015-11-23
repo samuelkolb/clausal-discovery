@@ -1,11 +1,18 @@
 package clausal_discovery.core;
 
 import logic.bias.Type;
+import logic.expression.formula.Formula;
 import logic.expression.formula.Predicate;
+import logic.expression.formula.PredicateInstance;
+import logic.expression.term.Term;
+import vector.SafeList;
 import vector.Vector;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Created by samuelkolb on 14/04/15.
+ * A predicate definition holds attributes of a predicate.
  *
  * @author Samuel Kolb
  */
@@ -19,14 +26,6 @@ public class PredicateDefinition {
 
 	public Predicate getPredicate() {
 		return predicate;
-	}
-
-	// IVAR symmetric - Whether or not the predicate is symmetric
-
-	private final boolean symmetric;
-
-	public boolean isSymmetric() {
-		return symmetric;
 	}
 
 	// IVAR calculated - Whether or not the predicate is calculated based on other predicates
@@ -46,19 +45,17 @@ public class PredicateDefinition {
 	 * @param predicate	The predicate
 	 */
 	public PredicateDefinition(Predicate predicate) {
-		this(predicate, false, false);
+		this(predicate, false);
 	}
 
 	/**
 	 * Creates a new predicate definition
 	 * @param predicate		The predicate
-	 * @param symmetric		If the predicate is symmetric
 	 * @param calculated	If the predicate is not given but calculated based on a theory
 	 */
-	public PredicateDefinition(Predicate predicate, boolean symmetric, boolean calculated) {
+	public PredicateDefinition(Predicate predicate, boolean calculated) {
 		this.predicate = predicate;
-		this.symmetric = symmetric;
-		checkIfValid(predicate, symmetric);
+		checkIfValid(predicate);
 		this.calculated = calculated;
 	}
 
@@ -69,17 +66,51 @@ public class PredicateDefinition {
 		return getPredicate().getArity();
 	}
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return getPredicate().getTypes();
 	}
+
+	/**
+	 * Checks whether the given variables can be used to create an instance of this predicate definition.
+	 * @param variables	The variable indices
+	 * @return	True iff the given variables are valid
+	 */
+	public boolean accepts(SafeList<Integer> variables) {
+		// Check if the number of given variables is correct
+		if(variables.size() != getPredicate().getArity()) {
+			return false;
+		}
+		// Check if the variables are all positive
+		return variables.all(e -> e >= 0);
+	}
+
+	/**
+	 * Transforms the input variables.
+	 * @param variables	The input variables
+	 * @return	The transformed input variables
+	 */
+	public SafeList<Integer> transform(SafeList<Integer> variables) {
+		return variables;
+	}
+
+	/**
+	 * Calculates the ground instances for this predicate definition, given a list of terms.
+	 * @param terms	The terms
+	 * @return	A list of ground instances
+	 */
+	public List<PredicateInstance> getGroundInstances(Term[] terms) {
+		return Collections.singletonList(getPredicate().getInstance(terms));
+	}
+
+	/**
+	 * Returns background knowledge about this definitions predicate.
+	 * @return	A list of logical formulas.
+	 */
+	public List<Formula> getBackground() {
+		return Collections.emptyList();
+	}
+
 	//endregion
 
-	private void checkIfValid(Predicate predicate, boolean symmetric) {
-		if(symmetric && predicate.getArity() > 0) {
-			Type type = predicate.getTypes().get(0);
-			for(int i = 1; i < predicate.getArity(); i++)
-				if(!type.equals(predicate.getTypes().get(i)))
-					throw new IllegalArgumentException("In symmetric predicates all arguments must have the same type");
-		}
-	}
+	protected void checkIfValid(Predicate predicate) { }
 }

@@ -15,6 +15,7 @@ import clausal_discovery.core.bias.ConnectedLiteralBias;
 import clausal_discovery.core.bias.LiteralBias;
 import clausal_discovery.core.bias.OrderedLiteralBias;
 import clausal_discovery.core.bias.RangeRestrictionBias;
+import log.Log;
 import util.Numbers;
 import vector.SafeList;
 import vector.SafeListBuilder;
@@ -134,6 +135,9 @@ public class InstanceList {
 	 * @return	An instance
 	 */
 	public Instance get(int index) {
+		if(!this.pairing.containsKey(index)) {
+			throw new IllegalArgumentException("No index: " + index);
+		}
 		return this.pairing.getValue(index);
 	}
 
@@ -186,8 +190,9 @@ public class InstanceList {
 		}
 		instanceList.sort(new AtomComparator(definitions));
 		Pairing<Integer, Instance> pairing = new HashPairing<>(false, false);
-		for(int i = 0; i < instanceList.size(); i++)
+		for(int i = 0; i < instanceList.size(); i++) {
 			pairing.put(i, instanceList.get(i));
+		}
 		return pairing;
 	}
 

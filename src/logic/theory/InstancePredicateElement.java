@@ -52,6 +52,6 @@ public class InstancePredicateElement extends Structure.PredicateElement {
 	//endregion
 
 	private String printInstance(PredicateInstance instance) {
-		return "(" + StringUtil.join(", ", instance.getTerms().getArray()) + ")";
+		return "(" + StringUtil.join(", ", instance.getTerms()) + ")";
 	}
 }

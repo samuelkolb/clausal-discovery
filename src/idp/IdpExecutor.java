@@ -79,11 +79,13 @@ public class IdpExecutor implements LogicExecutor {
 	@Override
 	public boolean entails(KnowledgeBase knowledgeBase, InlineTheory theory) {
 		entailmentStopwatch.start();
-		boolean test = executeTest(new EntailsProgram(knowledgeBase, printer, theory));
+		EntailsProgram idpProgram = new EntailsProgram(knowledgeBase, printer, theory);
+		boolean test = executeTest(idpProgram);
 		entailmentStopwatch.pause();
 		entailmentCount++;
-		if(!test)
+		if(!test) {
 			noEntailmentCount++;
+		}
 		return test;
 	}
 

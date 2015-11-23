@@ -2,7 +2,7 @@ package parse;
 
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.PredicateDefinition;
-import idp.IdpProgramPrinter;
+import clausal_discovery.core.bias.SymmetricPredicateDefinition;
 import log.Log;
 import logic.bias.EnumType;
 import logic.bias.Type;
@@ -13,13 +13,10 @@ import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.expression.term.Term;
 import pair.Pair;
-import util.Numbers;
 import vector.SafeList;
-import vector.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -120,11 +117,12 @@ public class LogicParserState {
 	 */
 	public void addPredicate(String predicateName, boolean symmetric, boolean calculated, String[] typeNames) {
 		Log.LOG.printLine("INFO added predicate " + predicateName + Arrays.toString(typeNames));
-		Type[] types = new Type[typeNames.length];
-		for(int i = 0; i < typeNames.length; i++)
-			types[i] = this.types.get(typeNames[i]);
+		SafeList<Type> types = SafeList.from(typeNames).map(this.types::get);
 		Predicate predicate = new Predicate(predicateName, types);
-		predicates.put(predicateName, new PredicateDefinition(predicate, symmetric, calculated));
+		PredicateDefinition definition = symmetric
+				? new SymmetricPredicateDefinition(predicate)
+				: new PredicateDefinition(predicate, calculated);
+		predicates.put(predicateName, definition);
 	}
 
 	/**
@@ -155,15 +153,12 @@ public class LogicParserState {
 		Term[] terms = new Term[constantNames.length];
 		for(int i = 0; i < constantNames.length; i++)
 			terms[i] = constants.get(constantNames[i]);
-		if(predicates.get(predicateName).isSymmetric())
-			Numbers.getPermutations(terms.length).forEach(p -> addInstance(predicateName, p.applyArray(terms)));
-		else
-			addInstance(predicateName, terms);
+		predicates.get(predicateName).getGroundInstances(terms).forEach(this::addInstance);
 	}
 
-	private void addInstance(String predicateName, Term[] terms) {
-		Log.LOG.formatLine("INFO Added %s(%s)", predicateName, Arrays.toString(terms));
-		instances.add(new PredicateInstance(predicates.get(predicateName).getPredicate(), terms));
+	private void addInstance(PredicateInstance instance) {
+		Log.LOG.formatLine("INFO Added %s(%s)", instance.getPredicate().getName(), instance.getTerms());
+		instances.add(instance);
 	}
 
 	/**
@@ -183,8 +178,8 @@ public class LogicParserState {
 	 */
 	public void addExample(String name) {
 		Log.LOG.formatLine("INFO added example %s", name);
-		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
-		examples.add(new Example(name, getSetup(), instances1, positiveExample));
+		SafeList<PredicateInstance> instances = SafeList.from(this.instances);
+		examples.add(new Example(name, getSetup(), instances, positiveExample));
 	}
 
 	public void setPositiveExample(boolean b) {
@@ -211,16 +206,13 @@ public class LogicParserState {
 	public LogicBase getLogicBase() {
 		SafeList<Example> examples = SafeList.from(this.examples);
 
-		Vector<PredicateDefinition> search;
-		if(searchPredicates.isEmpty())
-			search = new Vector<>(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
-		else
-			search = new Vector<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
+		boolean customSearch = !searchPredicates.isEmpty();
+		SafeList<PredicateDefinition> search = SafeList.from(customSearch ? searchPredicates : predicates.values());
 		SafeList<EnumType> enumList = SafeList.from(this.types.values()).filter(EnumType.class);
 		List<PredicateDefinition> enumDefinitions = new ArrayList<>();
 		enumList.forEach(t -> t.getConstants().forEach(c -> {
 			Predicate predicate = new Predicate(c.getName(), c.getType());
-			enumDefinitions.add(new PredicateDefinition(predicate, false, true));
+			enumDefinitions.add(new PredicateDefinition(predicate, true)); // TODO look at
 		}));
 		SafeList<PredicateDefinition> searchList = SafeList.from(search).grow(enumDefinitions);
 		return new Knowledge(getSetup().getVocabulary(), examples, searchList);

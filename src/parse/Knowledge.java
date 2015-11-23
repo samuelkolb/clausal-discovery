@@ -17,7 +17,6 @@ import pair.TypePair;
 import util.Numbers;
 import util.Randomness;
 import vector.SafeList;
-import vector.Vector;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,22 +69,9 @@ public class Knowledge implements LogicBase {
 
 	@Override
 	public List<Formula> getBackgroundKnowledge() {
-		// TODO add background knowledge
 		List<Formula> formulas = new ArrayList<>();
-		for(PredicateDefinition definition : getSearchList().filter(PredicateDefinition::isSymmetric)) {
-			Predicate predicate = definition.getPredicate();
-			Vector<Integer> variableIndices = ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1));
-			Map<Integer, Variable> variableMap = new HashMap<>();
-			for(Integer index : variableIndices) {
-				Type type = predicate.getTypes().get(index);
-				variableMap.put(index, new Variable(type.getName() + index, type));
-			}
-			Instance body = new Instance(definition, variableIndices);
-			List<Numbers.Permutation> permutations = Numbers.getPermutations(predicate.getArity());
-			for(int i = 1; i < permutations.size(); i++) {
-				Instance head = new Instance(definition, new Vector<>(permutations.get(i).getIntegerArray()));
-				formulas.add(Clause.horn(head.makeAtom(variableMap), body.makeAtom(variableMap)));
-			}
+		for(PredicateDefinition definition : getSearchList()) {
+			formulas.addAll(definition.getBackground());
 		}
 		return formulas;
 	}
