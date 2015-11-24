@@ -1,24 +1,19 @@
 package parse;
 
-import basic.ArrayUtil;
 import basic.StringUtil;
 import clausal_discovery.core.LogicBase;
 import clausal_discovery.core.PredicateDefinition;
-import clausal_discovery.instance.Instance;
 import idp.IdpProgramPrinter;
-import logic.bias.Type;
 import logic.example.Example;
-import logic.expression.formula.Clause;
 import logic.expression.formula.Formula;
-import logic.expression.formula.Predicate;
-import logic.expression.term.Variable;
 import logic.theory.Vocabulary;
 import pair.TypePair;
-import util.Numbers;
 import util.Randomness;
 import vector.SafeList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -55,9 +50,9 @@ public class Knowledge implements LogicBase {
 	 * @param examples      The list of examples
 	 * @param searchList	The list of search predicates
 	 */
-	public Knowledge(Vocabulary vocabulary, SafeList<Example> examples, SafeList<PredicateDefinition> searchList) {
+	public Knowledge(Vocabulary vocabulary, List<Example> examples, SafeList<PredicateDefinition> searchList) {
 		this.vocabulary = vocabulary;
-		this.examples = examples;
+		this.examples = SafeList.from(examples);
 		this.searchList = searchList;
 	}
 

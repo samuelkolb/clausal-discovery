@@ -12,6 +12,7 @@ import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.expression.term.Term;
+import logic.theory.Vocabulary;
 import pair.Pair;
 import vector.SafeList;
 
@@ -204,18 +205,12 @@ public class LogicParserState {
 	}
 
 	public LogicBase getLogicBase() {
-		SafeList<Example> examples = SafeList.from(this.examples);
-
 		boolean customSearch = !searchPredicates.isEmpty();
 		SafeList<PredicateDefinition> search = SafeList.from(customSearch ? searchPredicates : predicates.values());
 		SafeList<EnumType> enumList = SafeList.from(this.types.values()).filter(EnumType.class);
 		List<PredicateDefinition> enumDefinitions = new ArrayList<>();
-		enumList.forEach(t -> t.getConstants().forEach(c -> {
-			Predicate predicate = new Predicate(c.getName(), c.getType());
-			enumDefinitions.add(new PredicateDefinition(predicate, true)); // TODO look at
-		}));
-		SafeList<PredicateDefinition> searchList = SafeList.from(search).grow(enumDefinitions);
-		return new Knowledge(getSetup().getVocabulary(), examples, searchList);
+		enumList.forEach(t -> t.getConstants().forEach(c -> enumDefinitions.add(t.getPredicateDefinition(c))));
+		return new Knowledge(getSetup().getVocabulary(), this.examples, search.grow(enumDefinitions));
 	}
 
 	/**

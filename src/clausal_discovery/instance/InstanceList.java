@@ -67,6 +67,8 @@ public class InstanceList {
 		SafeListBuilder<PositionedInstance> head = SafeList.build(size());
 		LiteralSet unlocked = new LiteralSet(this);
 		LiteralSet blocked = new LiteralSet(this);
+		LiteralBias bias = predicates.filter(LiteralBias.class).foldLeft(getLiteralBias(), LiteralBias::combineWith);
+		//LiteralBias bias = getLiteralBias();
 		for(int i = 0; i < size(); i++) {
 			for(boolean inBody : new boolean[]{true, false}) {
 				if(initialBias.enables(get(i, !inBody))) {
@@ -88,10 +90,10 @@ public class InstanceList {
 					}
 					// not-opt j < i not necessary
 					for(boolean testInBody : new boolean[]{true, false}) {
-						if(getLiteralBias().enables(get(i, !inBody), get(j, !inBody))) {
+						if(bias.enables(get(i, !inBody), get(j, !inBody))) {
 							enabledSet = enabledSet.add(j, testInBody);
 						}
-						if(getLiteralBias().disables(get(i, !inBody), get(j, !inBody))) {
+						if(bias.disables(get(i, !inBody), get(j, !inBody))) {
 							disabledSet = disabledSet.add(j, testInBody);
 						}
 					}
@@ -149,7 +151,7 @@ public class InstanceList {
 	 */
 	private Literal get(int index, boolean positive) {
 		// not-opt uses the intermediate instance
-		return new Literal.BasicLiteral(get(index).getPredicate(), get(index).getVariableIndices(), positive);
+		return new Literal.BasicLiteral(get(index).getDefinition(), get(index).getVariableIndices(), positive);
 	}
 
 	/**

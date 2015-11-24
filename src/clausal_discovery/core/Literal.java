@@ -1,9 +1,7 @@
 package clausal_discovery.core;
 
-import basic.MathUtil;
 import logic.expression.formula.Predicate;
 import vector.SafeList;
-import vector.Vector;
 
 /**
  * Created by samuelkolb on 18/11/15.
@@ -14,7 +12,7 @@ public interface Literal {
 
 	class BasicLiteral implements Literal {
 
-		private final Predicate predicate;
+		private final PredicateDefinition definition;
 
 		private final SafeList<Integer> variables;
 
@@ -24,20 +22,20 @@ public interface Literal {
 
 		/**
 		 * Creates a new literal instance.
-		 * @param predicate		A predicate
+		 * @param definition	The predicate definition
 		 * @param variables		The variables (represented as integers)
 		 * @param isPositive	Whether this is a positive literal
 		 */
-		public BasicLiteral(Predicate predicate, SafeList<Integer> variables, boolean isPositive) {
-			this.predicate = predicate;
+		public BasicLiteral(PredicateDefinition definition, SafeList<Integer> variables, boolean isPositive) {
+			this.definition = definition;
 			this.variables = variables;
 			this.rank = new SafeList<>(variables).foldLeft(-1, Math::max);
 			this.isPositive = isPositive;
 		}
 
 		@Override
-		public Predicate getPredicate() {
-			return predicate;
+		public PredicateDefinition getDefinition() {
+			return definition;
 		}
 
 		@Override
@@ -61,7 +59,11 @@ public interface Literal {
 		}
 	}
 
-	Predicate getPredicate();
+	PredicateDefinition getDefinition();
+
+	default Predicate getPredicate() {
+		return getDefinition().getPredicate();
+	}
 
 	SafeList<Integer> getVariables();
 

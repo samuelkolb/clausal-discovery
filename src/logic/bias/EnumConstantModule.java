@@ -1,8 +1,6 @@
 package logic.bias;
 
 import clausal_discovery.core.PredicateDefinition;
-import clausal_discovery.instance.Instance;
-import logic.expression.formula.And;
 import logic.expression.formula.Atom;
 import logic.expression.formula.Clause;
 import logic.expression.formula.Formula;
@@ -11,10 +9,8 @@ import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.expression.term.Variable;
-import vector.Vector;
+import vector.SafeList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,12 +21,19 @@ import java.util.List;
  */
 public class EnumConstantModule { // TODO contemplate implement as predicate definition?
 
-	private class EnumPredicate extends PredicateDefinition {
+	private class EnumPredicateDefinition extends PredicateDefinition {
 
-		public EnumPredicate(Predicate predicate) {
+		public EnumPredicateDefinition(Predicate predicate) {
 			super(predicate);
 		}
 
+		@Override
+		public List<Formula> getBackground() {
+			Variable v1 = new Variable("x1"), v2 = new Variable("x2");
+			Atom head = new PredicateInstance(new InfixPredicate("=", Type.GENERIC, Type.GENERIC), v1, v2);
+			Formula formula = Clause.horn(head, getPredicate().getInstance(v1), getPredicate().getInstance(v2));
+			return SafeList.from(formula);
+		}
 	}
 
 	public class EnumType {
@@ -55,7 +58,7 @@ public class EnumConstantModule { // TODO contemplate implement as predicate def
 	 */
 	public EnumConstantModule(Constant constant) {
 		this.constant = constant;
-		this.predicateDefinition = new EnumPredicate(new Predicate(constant.getName(), constant.getType()));
+		this.predicateDefinition = new EnumPredicateDefinition(new Predicate(constant.getName(), constant.getType()));
 	}
 
 	public Predicate getPredicate() {

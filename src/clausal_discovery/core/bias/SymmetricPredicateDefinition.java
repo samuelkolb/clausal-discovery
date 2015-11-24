@@ -76,11 +76,6 @@ public class SymmetricPredicateDefinition extends PredicateDefinition {
 			Log.LOG.printLine(IdpExpressionPrinter.print(list.get(list.size() - 1)));
 		}
 		return list;
-		/*
-		Variable v1 = new Variable("x1"), v2 = new Variable("x2");
-		Atom head = new PredicateInstance(new InfixPredicate("=", Type.GENERIC, Type.GENERIC), v1, v2);
-		Formula formula = Clause.horn(head, getPredicate().getInstance(v1), getPredicate().getInstance(v2));
-		return SafeList.from(formula);*/
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package clausal_discovery.instance;
 
 import clausal_discovery.core.Literal;
 import clausal_discovery.core.LiteralSet;
+import clausal_discovery.core.PredicateDefinition;
 import logic.expression.formula.Predicate;
 import vector.SafeList;
 import vector.Vector;
@@ -55,9 +56,9 @@ public class PositionedInstance implements Literal {
 
 	/**
 	 * Creates a new positioned instance
-	 * @param instanceList    The instance list
+	 * @param instanceList  The instance list
 	 * @param inBody        Whether this instance is a body or a head instance
-	 * @param index            The index of the instance within the instance list
+	 * @param index         The index of the instance within the instance list
 	 * @param enabledSet
 	 * @param disabledSet
 	 */
@@ -105,6 +106,11 @@ public class PositionedInstance implements Literal {
 	@Override
 	public Predicate getPredicate() {
 		return getInstance().getPredicate();
+	}
+
+	@Override
+	public PredicateDefinition getDefinition() {
+		return getInstance().getDefinition();
 	}
 
 	@Override
