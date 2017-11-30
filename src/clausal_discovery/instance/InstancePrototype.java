@@ -56,7 +56,7 @@ public class InstancePrototype {
 	 * @return  An instance containing the given indices
 	 */
 	public Instance instantiate(int[] indices) {
-		SafeList<Integer> variableIndices = new SafeList<>(getPermutation().substitute(indices).getIntegerArray());
+		SafeList<Integer> variableIndices = SafeList.from(getPermutation().substitute(indices).getIntegerArray());
 		return new Instance(getDefinition(), variableIndices);
 	}
 

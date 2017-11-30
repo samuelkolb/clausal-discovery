@@ -55,8 +55,8 @@ public class Procedure {
 	}
 
 	public String printProgram(String... args) {
-		if(args.length < parameters.length) {
-			String[] missing = Arrays.copyOfRange(parameters.getArray(), args.length, parameters.length);
+		if(args.length < parameters.size()) {
+			String[] missing = Arrays.copyOfRange(parameters.toArray(new String[parameters.size()]), args.length, parameters.size());
 			throw new MissingParametersException(missing);
 		}
 		StringBuilder builder = new StringBuilder();

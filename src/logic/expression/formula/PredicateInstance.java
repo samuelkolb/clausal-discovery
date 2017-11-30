@@ -41,12 +41,12 @@ public class PredicateInstance extends Atom {
 
 	public PredicateInstance(Predicate predicate, Term... terms) {
 		this.predicate = predicate;
-		this.terms = new SafeList<>(terms);
+		this.terms = SafeList.from(terms);
 		int arity = getPredicate().getArity();
-		if(getTerms().length != arity)
-			throw new IllegalArgumentException(String.format(arityError, getTerms().length, predicate.getName(), arity));
+		if(getTerms().size() != arity)
+			throw new IllegalArgumentException(String.format(arityError, getTerms().size(), predicate.getName(), arity));
 		for(int i = 0; i < getPredicate().getArity(); i++) {
-			Type type = getPredicate().getTypes().e(i);
+			Type type = getPredicate().getTypes().get(i);
 			Term term = getTerm(i);
 			if(!type.isSuperTypeOf(term.getType()))
 				throw new IllegalArgumentException("Term " + term + " should be " + type + ", was " + term.getType());

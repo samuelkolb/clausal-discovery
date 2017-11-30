@@ -31,12 +31,12 @@ class ConstantTypeElement extends Structure.TypeElement {
 		for(int i = 1; i < constants.length; i++)
 			if(!getType().equals(constants[i].getType()))
 				throw new IllegalArgumentException("Inconsistent constant types");
-		this.constants = new SafeList<>(constants);
+		this.constants = SafeList.from(constants);
 	}
 
 	@Override
 	public String print() {
-		return getType().getName() + " = {" + StringUtil.join("; ", constants.getArray()) + "}";
+		return getType().getName() + " = {" + StringUtil.join("; ", constants.toArray()) + "}";
 	}
 }
 

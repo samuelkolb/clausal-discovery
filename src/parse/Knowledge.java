@@ -64,7 +64,7 @@ public class Knowledge implements LogicBase {
 	@Override
 	public String toString() {
 		return new IdpProgramPrinter.Cached().printVocabulary(getVocabulary(), "Vocabulary")
-				+ StringUtil.join("\n", examples.getArray());
+				+ StringUtil.join("\n", examples.toArray());
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class Knowledge implements LogicBase {
 		List<Formula> formulas = new ArrayList<>();
 		for(PredicateDefinition definition : getSearchPredicates().filter(PredicateDefinition::isSymmetric)) {
 			Predicate predicate = definition.getPredicate();
-			SafeList<Integer> variableIndices = ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1));
+			SafeList<Integer> variableIndices = SafeList.from(ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1)));
 			Map<Integer, Variable> variableMap = new HashMap<>();
 			for(Integer index : variableIndices) {
 				Type type = predicate.getTypes().get(index);
@@ -81,7 +81,7 @@ public class Knowledge implements LogicBase {
 			Instance body = new Instance(definition, variableIndices);
 			List<Numbers.Permutation> permutations = Numbers.getPermutations(predicate.getArity());
 			for(int i = 1; i < permutations.size(); i++) {
-				Instance head = new Instance(definition, new SafeList<>(permutations.get(i).getIntegerArray()));
+				Instance head = new Instance(definition, SafeList.from(permutations.get(i).getIntegerArray()));
 				formulas.add(Clause.horn(head.makeAtom(variableMap), body.makeAtom(variableMap)));
 			}
 		}
@@ -109,7 +109,7 @@ public class Knowledge implements LogicBase {
 		int index = Math.max(1, Math.min((int) Math.ceil(fraction * size), size - 1));
 		List<Example> examples = new ArrayList<>(getExamples());
 		Collections.shuffle(examples, Randomness.getRandom());
-		SafeList<Example> vector = new SafeList<>(Example.class, examples);
+		SafeList<Example> vector = new SafeList<>(examples);
 		return TypePair.of(copy(vector.subList(0, index)), copy(vector.subList(index, size)));
 	}
 

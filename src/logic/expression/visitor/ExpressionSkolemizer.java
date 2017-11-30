@@ -81,9 +81,9 @@ public class ExpressionSkolemizer {
 	}
 
 	private Atom[] skolemizeAtoms(SafeList<Atom> atoms, Map<Variable, Constant> variableMapping) {
-		Atom[] result = new Atom[atoms.length];
-		for(int i = 0; i < atoms.length; i++)
-			result[i] = (Atom) skolemize(atoms.e(i), variableMapping);
+		Atom[] result = new Atom[atoms.size()];
+		for(int i = 0; i < atoms.size(); i++)
+			result[i] = (Atom) skolemize(atoms.get(i), variableMapping);
 		return result;
 	}
 

@@ -67,7 +67,7 @@ public abstract class ValidityCalculator {
 	}
 
 	SafeList<Structure> getStructures() {
-		return new SafeList<>(Structure.class, getBase().getExamples(), Example::getStructure);
+		return new SafeList<>(getBase().getExamples(), Example::getStructure);
 	}
 
 	protected Theory getTheory(Formula formula) {

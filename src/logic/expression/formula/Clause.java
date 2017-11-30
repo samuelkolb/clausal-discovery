@@ -24,10 +24,10 @@ public class Clause extends Formula {
 	}
 
 	public Formula getHead() {
-		if(getHeadAtoms().length > 1)
+		if(getHeadAtoms().size() > 1)
 			return new Or(getHeadAtoms().toArray(new Formula[getHeadAtoms().size()]));
-		if(getHeadAtoms().length == 1)
-			return getHeadAtoms().e(0);
+		if(getHeadAtoms().size() == 1)
+			return getHeadAtoms().get(0);
 		return LogicalValue.FALSE;
 	}
 
@@ -38,10 +38,10 @@ public class Clause extends Formula {
 	}
 
 	public Formula getBody() {
-		if(getBodyAtoms().length > 1)
+		if(getBodyAtoms().size() > 1)
 			return new And(getBodyAtoms());
-		if(getBodyAtoms().length == 1)
-			return getBodyAtoms().e(0);
+		if(getBodyAtoms().size() == 1)
+			return getBodyAtoms().get(0);
 		return LogicalValue.TRUE;
 	}
 
@@ -50,7 +50,7 @@ public class Clause extends Formula {
 	//region Construction
 
 	private Clause(Atom[] body, Atom[] head) {
-		this(new SafeList<>(body), new SafeList<>(head));
+		this(SafeList.from(body), SafeList.from(head));
 	}
 
 	private Clause(SafeList<Atom> body, SafeList<Atom> head) {

@@ -19,7 +19,7 @@ public abstract class CompositeFormula extends Formula {
 	}
 
 	public int getElementCount() {
-		return elements.length;
+		return elements.size();
 	}
 
 	/**
@@ -36,7 +36,7 @@ public abstract class CompositeFormula extends Formula {
 	//region Construction
 
 	CompositeFormula(Formula... elements) {
-		this.elements = new SafeList<>(elements);
+		this.elements = SafeList.from(elements);
 	}
 
 	//endregion

@@ -43,7 +43,7 @@ public class InstanceSetPrototype {
 
 	//region Public methods
 	public SafeList<Instance> getInstances(int[] indices) {
-		return getPrototypes().map(Instance.class, p -> p.instantiate(indices));
+		return getPrototypes().map(p -> p.instantiate(indices));
 	}
 
 	public static SafeList<InstanceSetPrototype> createInstanceSets(SafeList<PredicateDefinition> definitions) {
@@ -62,7 +62,7 @@ public class InstanceSetPrototype {
 			InstanceSetPrototype instanceSet = createInstanceSet(definitionsSet, i + 1);
 			instanceSetPrototypes.add(instanceSet);
 		}
-		return new SafeList<>(InstanceSetPrototype.class, instanceSetPrototypes);
+		return new SafeList<>(instanceSetPrototypes);
 	}
 
 	public static InstanceSetPrototype createInstanceSet(Collection<PredicateDefinition> definitions, int rank) {
@@ -70,11 +70,11 @@ public class InstanceSetPrototype {
 		for(PredicateDefinition definition : definitions) {
 			List<Numbers.Permutation> permutations = Numbers.take(rank, definition.getArity());
 			for(Numbers.Permutation permutation : permutations)
-				if(new Environment().isValidInstance(definition, new SafeList<>(permutation.getIntegerArray())))
+				if(new Environment().isValidInstance(definition, SafeList.from(permutation.getIntegerArray())))
 					if(!definition.isSymmetric() || permutation.isSorted())
 						prototypes.add(new InstancePrototype(definition, permutation));
 		}
-		return new InstanceSetPrototype(new SafeList<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
+		return new InstanceSetPrototype(SafeList.from(prototypes.toArray(new InstancePrototype[prototypes.size()])));
 	}
 	//endregion
 }

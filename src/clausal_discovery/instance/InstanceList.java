@@ -81,7 +81,7 @@ public class InstanceList {
 	private Pairing<Integer, Instance> getInstances(SafeList<PredicateDefinition> definitions, int variables) {
 		SafeList<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(definitions);
 		List<Instance> instanceList = new ArrayList<>();
-		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.length)) {
+		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.size())) {
 			InstanceSetPrototype instanceSetPrototype = instanceSetPrototypes.get(choice.getDistinctCount() - 1);
 			instanceList.addAll(instanceSetPrototype.getInstances(choice.getArray()));
 		}

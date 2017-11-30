@@ -44,7 +44,7 @@ public class StructureBuilder extends Builder<Structure> {
 	}
 
 	public void addConstants(Type type, Constant... constants) {
-		typeElements.add(new ConstantTypeElement(type, new SafeList<>(constants)));
+		typeElements.add(new ConstantTypeElement(type, SafeList.from(constants)));
 	}
 
 	public void addConstants(Type type, Collection<Constant> constants) {
@@ -62,7 +62,7 @@ public class StructureBuilder extends Builder<Structure> {
 	}
 
 	public void addPredicateInstances(Predicate predicate, PredicateInstance... instances) {
-		predicateElements.add(new InstancePredicateElement(predicate, new SafeList<>(instances)));
+		predicateElements.add(new InstancePredicateElement(predicate, SafeList.from(instances)));
 	}
 
 	public void addPredicateInstances(Predicate predicate, Collection<PredicateInstance> instances) {
@@ -101,10 +101,10 @@ public class StructureBuilder extends Builder<Structure> {
 	//endregion
 
 	private SafeList<Structure.PredicateElement> getPredicateElementSafeList() {
-		return new SafeList<>(predicateElements.toArray(new Structure.PredicateElement[predicateElements.size()]));
+		return SafeList.from(predicateElements);
 	}
 
 	private SafeList<Structure.TypeElement> getTypeElementSafeList() {
-		return new SafeList<>(typeElements.toArray(new Structure.TypeElement[typeElements.size()]));
+		return SafeList.from(typeElements);
 	}
 }

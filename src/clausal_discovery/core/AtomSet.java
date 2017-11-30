@@ -6,7 +6,10 @@ import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
 import vector.SafeList;
+import vector.SafeListBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.IntPredicate;
 
 /**
@@ -83,15 +86,15 @@ class AtomSet implements Comparable<AtomSet> {
 	}
 
 	public SafeList<Instance> getInstances() {
-		SafeList<Instance> instances = new WriteOnceVector<>(new Instance[size()]);
+		List<Instance> instances = new ArrayList<>();
 		forEach(i -> instances.add(instanceList.get(i)));
-		return instances;
+		return SafeList.from(instances);
 	}
 
 	public SafeList<PositionedInstance> getInstances(boolean inBody) {
-		SafeList<PositionedInstance> instances = new WriteOnceVector<>(new PositionedInstance[size()]);
+		List<PositionedInstance> instances = new ArrayList<>();
 		forEach(i -> instances.add(instanceList.getInstance(i, inBody)));
-		return instances;
+		return SafeList.from(instances);
 	}
 
 	public boolean forEach(IntPredicate predicate) {

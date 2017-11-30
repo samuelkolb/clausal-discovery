@@ -52,7 +52,7 @@ public class Predicate {
 	 */
 	public Predicate(String name, Type... types) {
 		this.name = name;
-		this.types = ArrayUtil.wrap(types);
+		this.types = SafeList.from(ArrayUtil.wrap(types));
 	}
 
 	//endregion
@@ -70,12 +70,12 @@ public class Predicate {
 	}
 
 	public int getArity() {
-		return types.length;
+		return types.size();
 	}
 
 	@Override
 	public String toString() {
-		return getName() + "(" + StringUtil.join(", ", (Object[]) getTypes().getArray()) + ")";
+		return getName() + "(" + StringUtil.join(", ", (Object[]) getTypes().toArray()) + ")";
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import log.Log;
 import logic.expression.formula.Formula;
 import util.Numbers;
 import vector.SafeList;
-import vector.WriteOnceSafeList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,10 +97,10 @@ public class StatusClause {
 	 */
 	@Deprecated
 	public SafeList<PositionedInstance> getInstances() {
-		SafeList<PositionedInstance> vector = new WriteOnceSafeList<>(new PositionedInstance[size()]);
+		List<PositionedInstance> vector = new ArrayList<>();
 		vector.addAll(getLiteralSet().getBody().getInstances(true));
 		vector.addAll(getLiteralSet().getHead().getInstances(false));
-		return vector;
+		return SafeList.from(vector);
 	}
 
 	/**
@@ -169,8 +168,8 @@ public class StatusClause {
 
 	@Override
 	public String toString() {
-		List<String> body = literalSet.getBody().getInstances().map(String.class, Instance::toString);
-		List<String> head = literalSet.getHead().getInstances().map(String.class, Instance::toString);
+		List<String> body = literalSet.getBody().getInstances().map(Instance::toString);
+		List<String> head = literalSet.getHead().getInstances().map(Instance::toString);
 		return (body.isEmpty() ? "true" : StringUtil.join(" & ", body)) + " => "
 				+ (head.isEmpty() ? "false" : StringUtil.join(" | ", head));
 	}
@@ -361,7 +360,7 @@ public class StatusClause {
 	}
 
 	private SafeList<Integer> getVariables(Map<Integer, Integer> mapping, Instance instance) {
-		return instance.getVariableIndices().map(Integer.class, mapping::get);
+		return instance.getVariableIndices().map(mapping::get);
 	}
 	// endregion
 }

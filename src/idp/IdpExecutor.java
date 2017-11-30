@@ -68,7 +68,7 @@ public class IdpExecutor implements LogicExecutor {
 		List<SafeList<Boolean>> list = new ArrayList<>();
 		for(String line : result.trim().split("\n"))
 			if(line.trim().length() > 0)
-				list.add(new SafeList<>(line.trim().split(" ")).map(Boolean.class, this::getBoolean));
+				list.add(SafeList.from(line.trim().split(" ")).map(this::getBoolean));
 		BitMatrix bitMatrix = new BitMatrix(knowledgeBase.getStructures().size(), knowledgeBase.getTheories().size());
 		for(int row = 0; row < list.size(); row++)
 			for(int col = 0; col < list.get(row).size(); col++)

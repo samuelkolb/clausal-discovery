@@ -51,9 +51,9 @@ public class Vocabulary {
 	private PredicateDefinition getDefinition(String predicateName, SafeList<Integer> variableIndices) {
 		for(PredicateDefinition candidate : getDefinitions())
 			if(candidate.getPredicate().getName().equals(predicateName)
-					&& candidate.getArity() == variableIndices.length)
+					&& candidate.getArity() == variableIndices.size())
 				return candidate;
 		String message = "No predicate with the name %s and arity %d";
-		throw new NoSuchElementException(String.format(message, predicateName,variableIndices.length));
+		throw new NoSuchElementException(String.format(message, predicateName,variableIndices.size()));
 	}
 }

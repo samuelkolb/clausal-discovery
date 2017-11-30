@@ -34,7 +34,7 @@ public class InstancePredicateElement extends Structure.PredicateElement {
 		for(int i = 1; i < instances.length; i++)
 			if(!getPredicate().equals(instances[i].getPredicate()))
 				throw new IllegalArgumentException("Inconsistent instance predicates");
-		this.instances = new SafeList<>(instances);
+		this.instances = SafeList.from(instances);
 	}
 	//endregion
 
@@ -52,6 +52,6 @@ public class InstancePredicateElement extends Structure.PredicateElement {
 	//endregion
 
 	private String printInstance(PredicateInstance instance) {
-		return "(" + StringUtil.join(", ", instance.getTerms().getArray()) + ")";
+		return "(" + StringUtil.join(", ", instance.getTerms().toArray()) + ")";
 	}
 }

@@ -11,7 +11,7 @@ import vector.SafeList;
 public enum Procedures {
 
 	// 0: Theory, 1: Theory that might be entailed
-	ENTAILS("entails.txt", new SafeList<>("Entailing theory", "Entailed theory"), new SafeList<Function>());
+	ENTAILS("entails.txt", SafeList.from("Entailing theory", "Entailed theory"), new SafeList<Function>());
 
 	private final String program;
 

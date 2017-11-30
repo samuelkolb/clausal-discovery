@@ -55,14 +55,14 @@ public class ValidityTable {
 	 * @return	A new validity table
 	 */
 	public static ValidityTable create(SafeList<ValidatedClause> clauses) {
-		SafeList<Example> examples = clauses.isEmpty() ? new SafeList<>() : clauses.getFirst().getLogicBase().getExamples();
+		SafeList<Example> examples = clauses.isEmpty() ? new SafeList<>() : clauses.get(0).getLogicBase().getExamples();
 		return new ValidityTable(createValidityMap(clauses), examples);
 	}
 
 	private static BitMatrix createValidityMap(SafeList<ValidatedClause> clauses) {
 		if(clauses.isEmpty())
 			return new BitMatrix(0, 0);
-		int numberExamples = clauses.getFirst().getLogicBase().getExamples().size();
+		int numberExamples = clauses.get(0).getLogicBase().getExamples().size();
 		BitMatrix bitMatrix = new BitMatrix(numberExamples, clauses.size());
 		for(int clause = 0; clause < clauses.size(); clause++)
 			for(int i = 0; i < numberExamples; i++)
@@ -89,7 +89,7 @@ public class ValidityTable {
 	 */
 	public static ValidityTable create(LogicBase logicBase, SafeList<Theory> background, SafeList<StatusClause> clauses) {
 		ValidityCalculator calculator = new ParallelValidityCalculator(logicBase, IdpExecutor.get(), background);
-		ValidityTable table = create(clauses.map(ValidatedClause.class, calculator::getValidatedClause));
+		ValidityTable table = create(clauses.map(calculator::getValidatedClause));
 		calculator.shutdown();
 		return table;
 	}
@@ -102,8 +102,8 @@ public class ValidityTable {
 	 * @return	The validity table
 	 */
 	public static ValidityTable create(LogicBase logicBase, List<Formula> clauses) {
-		SafeList<Theory> theories = new SafeList<>(Formula.class, clauses).map(Theory.class, InlineTheory::new);
-		SafeList<Structure> structures = logicBase.getExamples().map(Structure.class, Example::getStructure);
+		SafeList<Theory> theories = new SafeList<>(clauses).map(InlineTheory::new);
+		SafeList<Structure> structures = logicBase.getExamples().map(Example::getStructure);
 		KnowledgeBase base = new KnowledgeBase(logicBase.getVocabulary(), theories, structures);
 		BitMatrix bitMatrix = IdpExecutor.get().testValidityTheories(base);
 		return new ValidityTable(bitMatrix, logicBase.getExamples());

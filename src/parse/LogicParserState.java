@@ -153,7 +153,7 @@ public class LogicParserState {
 	 */
 	public void addExample(String name) {
 		Log.LOG.formatLine("INFO added example %s", name);
-		SafeList<PredicateInstance> instances1 = new SafeList<>(instances.toArray(new PredicateInstance[instances.size()]));
+		SafeList<PredicateInstance> instances1 = SafeList.from(instances.toArray(new PredicateInstance[instances.size()]));
 		examples.add(new Example(name, getSetup(), instances1, positiveExample));
 		instances.clear();
 		constants.clear();
@@ -176,19 +176,19 @@ public class LogicParserState {
 
 	public Setup getSetup() {
 		Collection<PredicateDefinition> values = this.predicates.values();
-		SafeList<PredicateDefinition> definitions = new SafeList<>(PredicateDefinition.class, values);
-		SafeList<Constant> constants = new SafeList<>(Constant.class, this.constants.values());
-		return new Setup(new SafeList<>(Type.class, types.values()), definitions, constants);
+		SafeList<PredicateDefinition> definitions = new SafeList<>(values);
+		SafeList<Constant> constants = new SafeList<>(this.constants.values());
+		return new Setup(new SafeList<>(types.values()), definitions, constants);
 	}
 
 	public LogicBase getLogicBase() {
-		SafeList<Example> examples = new SafeList<>(Example.class, this.examples);
+		SafeList<Example> examples = new SafeList<>(this.examples);
 
 		SafeList<PredicateDefinition> search;
 		if(searchPredicates.isEmpty())
-			search = new SafeList<>(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
+			search = SafeList.from(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
 		else
-			search = new SafeList<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
+			search = SafeList.from(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
 		return new Knowledge(getSetup().getVocabulary(), examples, search);
 	}
 
