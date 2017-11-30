@@ -3,7 +3,7 @@ package logic.theory;
 import clausal_discovery.core.PredicateDefinition;
 import clausal_discovery.instance.Instance;
 import logic.bias.Type;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.*;
 
@@ -14,14 +14,14 @@ import java.util.*;
  */
 public class Vocabulary {
 
-	private final Vector<Type> types;
+	private final SafeList<Type> types;
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return types;
 	}
-	private final Vector<PredicateDefinition> definitions;
+	private final SafeList<PredicateDefinition> definitions;
 
-	public Vector<PredicateDefinition> getDefinitions() {
+	public SafeList<PredicateDefinition> getDefinitions() {
 		return definitions;
 	}
 
@@ -29,7 +29,7 @@ public class Vocabulary {
 	 * Creates a new vocabulary with the given definitions
 	 * @param definitions	The definitions
 	 */
-	public Vocabulary(Vector<Type> types, Vector<PredicateDefinition> definitions) {
+	public Vocabulary(SafeList<Type> types, SafeList<PredicateDefinition> definitions) {
 		Set<Type> contained = new HashSet<>();
 		for(PredicateDefinition definition : definitions)
 			contained.addAll(definition.getTypes());
@@ -44,11 +44,11 @@ public class Vocabulary {
 	 * @param variableIndices	The variable indices
 	 * @return	An instance
 	 */
-	public Instance getInstance(String predicateName, Vector<Integer> variableIndices) {
+	public Instance getInstance(String predicateName, SafeList<Integer> variableIndices) {
 		return new Instance(getDefinition(predicateName, variableIndices), variableIndices);
 	}
 
-	private PredicateDefinition getDefinition(String predicateName, Vector<Integer> variableIndices) {
+	private PredicateDefinition getDefinition(String predicateName, SafeList<Integer> variableIndices) {
 		for(PredicateDefinition candidate : getDefinitions())
 			if(candidate.getPredicate().getName().equals(predicateName)
 					&& candidate.getArity() == variableIndices.length)

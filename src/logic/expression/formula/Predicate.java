@@ -4,7 +4,7 @@ import basic.ArrayUtil;
 import basic.StringUtil;
 import logic.bias.Type;
 import logic.expression.term.Term;
-import vector.Vector;
+import vector.SafeList;
 
 /**
  * Created by samuelkolb on 22/10/14.
@@ -25,9 +25,9 @@ public class Predicate {
 
 	// IVAR types - The argument types
 
-	private final Vector<Type> types;
+	private final SafeList<Type> types;
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return types;
 	}
 

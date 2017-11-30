@@ -3,7 +3,7 @@ package clausal_discovery.instance;
 import clausal_discovery.core.Environment;
 import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,9 +23,9 @@ public class InstanceSetPrototype {
 		return rank;
 	}
 
-	private final Vector<InstancePrototype> prototypes;
+	private final SafeList<InstancePrototype> prototypes;
 
-	public Vector<InstancePrototype> getPrototypes() {
+	public SafeList<InstancePrototype> getPrototypes() {
 		return prototypes;
 	}
 
@@ -33,7 +33,7 @@ public class InstanceSetPrototype {
 
 	//region Construction
 
-	protected InstanceSetPrototype(Vector<InstancePrototype> prototypes) {
+	protected InstanceSetPrototype(SafeList<InstancePrototype> prototypes) {
 		this.rank = prototypes.isEmpty() ? 0 : prototypes.get(0).getRank();
 		for(int i = 1; i < prototypes.size(); i++) assert prototypes.get(i).getRank() == getRank();
 		this.prototypes = prototypes;
@@ -42,11 +42,11 @@ public class InstanceSetPrototype {
 	//endregion
 
 	//region Public methods
-	public Vector<Instance> getInstances(int[] indices) {
+	public SafeList<Instance> getInstances(int[] indices) {
 		return getPrototypes().map(Instance.class, p -> p.instantiate(indices));
 	}
 
-	public static Vector<InstanceSetPrototype> createInstanceSets(Vector<PredicateDefinition> definitions) {
+	public static SafeList<InstanceSetPrototype> createInstanceSets(SafeList<PredicateDefinition> definitions) {
 		int maxArity = definitions.get(0).getArity();
 		for(int i = 1; i < definitions.size(); i++)
 			maxArity = Math.max(maxArity, definitions.get(i).getArity());
@@ -62,7 +62,7 @@ public class InstanceSetPrototype {
 			InstanceSetPrototype instanceSet = createInstanceSet(definitionsSet, i + 1);
 			instanceSetPrototypes.add(instanceSet);
 		}
-		return new Vector<>(InstanceSetPrototype.class, instanceSetPrototypes);
+		return new SafeList<>(InstanceSetPrototype.class, instanceSetPrototypes);
 	}
 
 	public static InstanceSetPrototype createInstanceSet(Collection<PredicateDefinition> definitions, int rank) {
@@ -70,11 +70,11 @@ public class InstanceSetPrototype {
 		for(PredicateDefinition definition : definitions) {
 			List<Numbers.Permutation> permutations = Numbers.take(rank, definition.getArity());
 			for(Numbers.Permutation permutation : permutations)
-				if(new Environment().isValidInstance(definition, new Vector<>(permutation.getIntegerArray())))
+				if(new Environment().isValidInstance(definition, new SafeList<>(permutation.getIntegerArray())))
 					if(!definition.isSymmetric() || permutation.isSorted())
 						prototypes.add(new InstancePrototype(definition, permutation));
 		}
-		return new InstanceSetPrototype(new Vector<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
+		return new InstanceSetPrototype(new SafeList<>(prototypes.toArray(new InstancePrototype[prototypes.size()])));
 	}
 	//endregion
 }

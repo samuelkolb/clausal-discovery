@@ -1,6 +1,6 @@
 package logic.theory;
 
-import vector.Vector;
+import vector.SafeList;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
 
@@ -46,15 +46,15 @@ public class Structure {
 		}
 	}
 
-	private final Vector<TypeElement> typeElements;
+	private final SafeList<TypeElement> typeElements;
 
-	public Vector<TypeElement> getTypeElements() {
+	public SafeList<TypeElement> getTypeElements() {
 		return typeElements;
 	}
 
-	private final Vector<PredicateElement> predicateElements;
+	private final SafeList<PredicateElement> predicateElements;
 
-	public Vector<PredicateElement> getPredicateElements() {
+	public SafeList<PredicateElement> getPredicateElements() {
 		return predicateElements;
 	}
 
@@ -70,7 +70,7 @@ public class Structure {
 	 * @param predicateElements	The given predicate instances
 	 * @param isPositive		Whether this structure is a positive example or not
 	 */
-	public Structure(Vector<TypeElement> typeElements, Vector<PredicateElement> predicateElements, boolean isPositive) {
+	public Structure(SafeList<TypeElement> typeElements, SafeList<PredicateElement> predicateElements, boolean isPositive) {
 		this.typeElements = typeElements;
 		this.predicateElements = predicateElements;
 		this.isPositive = isPositive;

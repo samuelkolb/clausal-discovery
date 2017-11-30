@@ -6,7 +6,7 @@ import clausal_discovery.validity.ValidatedClause;
 import logic.expression.formula.Formula;
 import logic.theory.InlineTheory;
 import logic.theory.Theory;
-import vector.Vector;
+import vector.SafeList;
 import version3.algorithm.*;
 import version3.algorithm.implementation.BreadthFirstSearch;
 import version3.plugin.DuplicateEliminationPlugin;
@@ -82,7 +82,7 @@ public class ClausalDiscovery {
 	private List<ValidatedClause> run(Configuration configuration, Predicate<ValidatedClause> validityTest) {
 		int variables = configuration.getVariableCount();
 		LogicBase logicBase = configuration.getLogicBase();
-		Vector<Theory> background = configuration.getBackgroundTheories();
+		SafeList<Theory> background = configuration.getBackgroundTheories();
 		InstanceList list = new InstanceList(logicBase.getSearchPredicates(), variables);
 		VariableRefinement refinement = new VariableRefinement(logicBase, list, background, validityTest);
 		List<ValidatedClause> initialNodes = Collections.singletonList(new ValidatedClause(list, logicBase));

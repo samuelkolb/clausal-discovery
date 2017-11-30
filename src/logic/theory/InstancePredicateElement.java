@@ -1,7 +1,7 @@
 package logic.theory;
 
 import basic.StringUtil;
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
 
@@ -13,15 +13,15 @@ import logic.expression.formula.PredicateInstance;
 public class InstancePredicateElement extends Structure.PredicateElement {
 
 	//region Variables
-	private final Vector<PredicateInstance> instances;
+	private final SafeList<PredicateInstance> instances;
 	//endregion
 
 	//region Construction
 	public InstancePredicateElement(Predicate predicate) {
-		this(predicate, new Vector<>());
+		this(predicate, new SafeList<>());
 	}
 
-	public InstancePredicateElement(Predicate predicate, Vector<PredicateInstance> instances) {
+	public InstancePredicateElement(Predicate predicate, SafeList<PredicateInstance> instances) {
 		super(predicate);
 		this.instances = instances;
 		for(PredicateInstance instance : instances)
@@ -34,7 +34,7 @@ public class InstancePredicateElement extends Structure.PredicateElement {
 		for(int i = 1; i < instances.length; i++)
 			if(!getPredicate().equals(instances[i].getPredicate()))
 				throw new IllegalArgumentException("Inconsistent instance predicates");
-		this.instances = new Vector<>(instances);
+		this.instances = new SafeList<>(instances);
 	}
 	//endregion
 

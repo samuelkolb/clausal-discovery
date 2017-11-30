@@ -4,7 +4,7 @@ import clausal_discovery.core.PredicateDefinition;
 import log.Log;
 import util.Numbers;
 import pair.Pair;
-import vector.Vector;
+import vector.SafeList;
 import clausal_discovery.core.LogicBase;
 import logic.bias.Type;
 import logic.example.Example;
@@ -153,7 +153,7 @@ public class LogicParserState {
 	 */
 	public void addExample(String name) {
 		Log.LOG.formatLine("INFO added example %s", name);
-		Vector<PredicateInstance> instances1 = new Vector<>(instances.toArray(new PredicateInstance[instances.size()]));
+		SafeList<PredicateInstance> instances1 = new SafeList<>(instances.toArray(new PredicateInstance[instances.size()]));
 		examples.add(new Example(name, getSetup(), instances1, positiveExample));
 		instances.clear();
 		constants.clear();
@@ -176,19 +176,19 @@ public class LogicParserState {
 
 	public Setup getSetup() {
 		Collection<PredicateDefinition> values = this.predicates.values();
-		Vector<PredicateDefinition> definitions = new Vector<>(PredicateDefinition.class, values);
-		Vector<Constant> constants = new Vector<>(Constant.class, this.constants.values());
-		return new Setup(new Vector<>(Type.class, types.values()), definitions, constants);
+		SafeList<PredicateDefinition> definitions = new SafeList<>(PredicateDefinition.class, values);
+		SafeList<Constant> constants = new SafeList<>(Constant.class, this.constants.values());
+		return new Setup(new SafeList<>(Type.class, types.values()), definitions, constants);
 	}
 
 	public LogicBase getLogicBase() {
-		Vector<Example> examples = new Vector<>(Example.class, this.examples);
+		SafeList<Example> examples = new SafeList<>(Example.class, this.examples);
 
-		Vector<PredicateDefinition> search;
+		SafeList<PredicateDefinition> search;
 		if(searchPredicates.isEmpty())
-			search = new Vector<>(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
+			search = new SafeList<>(predicates.values().toArray(new PredicateDefinition[predicates.values().size()]));
 		else
-			search = new Vector<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
+			search = new SafeList<>(searchPredicates.toArray(new PredicateDefinition[searchPredicates.size()]));
 		return new Knowledge(getSetup().getVocabulary(), examples, search);
 	}
 

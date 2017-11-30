@@ -3,7 +3,7 @@ package clausal_discovery.test;
 import clausal_discovery.core.score.ScoringFunction;
 import logic.example.Example;
 import pair.Pair;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ScoreComparator {
 	 * Creates a score comparator
 	 * @param examples	The examples to use
 	 */
-	public ScoreComparator(Vector<Example> examples) {
+	public ScoreComparator(SafeList<Example> examples) {
 		this.pairs = new ArrayList<>();
 		for(int i = 0; i < examples.size(); i++)
 			for(int j = i + 1; j < examples.size(); j++)

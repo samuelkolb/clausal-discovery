@@ -4,7 +4,6 @@ import clausal_discovery.core.score.ClauseFunction;
 import clausal_discovery.validity.ValidityTable;
 import logic.expression.formula.Formula;
 import vector.SafeList;
-import vector.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +23,15 @@ public class Constraints {
 		return logicBase;
 	}
 
-	private final Vector<Formula> hardConstraints;
+	private final SafeList<Formula> hardConstraints;
 
-	public Vector<Formula> getHardConstraints() {
+	public SafeList<Formula> getHardConstraints() {
 		return hardConstraints;
 	}
 
-	private final Vector<Formula> softConstraints;
+	private final SafeList<Formula> softConstraints;
 
-	public Vector<Formula> getSoftConstraints() {
+	public SafeList<Formula> getSoftConstraints() {
 		return softConstraints;
 	}
 
@@ -48,12 +47,12 @@ public class Constraints {
 
 	public Constraints(LogicBase logicBase, List<Formula> hardConstraints, List<Formula> softConstraints,
 					   List<Double> weights) {
-		this(logicBase, new Vector<>(Formula.class, hardConstraints), new Vector<>(Formula.class, softConstraints),
-				new Vector<>(Double.class, weights));
+		this(logicBase, new SafeList<>(hardConstraints), new SafeList<>(softConstraints),
+				new SafeList<>(weights));
 	}
 
-	public Constraints(LogicBase logicBase, Vector<Formula> hardConstraints, Vector<Formula> softConstraints,
-					   Vector<Double> weights) {
+	public Constraints(LogicBase logicBase, SafeList<Formula> hardConstraints, SafeList<Formula> softConstraints,
+					   SafeList<Double> weights) {
 		this.logicBase = logicBase;
 		this.hardConstraints = hardConstraints;
 		this.softConstraints = softConstraints;

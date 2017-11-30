@@ -2,7 +2,7 @@ package clausal_discovery.core;
 
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
-import vector.Vector;
+import vector.SafeList;
 
 /**
  * Created by samuelkolb on 14/04/15.
@@ -69,7 +69,7 @@ public class PredicateDefinition {
 		return getPredicate().getArity();
 	}
 
-	public Vector<Type> getTypes() {
+	public SafeList<Type> getTypes() {
 		return getPredicate().getTypes();
 	}
 	//endregion

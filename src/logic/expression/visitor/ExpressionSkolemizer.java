@@ -1,6 +1,6 @@
 package logic.expression.visitor;
 
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.formula.*;
 import logic.expression.term.Constant;
 import logic.expression.term.Term;
@@ -80,7 +80,7 @@ public class ExpressionSkolemizer {
 		return formula.instance(result);
 	}
 
-	private Atom[] skolemizeAtoms(Vector<Atom> atoms, Map<Variable, Constant> variableMapping) {
+	private Atom[] skolemizeAtoms(SafeList<Atom> atoms, Map<Variable, Constant> variableMapping) {
 		Atom[] result = new Atom[atoms.length];
 		for(int i = 0; i < atoms.length; i++)
 			result[i] = (Atom) skolemize(atoms.e(i), variableMapping);

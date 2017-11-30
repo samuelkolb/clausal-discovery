@@ -5,7 +5,7 @@ import clausal_discovery.core.StatusClause;
 import logic.expression.formula.Formula;
 import logic.theory.LogicExecutor;
 import logic.theory.Theory;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class BatchValidityCalculator extends ValidityCalculator {
 	 * @param executor				The executor to be used for validity tests
 	 * @param backgroundTheories	The background theories
 	 */
-	public BatchValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+	public BatchValidityCalculator(LogicBase base, LogicExecutor executor, SafeList<Theory> backgroundTheories) {
 		super(base, executor, backgroundTheories);
 	}
 
@@ -74,10 +74,10 @@ public class BatchValidityCalculator extends ValidityCalculator {
 
 	void extendValidityTable() {
 		/*Log.LOG.printLine("Calculating...");
-		Vector<Theory> theories = new WriteOnceVector<>(new Theory[formulas.size()]);
+		SafeList<Theory> theories = new WriteOnceSafeList<>(new Theory[formulas.size()]);
 		for(Formula formula : formulas)
 			theories.add(getTheory(formula));
-		Vector<Boolean> validity = getExecutor().testValidityTheories(getKnowledgeBase(theories)).get(0);
+		SafeList<Boolean> validity = getExecutor().testValidityTheories(getKnowledgeBase(theories)).get(0);
 		for(int i = 0; i < formulas.size(); i++)
 			validityTable.put(formulas.get(i), validity.get(i));
 		formulas.clear();

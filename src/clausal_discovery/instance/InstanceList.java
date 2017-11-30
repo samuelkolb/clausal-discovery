@@ -5,7 +5,7 @@ import association.Pairing;
 import basic.StringUtil;
 import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class InstanceList {
 	 * @param predicates	The predicates to use
 	 * @param variables		The number of variables to be used
 	 */
-	public InstanceList(Vector<PredicateDefinition> predicates, int variables) {
+	public InstanceList(SafeList<PredicateDefinition> predicates, int variables) {
 		this.pairing = getInstances(predicates, getMaximalVariables(variables, predicates));
 	}
 
@@ -34,7 +34,7 @@ public class InstanceList {
 	 * Create a specific instance list
 	 * @param instances	The instances in order
 	 */
-	public InstanceList(Vector<Instance> instances) {
+	public InstanceList(SafeList<Instance> instances) {
 		this.pairing = new HashPairing<>(false, false);
 		for(int i = 0; i < instances.size(); i++)
 			this.pairing.associate(i, instances.get(i));
@@ -78,8 +78,8 @@ public class InstanceList {
 		return this.pairing.getKey(instance);
 	}
 
-	private Pairing<Integer, Instance> getInstances(Vector<PredicateDefinition> definitions, int variables) {
-		Vector<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(definitions);
+	private Pairing<Integer, Instance> getInstances(SafeList<PredicateDefinition> definitions, int variables) {
+		SafeList<InstanceSetPrototype> instanceSetPrototypes = InstanceSetPrototype.createInstanceSets(definitions);
 		List<Instance> instanceList = new ArrayList<>();
 		for(Numbers.Permutation choice : getChoices(variables, instanceSetPrototypes.length)) {
 			InstanceSetPrototype instanceSetPrototype = instanceSetPrototypes.get(choice.getDistinctCount() - 1);
@@ -100,7 +100,7 @@ public class InstanceList {
 		return choices;
 	}
 
-	private int getMaximalVariables(int variables, Vector<PredicateDefinition> predicates) {
+	private int getMaximalVariables(int variables, SafeList<PredicateDefinition> predicates) {
 		int max = 0;
 		for(PredicateDefinition definition : predicates)
 			max = Math.max(max, definition.getPredicate().getArity());

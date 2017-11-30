@@ -13,7 +13,7 @@ import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
 import logic.theory.Theory;
 import time.Stopwatch;
-import vector.Vector;
+import vector.SafeList;
 import version3.algorithm.*;
 
 import java.util.ArrayList;
@@ -81,9 +81,9 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 
 	// IVAR backgroundTheories - The background theories provided to the search
 
-	private final Vector<Theory> backgroundTheories;
+	private final SafeList<Theory> backgroundTheories;
 
-	public Vector<Theory> getBackgroundTheories() {
+	public SafeList<Theory> getBackgroundTheories() {
 		return backgroundTheories;
 	}
 
@@ -118,7 +118,7 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 	 * @param background	The background theories provided to the search
 	 * @param validityTest	The validity test
 	 */
-	public VariableRefinement(LogicBase logicBase, InstanceList list, Vector<Theory> background,
+	public VariableRefinement(LogicBase logicBase, InstanceList list, SafeList<Theory> background,
 							  Predicate<ValidatedClause> validityTest) {
 		this.backgroundTheories = background.grow(new InlineTheory(logicBase.getSymmetryFormulas()));
 		this.logicBase = logicBase;
@@ -197,9 +197,9 @@ public class VariableRefinement implements ExpansionOperator<ValidatedClause>, R
 				.map(ValidatedClause::getClause).map(this::getClause)
 				.collect(Collectors.toList());
 		//formulas.addAll(getLogicBase().getSymmetryFormulas());
-		Vector<Theory> theories = new Vector<>(new InlineTheory(formulas));
-		//Vector<Theory> background = getBackgroundTheories().grow(new InlineTheory(getLogicBase().getSymmetryFormulas()));
-		return new KnowledgeBase(logicBase.getVocabulary(), theories, getBackgroundTheories(), new Vector<>());
+		SafeList<Theory> theories = new SafeList<>(new InlineTheory(formulas));
+		//SafeList<Theory> background = getBackgroundTheories().grow(new InlineTheory(getLogicBase().getSymmetryFormulas()));
+		return new KnowledgeBase(logicBase.getVocabulary(), theories, getBackgroundTheories(), new SafeList<>());
 	}
 
 	protected Clause getClause(StatusClause clause) {

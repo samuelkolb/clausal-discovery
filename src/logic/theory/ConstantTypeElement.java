@@ -1,7 +1,7 @@
 package logic.theory;
 
 import basic.StringUtil;
-import vector.Vector;
+import vector.SafeList;
 import logic.bias.Type;
 import logic.expression.term.Constant;
 
@@ -12,13 +12,13 @@ import logic.expression.term.Constant;
  */
 class ConstantTypeElement extends Structure.TypeElement {
 
-	private final Vector<Constant> constants;
+	private final SafeList<Constant> constants;
 
 	public ConstantTypeElement(Type type) {
-		this(type, new Vector<>());
+		this(type, new SafeList<>());
 	}
 
-	public ConstantTypeElement(Type type, Vector<Constant> constants) {
+	public ConstantTypeElement(Type type, SafeList<Constant> constants) {
 		super(type);
 		this.constants = constants;
 		for(Constant constant : constants)
@@ -31,7 +31,7 @@ class ConstantTypeElement extends Structure.TypeElement {
 		for(int i = 1; i < constants.length; i++)
 			if(!getType().equals(constants[i].getType()))
 				throw new IllegalArgumentException("Inconsistent constant types");
-		this.constants = new Vector<>(constants);
+		this.constants = new SafeList<>(constants);
 	}
 
 	@Override

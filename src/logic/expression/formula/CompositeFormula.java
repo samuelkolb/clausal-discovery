@@ -1,6 +1,6 @@
 package logic.expression.formula;
 
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.HashSet;
 
@@ -12,9 +12,9 @@ import java.util.HashSet;
 public abstract class CompositeFormula extends Formula {
 
 	//region Variables
-	private final Vector<Formula> elements;
+	private final SafeList<Formula> elements;
 
-	protected Vector<Formula> getElements() {
+	protected SafeList<Formula> getElements() {
 		return elements;
 	}
 
@@ -36,7 +36,7 @@ public abstract class CompositeFormula extends Formula {
 	//region Construction
 
 	CompositeFormula(Formula... elements) {
-		this.elements = new Vector<>(elements);
+		this.elements = new SafeList<>(elements);
 	}
 
 	//endregion

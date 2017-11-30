@@ -5,7 +5,7 @@ import clausal_discovery.core.StatusClause;
 import logic.example.Example;
 import logic.expression.formula.Formula;
 import logic.theory.*;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,9 @@ public abstract class ValidityCalculator {
 		return executor;
 	}
 
-	private final Vector<Theory> backgroundTheories;
+	private final SafeList<Theory> backgroundTheories;
 
-	Vector<Theory> getBackgroundTheories() {
+	SafeList<Theory> getBackgroundTheories() {
 		return backgroundTheories;
 	}
 
@@ -42,7 +42,7 @@ public abstract class ValidityCalculator {
 
 	//region Construction
 
-	ValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+	ValidityCalculator(LogicBase base, LogicExecutor executor, SafeList<Theory> backgroundTheories) {
 		this.base = base;
 		this.executor = executor;
 		this.backgroundTheories = backgroundTheories;
@@ -66,8 +66,8 @@ public abstract class ValidityCalculator {
 
 	}
 
-	Vector<Structure> getStructures() {
-		return new Vector<>(Structure.class, getBase().getExamples(), Example::getStructure);
+	SafeList<Structure> getStructures() {
+		return new SafeList<>(Structure.class, getBase().getExamples(), Example::getStructure);
 	}
 
 	protected Theory getTheory(Formula formula) {
@@ -77,7 +77,7 @@ public abstract class ValidityCalculator {
 		return new InlineTheory(formulas);
 	}
 
-	protected KnowledgeBase getKnowledgeBase(Vector<Theory> theories) {
+	protected KnowledgeBase getKnowledgeBase(SafeList<Theory> theories) {
 		return new KnowledgeBase(getBase().getVocabulary(), theories, getBackgroundTheories(), getStructures());
 	}
 

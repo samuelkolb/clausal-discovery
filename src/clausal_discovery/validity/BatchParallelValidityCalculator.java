@@ -5,7 +5,7 @@ import clausal_discovery.core.StatusClause;
 import log.Log;
 import logic.expression.formula.Formula;
 import logic.theory.*;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +29,7 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 
 		@Override
 		public void run() {
-			Vector<Theory> theories = new Vector<>(getTheory(formula));
+			SafeList<Theory> theories = new SafeList<>(getTheory(formula));
 			getValidityTable().put(formula, getExecutor().testValidityTheory(getKnowledgeBase(theories)));
 		}
 	}
@@ -46,7 +46,7 @@ public class BatchParallelValidityCalculator extends BatchValidityCalculator {
 	 * @param executor				The executor to be used for validity tests
 	 * @param backgroundTheories	The background theories
 	 */
-	public BatchParallelValidityCalculator(LogicBase base, LogicExecutor executor, Vector<Theory> backgroundTheories) {
+	public BatchParallelValidityCalculator(LogicBase base, LogicExecutor executor, SafeList<Theory> backgroundTheories) {
 		super(base, executor, backgroundTheories);
 	}
 

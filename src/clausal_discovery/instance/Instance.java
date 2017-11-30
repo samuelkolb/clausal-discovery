@@ -6,7 +6,7 @@ import logic.expression.formula.Atom;
 import logic.expression.formula.Predicate;
 import logic.expression.term.Term;
 import logic.expression.term.Variable;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.Map;
 
@@ -28,9 +28,9 @@ public class Instance {
 		return getDefinition().getPredicate();
 	}
 
-	private Vector<Integer> variableIndices;
+	private SafeList<Integer> variableIndices;
 
-	public Vector<Integer> getVariableIndices() {
+	public SafeList<Integer> getVariableIndices() {
 		return variableIndices;
 	}
 
@@ -49,7 +49,7 @@ public class Instance {
 	 * @param definition        The predicate definition of this instance
 	 * @param variableIndices   The variable indices
 	 */
-	public Instance(PredicateDefinition definition, Vector<Integer> variableIndices) {
+	public Instance(PredicateDefinition definition, SafeList<Integer> variableIndices) {
 		assert definition.getPredicate().getArity() == variableIndices.size();
 		this.definition = definition;
 		this.variableIndices = definition.isSymmetric() ? variableIndices.sortedCopy() : variableIndices;

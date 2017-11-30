@@ -2,7 +2,7 @@ package idp.program;
 
 import idp.IdpProgramPrinter;
 import logic.theory.KnowledgeBase;
-import vector.Vector;
+import vector.SafeList;
 
 /**
  * Represents a program that tests whether the given theory is valid on the structures in the logic program
@@ -32,8 +32,8 @@ public class ValidProgram extends IdpProgram {
 		}
 		procedure.append("print(\"\")\n");
 
-		Vector<Function> functions = new Vector<>(Functions.VALID.getFunction());
-		builder.append(new Procedure(procedure.toString(), new Vector<>(), functions).print());
+		SafeList<Function> functions = new SafeList<>(Functions.VALID.getFunction());
+		builder.append(new Procedure(procedure.toString(), new SafeList<>(), functions).print());
 		return builder.toString();
 	}
 

@@ -8,7 +8,7 @@ import log.Log;
 import logic.expression.formula.Formula;
 import logic.theory.Vocabulary;
 import time.Stopwatch;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public class ConstraintParser implements LocalParser<Constraints> {
 
 	private static Instance parseInstance(Vocabulary voc, String part) {
 		String[] split = part.substring(0, part.length() - 1).split("\\(");
-		return voc.getInstance(split[0], new Vector<>(split[1].split(" ")).map(Integer.class, Integer::parseInt));
+		return voc.getInstance(split[0], new SafeList<>(split[1].split(" ")).map(Integer.class, Integer::parseInt));
 	}
 
 	//endregion

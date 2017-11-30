@@ -1,7 +1,7 @@
 package idp.program;
 
 import basic.FileUtil;
-import vector.Vector;
+import vector.SafeList;
 
 /**
  * Created by samuelkolb on 11/11/14.
@@ -11,15 +11,15 @@ import vector.Vector;
 public enum Procedures {
 
 	// 0: Theory, 1: Theory that might be entailed
-	ENTAILS("entails.txt", new Vector<>("Entailing theory", "Entailed theory"), new Vector<Function>());
+	ENTAILS("entails.txt", new SafeList<>("Entailing theory", "Entailed theory"), new SafeList<Function>());
 
 	private final String program;
 
-	private final Vector<String> parameters;
+	private final SafeList<String> parameters;
 
-	private final Vector<Function> functions;
+	private final SafeList<Function> functions;
 
-	Procedures(String filename, Vector<String> parameters, Vector<Function> functions) {
+	Procedures(String filename, SafeList<String> parameters, SafeList<Function> functions) {
 		this.parameters = parameters;
 		this.functions = functions;
 		program = FileUtil.readFile(FileUtil.getLocalFile(getClass().getResource("/idp_programs/" + filename)));

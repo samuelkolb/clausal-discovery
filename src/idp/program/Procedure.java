@@ -1,7 +1,7 @@
 package idp.program;
 
 import basic.StringUtil;
-import vector.Vector;
+import vector.SafeList;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -29,18 +29,18 @@ public class Procedure {
 	//region Variables
 	private final String program;
 
-	private final Vector<String> parameters;
+	private final SafeList<String> parameters;
 
-	private final Vector<Function> functions;
+	private final SafeList<Function> functions;
 	//endregion
 
 	//region Construction
 
 	protected Procedure(String program) {
-		this(program, new Vector<>(), new Vector<>());
+		this(program, new SafeList<>(), new SafeList<>());
 	}
 
-	protected Procedure(String program, Vector<String> parameters, Vector<Function> functions) {
+	protected Procedure(String program, SafeList<String> parameters, SafeList<Function> functions) {
 		this.program = program;
 		this.parameters = parameters;
 		this.functions = functions;

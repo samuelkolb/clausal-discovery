@@ -1,6 +1,6 @@
 package logic.theory;
 
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.formula.Formula;
 
 import java.util.Collection;
@@ -12,9 +12,9 @@ import java.util.Collection;
  */
 public class InlineTheory implements Theory {
 
-	private final Vector<Formula> formulas;
+	private final SafeList<Formula> formulas;
 
-	public Vector<Formula> getFormulas() {
+	public SafeList<Formula> getFormulas() {
 		return formulas;
 	}
 
@@ -23,7 +23,7 @@ public class InlineTheory implements Theory {
 	 * @param formulas	The formulas that make up the theory
 	 */
 	public InlineTheory(Formula... formulas) {
-		this(new Vector<>(formulas));
+		this(new SafeList<>(formulas));
 	}
 
 	/**
@@ -31,7 +31,7 @@ public class InlineTheory implements Theory {
 	 * @param formulas	The formulas that make up the theory
 	 */
 	public <T extends Formula> InlineTheory(Collection<T> formulas) {
-		this.formulas = new Vector<>(new Formula[formulas.size()], formulas);
+		this.formulas = new SafeList<>(new Formula[formulas.size()], formulas);
 	}
 
 	/**

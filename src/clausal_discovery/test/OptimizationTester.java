@@ -9,7 +9,7 @@ import log.Log;
 import logic.example.Example;
 import pair.Pair;
 import util.ParallelCalculator;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +106,7 @@ public class OptimizationTester {
 	 * @param function	The function to induce the ordering
 	 * @return	A preferences object
 	 */
-	public Preferences generatePreferences(Vector<Example> examples, ScoringFunction function) {
+	public Preferences generatePreferences(SafeList<Example> examples, ScoringFunction function) {
 		List<List<List<Example>>> orders = new ArrayList<>();
 		for(int i = 0; i < examples.size(); i++)
 			for(int j = i + 1; j < examples.size(); j++) {

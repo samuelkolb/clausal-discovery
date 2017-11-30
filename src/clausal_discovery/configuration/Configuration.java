@@ -10,7 +10,7 @@ import logic.theory.Theory;
 import pair.TypePair;
 import parse.LogicParser;
 import parse.ParseException;
-import vector.Vector;
+import vector.SafeList;
 import version3.algorithm.SearchAlgorithm;
 import version3.plugin.CountingPlugin;
 import version3.plugin.FileLoggingPlugin;
@@ -48,9 +48,9 @@ public class Configuration {
 
 	// IVAR backgroundTheories - Background theories
 
-	private final Vector<Theory> backgroundTheories;
+	private final SafeList<Theory> backgroundTheories;
 
-	public Vector<Theory> getBackgroundTheories() {
+	public SafeList<Theory> getBackgroundTheories() {
 		return backgroundTheories;
 	}
 
@@ -77,7 +77,7 @@ public class Configuration {
 	 * @param variableCount	The number of variables to use
 	 * @param clauseLength	The number of literals to use
 	 */
-	public Configuration(LogicBase logicBase, Vector<Theory> background, int variableCount, int clauseLength) {
+	public Configuration(LogicBase logicBase, SafeList<Theory> background, int variableCount, int clauseLength) {
 		this.logicBase = logicBase;
 		this.backgroundTheories = background;
 		this.variableCount = variableCount;
@@ -118,7 +118,7 @@ public class Configuration {
 	 * @return 	The new configuration
 	 */
 	public Configuration addBackgroundTheory(Theory theory) {
-		Vector<Theory> backgroundTheories = getBackgroundTheories().grow(theory);
+		SafeList<Theory> backgroundTheories = getBackgroundTheories().grow(theory);
 		return new Configuration(getLogicBase(), backgroundTheories, getVariableCount(), getClauseLength());
 	}
 
@@ -139,9 +139,9 @@ public class Configuration {
 			throw new IllegalArgumentException(e);
 		}
 		URL url = Configuration.class.getResource("/examples/" + name + ".background");
-		Vector<Theory> background = url == null
-				? new Vector<>()
-				: new Vector<>(new FileTheory(FileUtil.getLocalFile(url)));
+		SafeList<Theory> background = url == null
+				? new SafeList<>()
+				: new SafeList<>(new FileTheory(FileUtil.getLocalFile(url)));
 		return new Configuration(logicBase, background, variableCount, clauseLength);
 	}
 
@@ -163,9 +163,9 @@ public class Configuration {
 			Log.LOG.formatLine("Error parsing file %s.logic\n%s", file.getName(), e.getMessage());
 			throw new IllegalArgumentException(e);
 		}
-		Vector<Theory> background = backgroundFile.isPresent()
-				? new Vector<>(new FileTheory(backgroundFile.get()))
-				: new Vector<>();
+		SafeList<Theory> background = backgroundFile.isPresent()
+				? new SafeList<>(new FileTheory(backgroundFile.get()))
+				: new SafeList<>();
 		return new Configuration(logicBase, background, variables, literals);
 	}
 

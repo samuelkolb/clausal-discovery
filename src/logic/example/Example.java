@@ -9,7 +9,7 @@ import logic.expression.formula.PredicateInstance;
 import logic.expression.term.Constant;
 import logic.theory.Structure;
 import logic.theory.StructureBuilder;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.Objects;
 import java.util.Set;
@@ -41,7 +41,7 @@ public class Example {
 
 	// IVAR instances - The predicate instances declared in this example
 
-	private final Vector<PredicateInstance> instances;
+	private final SafeList<PredicateInstance> instances;
 
 	// IVAR isPositive - Whether this is a positive example or not (if not it is a negative example)
 
@@ -62,7 +62,7 @@ public class Example {
 	 * @param instances		The instances present in the example
 	 * @param isPositive	Whether or not this is a positive or negative example
 	 */
-	public Example(String name, Setup setup, Vector<PredicateInstance> instances, boolean isPositive) {
+	public Example(String name, Setup setup, SafeList<PredicateInstance> instances, boolean isPositive) {
 		Objects.requireNonNull(name);
 		this.name = name;
 		this.setup = setup;

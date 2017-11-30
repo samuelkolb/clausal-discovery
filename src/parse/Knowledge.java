@@ -16,7 +16,7 @@ import logic.theory.Vocabulary;
 import pair.TypePair;
 import util.Numbers;
 import util.Randomness;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,17 +35,17 @@ public class Knowledge implements LogicBase {
 		return vocabulary;
 	}
 
-	private final Vector<Example> examples;
+	private final SafeList<Example> examples;
 
 	@Override
-	public Vector<Example> getExamples() {
+	public SafeList<Example> getExamples() {
 		return examples;
 	}
 
-	private final Vector<PredicateDefinition> searchPredicates;
+	private final SafeList<PredicateDefinition> searchPredicates;
 
 	@Override
-	public Vector<PredicateDefinition> getSearchPredicates() {
+	public SafeList<PredicateDefinition> getSearchPredicates() {
 		return searchPredicates;
 	}
 
@@ -55,7 +55,7 @@ public class Knowledge implements LogicBase {
 	 * @param examples         	The list of examples
 	 * @param searchPredicates  The list of search predicates
 	 */
-	public Knowledge(Vocabulary vocabulary, Vector<Example> examples, Vector<PredicateDefinition> searchPredicates) {
+	public Knowledge(Vocabulary vocabulary, SafeList<Example> examples, SafeList<PredicateDefinition> searchPredicates) {
 		this.vocabulary = vocabulary;
 		this.examples = examples;
 		this.searchPredicates = searchPredicates;
@@ -72,7 +72,7 @@ public class Knowledge implements LogicBase {
 		List<Formula> formulas = new ArrayList<>();
 		for(PredicateDefinition definition : getSearchPredicates().filter(PredicateDefinition::isSymmetric)) {
 			Predicate predicate = definition.getPredicate();
-			Vector<Integer> variableIndices = ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1));
+			SafeList<Integer> variableIndices = ArrayUtil.wrap(Numbers.range(predicate.getArity() - 1));
 			Map<Integer, Variable> variableMap = new HashMap<>();
 			for(Integer index : variableIndices) {
 				Type type = predicate.getTypes().get(index);
@@ -81,7 +81,7 @@ public class Knowledge implements LogicBase {
 			Instance body = new Instance(definition, variableIndices);
 			List<Numbers.Permutation> permutations = Numbers.getPermutations(predicate.getArity());
 			for(int i = 1; i < permutations.size(); i++) {
-				Instance head = new Instance(definition, new Vector<>(permutations.get(i).getIntegerArray()));
+				Instance head = new Instance(definition, new SafeList<>(permutations.get(i).getIntegerArray()));
 				formulas.add(Clause.horn(head.makeAtom(variableMap), body.makeAtom(variableMap)));
 			}
 		}
@@ -91,13 +91,13 @@ public class Knowledge implements LogicBase {
 	@Override
 	public List<LogicBase> split() {
 		return getExamples().stream()
-				.map(example -> copy(new Vector<>(example)))
+				.map(example -> copy(new SafeList<>(example)))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public LogicBase filterExamples(java.util.function.Predicate<Example> predicate) {
-		Vector<Example> examples = getExamples().filter(predicate);
+		SafeList<Example> examples = getExamples().filter(predicate);
 		return copy(examples);
  	}
 
@@ -109,11 +109,11 @@ public class Knowledge implements LogicBase {
 		int index = Math.max(1, Math.min((int) Math.ceil(fraction * size), size - 1));
 		List<Example> examples = new ArrayList<>(getExamples());
 		Collections.shuffle(examples, Randomness.getRandom());
-		Vector<Example> vector = new Vector<>(Example.class, examples);
+		SafeList<Example> vector = new SafeList<>(Example.class, examples);
 		return TypePair.of(copy(vector.subList(0, index)), copy(vector.subList(index, size)));
 	}
 
-	private Knowledge copy(Vector<Example> examples) {
+	private Knowledge copy(SafeList<Example> examples) {
 		return new Knowledge(getVocabulary(), examples, getSearchPredicates());
 	}
 }

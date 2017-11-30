@@ -10,7 +10,7 @@ import logic.theory.InlineTheory;
 import logic.theory.KnowledgeBase;
 import logic.theory.LogicExecutor;
 import time.Stopwatch;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,10 +65,10 @@ public class IdpExecutor implements LogicExecutor {
 	@Override
 	public BitMatrix testValidityTheories(KnowledgeBase knowledgeBase) {
 		String result = executeSafe(new ValidityProgram(knowledgeBase, printer));
-		List<Vector<Boolean>> list = new ArrayList<>();
+		List<SafeList<Boolean>> list = new ArrayList<>();
 		for(String line : result.trim().split("\n"))
 			if(line.trim().length() > 0)
-				list.add(new Vector<>(line.trim().split(" ")).map(Boolean.class, this::getBoolean));
+				list.add(new SafeList<>(line.trim().split(" ")).map(Boolean.class, this::getBoolean));
 		BitMatrix bitMatrix = new BitMatrix(knowledgeBase.getStructures().size(), knowledgeBase.getTheories().size());
 		for(int row = 0; row < list.size(); row++)
 			for(int col = 0; col < list.get(row).size(); col++)

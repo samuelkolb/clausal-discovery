@@ -2,7 +2,7 @@ package logic.expression.formula;
 
 import basic.ArrayUtil;
 import log.Log;
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.visitor.ExpressionLogicPrinter;
 import logic.expression.visitor.ExpressionVisitor;
 
@@ -17,9 +17,9 @@ import java.util.List;
 public class Clause extends Formula {
 
 	//region Variables
-	private final Vector<Atom> head;
+	private final SafeList<Atom> head;
 
-	public Vector<Atom> getHeadAtoms() {
+	public SafeList<Atom> getHeadAtoms() {
 		return head;
 	}
 
@@ -31,9 +31,9 @@ public class Clause extends Formula {
 		return LogicalValue.FALSE;
 	}
 
-	private final Vector<Atom> body;
+	private final SafeList<Atom> body;
 
-	public Vector<Atom> getBodyAtoms() {
+	public SafeList<Atom> getBodyAtoms() {
 		return body;
 	}
 
@@ -50,10 +50,10 @@ public class Clause extends Formula {
 	//region Construction
 
 	private Clause(Atom[] body, Atom[] head) {
-		this(new Vector<>(body), new Vector<>(head));
+		this(new SafeList<>(body), new SafeList<>(head));
 	}
 
-	private Clause(Vector<Atom> body, Vector<Atom> head) {
+	private Clause(SafeList<Atom> body, SafeList<Atom> head) {
 		this.head = head;
 		this.body = body;
 	}

@@ -2,7 +2,7 @@ package clausal_discovery.instance;
 
 import clausal_discovery.core.PredicateDefinition;
 import util.Numbers;
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.formula.Predicate;
 
 /**
@@ -56,7 +56,7 @@ public class InstancePrototype {
 	 * @return  An instance containing the given indices
 	 */
 	public Instance instantiate(int[] indices) {
-		Vector<Integer> variableIndices = new Vector<>(getPermutation().substitute(indices).getIntegerArray());
+		SafeList<Integer> variableIndices = new SafeList<>(getPermutation().substitute(indices).getIntegerArray());
 		return new Instance(getDefinition(), variableIndices);
 	}
 

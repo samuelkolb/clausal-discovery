@@ -5,8 +5,7 @@ import cern.colt.function.IntProcedure;
 import clausal_discovery.instance.Instance;
 import clausal_discovery.instance.InstanceList;
 import clausal_discovery.instance.PositionedInstance;
-import vector.Vector;
-import vector.WriteOnceVector;
+import vector.SafeList;
 
 import java.util.function.IntPredicate;
 
@@ -83,14 +82,14 @@ class AtomSet implements Comparable<AtomSet> {
 		return size() == 0;
 	}
 
-	public Vector<Instance> getInstances() {
-		Vector<Instance> instances = new WriteOnceVector<>(new Instance[size()]);
+	public SafeList<Instance> getInstances() {
+		SafeList<Instance> instances = new WriteOnceVector<>(new Instance[size()]);
 		forEach(i -> instances.add(instanceList.get(i)));
 		return instances;
 	}
 
-	public Vector<PositionedInstance> getInstances(boolean inBody) {
-		Vector<PositionedInstance> instances = new WriteOnceVector<>(new PositionedInstance[size()]);
+	public SafeList<PositionedInstance> getInstances(boolean inBody) {
+		SafeList<PositionedInstance> instances = new WriteOnceVector<>(new PositionedInstance[size()]);
 		forEach(i -> instances.add(instanceList.getInstance(i, inBody)));
 		return instances;
 	}

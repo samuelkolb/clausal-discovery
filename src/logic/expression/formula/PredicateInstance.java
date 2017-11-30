@@ -1,7 +1,7 @@
 package logic.expression.formula;
 
 import logic.bias.Type;
-import vector.Vector;
+import vector.SafeList;
 import logic.expression.term.Term;
 import logic.expression.visitor.ExpressionVisitor;
 
@@ -21,9 +21,9 @@ public class PredicateInstance extends Atom {
 		return predicate;
 	}
 
-	private final Vector<Term> terms;
+	private final SafeList<Term> terms;
 
-	public Vector<Term> getTerms() {
+	public SafeList<Term> getTerms() {
 		return terms;
 	}
 
@@ -41,7 +41,7 @@ public class PredicateInstance extends Atom {
 
 	public PredicateInstance(Predicate predicate, Term... terms) {
 		this.predicate = predicate;
-		this.terms = new Vector<>(terms);
+		this.terms = new SafeList<>(terms);
 		int arity = getPredicate().getArity();
 		if(getTerms().length != arity)
 			throw new IllegalArgumentException(String.format(arityError, getTerms().length, predicate.getName(), arity));

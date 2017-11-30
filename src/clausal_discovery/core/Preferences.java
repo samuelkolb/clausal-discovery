@@ -4,7 +4,7 @@ import clausal_discovery.validity.ValidityTable;
 import log.Log;
 import logic.example.Example;
 import util.Randomness;
-import vector.Vector;
+import vector.SafeList;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,13 +42,13 @@ public class Preferences {
 
 	// IVAR groups - A vector of groups
 
-	private final Vector<Group> groups;
+	private final SafeList<Group> groups;
 
 	private List<Group> getGroups() {
 		return new ArrayList<>(groups);
 	}
 
-	private final Vector<Example> elements;
+	private final SafeList<Example> elements;
 
 	public List<Example> getElements() {
 		return new ArrayList<>(elements);
@@ -58,12 +58,12 @@ public class Preferences {
 
 	//region Construction
 
-	private Preferences(Vector<Group> groups) {
+	private Preferences(SafeList<Group> groups) {
 		this.groups = groups;
 		Set<Example> elements = new HashSet<>();
 		for(Group group : groups)
 			group.getOrdering().forEach(elements::addAll);
-		this.elements = new Vector<>(Example.class, elements);
+		this.elements = new SafeList<>(elements);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class Preferences {
 	 * @return	A preferences object
 	 */
 	public static Preferences newFromOrders(List<List<List<Example>>> orders) {
-		return new Preferences(new Vector<>(Group.class, orders.stream().map(Group::new).collect(Collectors.toList())));
+		return new Preferences(new SafeList<Group>(orders.stream().map(Group::new).collect(Collectors.toList())));
 	}
 
 	//endregion
@@ -130,7 +130,7 @@ public class Preferences {
 		Collections.shuffle(groups, Randomness.getRandom());
 		int newSize = (int) Math.ceil(groups.size() * factor);
 		Log.LOG.saveState().formatLine("Resize from %d preferences to %d preferences", getGroups().size(), newSize).revert();
-		return new Preferences(new Vector<>(Group.class, groups.subList(0, newSize)));
+		return new Preferences(new SafeList<Group>(groups.subList(0, newSize)));
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class Preferences {
 		Log.LOG.printLine("Noise: " + (int) (groups.size() * factor) + " of " + groups.size());
 		for(int i = 0; i < (int) (groups.size() * factor); i++)
 			groups.set(i, groups.get(i).disturb());
-		return new Preferences(new Vector<>(Group.class, groups));
+		return new Preferences(new SafeList<Group>(groups));
 	}
 
 	//endregion

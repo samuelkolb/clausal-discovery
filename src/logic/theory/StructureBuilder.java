@@ -1,7 +1,7 @@
 package logic.theory;
 
 import build.Builder;
-import vector.Vector;
+import vector.SafeList;
 import logic.bias.Type;
 import logic.expression.formula.Predicate;
 import logic.expression.formula.PredicateInstance;
@@ -44,7 +44,7 @@ public class StructureBuilder extends Builder<Structure> {
 	}
 
 	public void addConstants(Type type, Constant... constants) {
-		typeElements.add(new ConstantTypeElement(type, new Vector<>(constants)));
+		typeElements.add(new ConstantTypeElement(type, new SafeList<>(constants)));
 	}
 
 	public void addConstants(Type type, Collection<Constant> constants) {
@@ -62,7 +62,7 @@ public class StructureBuilder extends Builder<Structure> {
 	}
 
 	public void addPredicateInstances(Predicate predicate, PredicateInstance... instances) {
-		predicateElements.add(new InstancePredicateElement(predicate, new Vector<>(instances)));
+		predicateElements.add(new InstancePredicateElement(predicate, new SafeList<>(instances)));
 	}
 
 	public void addPredicateInstances(Predicate predicate, Collection<PredicateInstance> instances) {
@@ -78,18 +78,18 @@ public class StructureBuilder extends Builder<Structure> {
 	 * @param predicates	The given predicate instances
 	 * @return	A vector of all different constant that occur at least once as a term of one of the given instances
 	 *//*
-	public static Vector<Constant> extractConstants(PredicateInstance... predicates) {
+	public static SafeList<Constant> extractConstants(PredicateInstance... predicates) {
 		Set<Constant> constants = new HashSet<>();
 		for(PredicateInstance instance : predicates)
 			for(Term term : instance.getTerms())
 				if(term instanceof Constant)
 					constants.add((Constant) term);
-		return new Vector<>(constants.toArray(new Constant[constants.size()]));
+		return new SafeList<>(constants.toArray(new Constant[constants.size()]));
 	}/*/
 
 	@Override
 	public Structure sample() {
-		return new Structure(getTypeElementVector(), getPredicateElementVector(), true);
+		return new Structure(getTypeElementSafeList(), getPredicateElementSafeList(), true);
 	}
 
 	@Override
@@ -100,11 +100,11 @@ public class StructureBuilder extends Builder<Structure> {
 
 	//endregion
 
-	private Vector<Structure.PredicateElement> getPredicateElementVector() {
-		return new Vector<>(predicateElements.toArray(new Structure.PredicateElement[predicateElements.size()]));
+	private SafeList<Structure.PredicateElement> getPredicateElementSafeList() {
+		return new SafeList<>(predicateElements.toArray(new Structure.PredicateElement[predicateElements.size()]));
 	}
 
-	private Vector<Structure.TypeElement> getTypeElementVector() {
-		return new Vector<>(typeElements.toArray(new Structure.TypeElement[typeElements.size()]));
+	private SafeList<Structure.TypeElement> getTypeElementSafeList() {
+		return new SafeList<>(typeElements.toArray(new Structure.TypeElement[typeElements.size()]));
 	}
 }
